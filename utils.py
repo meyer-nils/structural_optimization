@@ -2,12 +2,15 @@ import matplotlib.pyplot as plt
 import torch
 
 
-def plot_contours(x, y, z, opti=[], figsize=(8, 6), levels=25, title=None, paths={}):
+def plot_contours(
+    x, y, z, opti=[], figsize=(8, 6), levels=25, title=None, patches=[], paths={}
+):
     with torch.no_grad():
         plt.figure(figsize=figsize)
-        # locator = ticker.LogLocator(subs=(0.5, 1.0))
         plt.contour(x, y, z, levels=levels, colors="k", linewidths=1)
         plt.contourf(x, y, z, levels=levels, cmap="plasma")
+        for patch in patches:
+            plt.gca().add_patch(patch)
         for label, path in paths.items():
             xp = [p[0] for p in path]
             yp = [p[1] for p in path]
