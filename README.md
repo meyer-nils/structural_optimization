@@ -4,4 +4,4 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/meyer-nils/structural_optimization_exercise/HEAD)
 
 # Structural Optimization Exercises
-Jupyter notebooks for the exercises of my structural optimization lecture.
+Jupyter notebooks for my structural optimization lecture.
