@@ -163,6 +163,13 @@ class Truss:
                 x = pos[i][0]
                 y = pos[i][1]
                 plt.arrow(x, y, force[0], force[1], width=0.05, facecolor="gray")
+        for i, constraint in enumerate(self.constraints):
+            x = pos[i][0]
+            y = pos[i][1]
+            if constraint[0]:
+                plt.plot(x - 0.1, y, ">", color="gray")
+            if constraint[1]:
+                plt.plot(x, y - 0.1, "^", color="gray")
 
         # Adjustments
         nmin = pos.min(dim=0).values
