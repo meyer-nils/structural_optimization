@@ -138,7 +138,7 @@ class Truss:
             sm = plt.cm.ScalarMappable(
                 cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax)
             )
-            plt.colorbar(sm, label="Stress")
+            plt.colorbar(sm, label="Stress", shrink=0.5)
         else:
             color = self.elements.shape[0] * ["black"]
 
