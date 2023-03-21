@@ -4,7 +4,7 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/meyer-nils/structural_optimization_exercise/HEAD)
 
 # Structural Optimization
-Jupyter notebooks for my structural optimization lecture MRM-0156. 
+Accompanying code for my structural optimization lecture MRM-0156. 
 The images of the lecture are generated with notebooks having a prefix `lecture`. 
 The solution to exersices are documented in notebooks having a prefix `exercise`.
 
