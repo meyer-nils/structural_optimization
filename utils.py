@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import torch
 from matplotlib import cm
 
+torch.set_default_dtype(torch.double)
+
 
 def plot_contours(
     x, y, z, opti=[], figsize=(8, 6), levels=25, title=None, box=None, paths={}
@@ -59,20 +61,21 @@ def plot_contours(
 
 
 class Truss:
-    def __init__(self, nodes, elements, forces, constraints):
+    def __init__(self, nodes, elements, forces, constraints, E):
         self.nodes = nodes
         self.elements = elements
         self.forces = forces
         self.constraints = constraints
+        self.E = E
 
-    def _element_stiffness(self, element, E, A):
+    def k0(self, element):
         n1 = int(element[0])
         n2 = int(element[1])
         dx = self.nodes[n1][0] - self.nodes[n2][0]
         dy = self.nodes[n1][1] - self.nodes[n2][1]
-        L = torch.sqrt(dx**2 + dy**2)
-        c = dx / L
-        s = dy / L
+        l0 = torch.sqrt(dx**2 + dy**2)
+        c = dx / l0
+        s = dy / l0
         m = torch.tensor(
             [
                 [c**2, s * c, -(c**2), -s * c],
@@ -81,24 +84,43 @@ class Truss:
                 [-s * c, -(s**2), s * c, s**2],
             ]
         )
-        return E * A / L * m
+        return self.E / l0 * m
 
-    def stiffness(self, E, A):
-        n_dofs = torch.numel(self.nodes)
-        K = torch.zeros((n_dofs, n_dofs))
-        for i, element in enumerate(self.elements):
+    def element_lengths(self):
+        l0 = torch.zeros((self.elements.shape[0]))
+        for j, element in enumerate(self.elements):
             n1 = int(element[0])
             n2 = int(element[1])
-            k = self._element_stiffness(element, E[i], A[i])
+            dx = self.nodes[n1][0] - self.nodes[n2][0]
+            dy = self.nodes[n1][1] - self.nodes[n2][1]
+            l0[j] = torch.sqrt(dx**2 + dy**2)
+        return l0
+
+    def element_strain_energies(self, u):
+        w = torch.zeros((self.elements.shape[0]))
+        for j, element in enumerate(self.elements):
+            n1 = int(element[0])
+            n2 = int(element[1])
+            u_j = torch.tensor([u[n1, 0], u[n1, 1], u[n2, 0], u[n2, 1]])
+            w[j] = 0.5 * u_j @ self.k0(element) @ u_j
+        return w
+
+    def stiffness(self, x):
+        n_dofs = torch.numel(self.nodes)
+        K = torch.zeros((n_dofs, n_dofs))
+        for j, element in enumerate(self.elements):
+            n1 = int(element[0])
+            n2 = int(element[1])
+            k = x[j] * self.k0(element)
             K[n1 * 2 : n1 * 2 + 2, n1 * 2 : n1 * 2 + 2] += k[0:2, 0:2]
             K[n1 * 2 : n1 * 2 + 2, n2 * 2 : n2 * 2 + 2] += k[0:2, 2:4]
             K[n2 * 2 : n2 * 2 + 2, n1 * 2 : n1 * 2 + 2] += k[2:4, 0:2]
             K[n2 * 2 : n2 * 2 + 2, n2 * 2 : n2 * 2 + 2] += k[2:4, 2:4]
         return K
 
-    def solve(self, E, A):
+    def solve(self, x):
         # Compute global stiffness matrix
-        K = self.stiffness(E, A)
+        K = self.stiffness(x)
         # Get reuced stiffness matrix
         uncon = torch.nonzero(~self.constraints.ravel(), as_tuple=False).ravel()
         K_red = torch.index_select(K, 0, uncon)
@@ -109,31 +131,42 @@ class Truss:
         u = torch.zeros_like(self.nodes).ravel()
         u[uncon] = u_red
 
+        # Evaluate force
+        f = K @ u
+
+        # Reshape
+        u = u.reshape((-1, 2))
+        f = f.reshape((-1, 2))
+
         # Evaluate stress
-        f = (K @ u).reshape((-1, 2))
         sigma = torch.zeros((self.elements.shape[0]))
-        for i, element in enumerate(self.elements):
+        for j, element in enumerate(self.elements):
             n1 = int(element[0])
             n2 = int(element[1])
-            df = f[n2] - f[n1]
-            dx = self.nodes[n2] - self.nodes[n1]
-            sigma[i] = torch.dot(df, dx / torch.norm(dx)) / A[i]
+            dx = self.nodes[n1][0] - self.nodes[n2][0]
+            dy = self.nodes[n1][1] - self.nodes[n2][1]
+            l0 = torch.sqrt(dx**2 + dy**2)
+            c = dx / l0
+            s = dy / l0
+            m = torch.tensor([c, s, -c, -s])
+            u_j = torch.tensor([u[n1, 0], u[n1, 1], u[n2, 0], u[n2, 1]])
+            sigma[j] = self.E / l0 * torch.inner(m, u_j)
 
-        return [u.reshape((-1, 2)), sigma]
+        return [u, f, sigma]
 
-    def plot(self, u=0.0, sigma=None, A=None, node_labels=True):
+    def plot(self, u=0.0, sigma=None, x=None, node_labels=True):
         # Line widths from diameters (if present)
-        if A is not None:
-            A_max = torch.max(A)
-            linewidth = 3.0 * A / A_max
+        if x is not None:
+            x_max = torch.max(x)
+            linewidth = 5.0 * x / x_max
         else:
             linewidth = 2.0 * torch.ones(self.elements.shape[0])
 
         # Line color from stress (if present)
         if sigma is not None:
             cmap = cm.viridis
-            vmin = sigma.min()
-            vmax = sigma.max()
+            vmin = min(sigma.min(), 0.0)
+            vmax = max(sigma.max(), 0.0)
             color = cmap((sigma - vmin) / (vmax - vmin))
             sm = plt.cm.ScalarMappable(
                 cmap=cmap, norm=plt.Normalize(vmin=vmin, vmax=vmax)
@@ -150,12 +183,12 @@ class Truss:
                 plt.annotate(i, (node[0] + 0.01, node[1] + 0.1), color="black")
 
         # Trusses
-        for i, element in enumerate(self.elements):
+        for j, element in enumerate(self.elements):
             n1 = int(element[0])
             n2 = int(element[1])
             x = [pos[n1][0], pos[n2][0]]
             y = [pos[n1][1], pos[n2][1]]
-            plt.plot(x, y, linewidth=linewidth[i], c=color[i])
+            plt.plot(x, y, linewidth=linewidth[j], c=color[j])
 
         # Forces
         for i, force in enumerate(self.forces):
