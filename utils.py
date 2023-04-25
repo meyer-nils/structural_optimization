@@ -196,6 +196,8 @@ class Truss:
                 x = pos[i][0]
                 y = pos[i][1]
                 plt.arrow(x, y, force[0], force[1], width=0.05, facecolor="gray")
+
+        # Constraints
         for i, constraint in enumerate(self.constraints):
             x = pos[i][0]
             y = pos[i][1]
@@ -208,5 +210,61 @@ class Truss:
         nmin = pos.min(dim=0).values
         nmax = pos.max(dim=0).values
         plt.axis([nmin[0] - 0.5, nmax[0] + 0.5, nmin[1] - 0.5, nmax[1] + 0.5])
+        plt.gca().set_aspect("equal", adjustable="box")
+        plt.axis("off")
+
+
+class QuadElement:
+    def N(self, xi):
+        N_1 = (1.0 - xi[..., 0]) * (1.0 - xi[..., 1])
+        N_2 = (1.0 + xi[..., 0]) * (1.0 - xi[..., 1])
+        N_3 = (1.0 + xi[..., 0]) * (1.0 + xi[..., 1])
+        N_4 = (1.0 - xi[..., 0]) * (1.0 + xi[..., 1])
+        return 0.25 * torch.stack([N_1, N_2, N_3, N_4], dim=2)
+
+    def B(self, xi):
+        return 0.25 * torch.tensor(
+            [
+                [-(1.0 - xi[1]), (1.0 - xi[1]), (1.0 + xi[1]), -(1.0 + xi[1])],
+                [-(1.0 - xi[0]), (1.0 - xi[0]), (1.0 + xi[0]), -(1.0 + xi[0])],
+            ]
+        )
+
+
+class FEM:
+    def __init__(self, nodes, elements, forces, constraints):
+        self.nodes = nodes
+        self.elements = elements
+        self.forces = forces
+        self.constraints = constraints
+        # self.E = E
+
+    def plot(self):
+        pos = self.nodes
+        # Nodes
+        plt.scatter(pos[:, 0], pos[:, 1], color="black", marker="o")
+
+        # Elements
+        for element in self.elements:
+            x1 = [pos[node, 0] for node in element] + [pos[element[0], 0]]
+            x2 = [pos[node, 1] for node in element] + [pos[element[0], 1]]
+            plt.plot(x1, x2, color="black")
+
+        # Forces
+        for i, force in enumerate(self.forces):
+            if torch.norm(force) > 0.0:
+                x = pos[i][0]
+                y = pos[i][1]
+                plt.arrow(x, y, force[0], force[1], width=0.1, facecolor="gray")
+
+        # Contraints
+        for i, constraint in enumerate(self.constraints):
+            x = pos[i][0]
+            y = pos[i][1]
+            if constraint[0]:
+                plt.plot(x - 0.1, y, ">", color="gray")
+            if constraint[1]:
+                plt.plot(x, y - 0.1, "^", color="gray")
+
         plt.gca().set_aspect("equal", adjustable="box")
         plt.axis("off")
