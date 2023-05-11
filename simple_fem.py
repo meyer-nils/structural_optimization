@@ -2,6 +2,7 @@ from math import sqrt
 
 import matplotlib.pyplot as plt
 import torch
+from matplotlib.collections import PolyCollection
 
 torch.set_default_dtype(torch.double)
 
@@ -37,11 +38,45 @@ class FEM:
         self.forces = forces
         self.constraints = constraints
         self.quad = QuadElement()
+        # Plain strain state
         self.C = (E / ((1.0 + nu) * (1.0 - 2.0 * nu))) * torch.tensor(
             [[1.0 - nu, nu, 0.0], [nu, 1.0 - nu, 0.0], [0.0, 0.0, 0.5 - nu]]
         )
 
-    def k(self, element):
+    def areas(self):
+        areas = torch.zeros((self.elements.shape[0]))
+        for j, element in enumerate(self.elements):
+            nodes = self.nodes[element, :]
+            area = 0.0
+            for q in self.quad.integration_points():
+                J = (self.quad.B_ref(q) @ nodes).T
+                area += torch.linalg.det(J)
+            areas[j] = area
+        return areas
+
+    def element_strain_energies(self, u):
+        w = torch.zeros((self.elements.shape[0]))
+        for j, element in enumerate(self.elements):
+            n1 = int(element[0])
+            n2 = int(element[1])
+            n3 = int(element[2])
+            n4 = int(element[3])
+            u_j = torch.tensor(
+                [
+                    u[n1, 0],
+                    u[n1, 1],
+                    u[n2, 0],
+                    u[n2, 1],
+                    u[n3, 0],
+                    u[n3, 1],
+                    u[n4, 0],
+                    u[n4, 1],
+                ]
+            )
+            w[j] = 0.5 * u_j @ self.k0(element) @ u_j
+        return w
+
+    def k0(self, element):
         # Element stiffness matrix
         k = torch.zeros((8, 8))
         B = torch.zeros((3, 8))
@@ -56,12 +91,12 @@ class FEM:
             k += B.T @ self.C @ B * torch.linalg.det(J)
         return k
 
-    def stiffness(self):
+    def stiffness(self, d):
         # Assemble global stiffness matrix
         n_dofs = torch.numel(self.nodes)
         K = torch.zeros((n_dofs, n_dofs))
         for j, element in enumerate(self.elements):
-            k = self.k(element)
+            k = d[j] * self.k0(element)
             for i, I in enumerate(element):
                 for j, J in enumerate(element):
                     K[2 * I, 2 * J] += k[2 * i, 2 * j]
@@ -70,9 +105,9 @@ class FEM:
                     K[2 * I, 2 * J + 1] += k[2 * i, 2 * j + 1]
         return K
 
-    def solve(self):
+    def solve(self, d):
         # Compute global stiffness matrix
-        K = self.stiffness()
+        K = self.stiffness(d)
 
         # Get reduced stiffness matrix
         uncon = torch.nonzero(~self.constraints.ravel(), as_tuple=False).ravel()
@@ -85,11 +120,30 @@ class FEM:
         u = torch.zeros_like(self.nodes).ravel()
         u[uncon] = u_red
 
-        u = u.reshape((-1, 2))
-        return u
+        # Evaluate force
+        f = K @ u
 
-    def plot(self, u=0.0):
+        u = u.reshape((-1, 2))
+        f = f.reshape((-1, 2))
+        return u, f
+
+    @torch.no_grad()
+    def plot(self, u=0.0, node_property=None, element_property=None):
+        # Compute deformed positions
         pos = self.nodes + u
+
+        # Color surface with interpolated nodal properties (if provided)
+        if node_property is not None:
+            plt.tricontourf(pos[:, 0], pos[:, 1], node_property)
+
+        # Color surface with element properties (if provided)
+        if element_property is not None:
+            ax = plt.gca()
+            verts = pos[self.elements]
+            pc = PolyCollection(verts)
+            pc.set_array(element_property)
+            ax.add_collection(pc)
+
         # Nodes
         plt.scatter(pos[:, 0], pos[:, 1], color="black", marker="o")
 
