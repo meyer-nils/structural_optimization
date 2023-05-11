@@ -158,7 +158,9 @@ class FEM:
             if torch.norm(force) > 0.0:
                 x = pos[i][0]
                 y = pos[i][1]
-                plt.arrow(x, y, force[0], force[1], width=0.1, facecolor="gray")
+                plt.arrow(
+                    x, y, force[0], force[1], width=0.1, facecolor="gray", zorder=10
+                )
 
         # Contraints
         for i, constraint in enumerate(self.constraints):
