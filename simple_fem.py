@@ -57,22 +57,7 @@ class FEM:
     def element_strain_energies(self, u):
         w = torch.zeros((self.elements.shape[0]))
         for j, element in enumerate(self.elements):
-            n1 = int(element[0])
-            n2 = int(element[1])
-            n3 = int(element[2])
-            n4 = int(element[3])
-            u_j = torch.tensor(
-                [
-                    u[n1, 0],
-                    u[n1, 1],
-                    u[n2, 0],
-                    u[n2, 1],
-                    u[n3, 0],
-                    u[n3, 1],
-                    u[n4, 0],
-                    u[n4, 1],
-                ]
-            )
+            u_j = torch.tensor([u[int(n), i] for n in element for i in [0, 1]])
             w[j] = 0.5 * u_j @ self.k0(element) @ u_j
         return w
 
