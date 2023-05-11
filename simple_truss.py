@@ -50,22 +50,22 @@ class Truss:
             w[j] = 0.5 * u_j @ self.k0(element) @ u_j
         return w
 
-    def stiffness(self, x):
+    def stiffness(self, a):
         n_dofs = torch.numel(self.nodes)
         K = torch.zeros((n_dofs, n_dofs))
         for j, element in enumerate(self.elements):
             n1 = int(element[0])
             n2 = int(element[1])
-            k = x[j] * self.k0(element)
+            k = a[j] * self.k0(element)
             K[n1 * 2 : n1 * 2 + 2, n1 * 2 : n1 * 2 + 2] += k[0:2, 0:2]
             K[n1 * 2 : n1 * 2 + 2, n2 * 2 : n2 * 2 + 2] += k[0:2, 2:4]
             K[n2 * 2 : n2 * 2 + 2, n1 * 2 : n1 * 2 + 2] += k[2:4, 0:2]
             K[n2 * 2 : n2 * 2 + 2, n2 * 2 : n2 * 2 + 2] += k[2:4, 2:4]
         return K
 
-    def solve(self, x):
+    def solve(self, a):
         # Compute global stiffness matrix
-        K = self.stiffness(x)
+        K = self.stiffness(a)
         # Get reduced stiffness matrix
         uncon = torch.nonzero(~self.constraints.ravel(), as_tuple=False).ravel()
         K_red = torch.index_select(K, 0, uncon)
@@ -99,11 +99,12 @@ class Truss:
 
         return [u, f, sigma]
 
-    def plot(self, u=0.0, sigma=None, x=None, node_labels=True):
+    @torch.no_grad()
+    def plot(self, u=0.0, sigma=None, a=None, node_labels=True):
         # Line widths from diameters (if present)
-        if x is not None:
-            x_max = torch.max(x)
-            linewidth = 5.0 * x / x_max
+        if a is not None:
+            a_max = torch.max(a)
+            linewidth = 5.0 * a / a_max
         else:
             linewidth = 2.0 * torch.ones(self.elements.shape[0])
 
