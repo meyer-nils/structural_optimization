@@ -125,12 +125,13 @@ class FEM:
         if element_property is not None:
             ax = plt.gca()
             verts = pos[self.elements]
-            pc = PolyCollection(verts)
+            pc = PolyCollection(verts, cmap="gray_r")
             pc.set_array(element_property)
             ax.add_collection(pc)
 
         # Nodes
-        plt.scatter(pos[:, 0], pos[:, 1], color="black", marker="o")
+        if len(pos) < 200:
+            plt.scatter(pos[:, 0], pos[:, 1], color="black", marker="o")
 
         # Elements
         for element in self.elements:
@@ -158,3 +159,34 @@ class FEM:
 
         plt.gca().set_aspect("equal", adjustable="box")
         plt.axis("off")
+
+
+def get_cantilever(size, Lx, Ly, E=100, nu=0.3):
+    # Dimensions
+    Nx = int(Lx / size)
+    Ny = int(Ly / size)
+
+    # Create nodes
+    n1 = torch.linspace(0.0, Lx, Nx)
+    n2 = torch.linspace(0.0, Ly, Ny)
+    n1, n2 = torch.stack(torch.meshgrid(n1, n2, indexing="xy"))
+    nodes = torch.stack([n1.ravel(), n2.ravel()], dim=1)
+
+    # Create elements connecting nodes
+    elem = []
+    for j in range(Ny - 1):
+        for i in range(Nx - 1):
+            n0 = i + j * Nx
+            elem.append([n0, n0 + 1, n0 + Nx + 1, n0 + Nx])
+    elements = torch.tensor(elem)
+
+    # Load at tip
+    forces = torch.zeros_like(nodes)
+    forces[(int(Ny / 2) + 1) * Nx - 1, 1] = -1.0
+
+    # Constrained displacement at left end
+    constraints = torch.zeros_like(nodes, dtype=bool)
+    for i in range(Ny):
+        constraints[i * Nx, :] = True
+
+    return FEM(nodes, elements, forces, constraints, E, nu)
