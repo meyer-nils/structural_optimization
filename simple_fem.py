@@ -7,7 +7,30 @@ from matplotlib.collections import PolyCollection
 torch.set_default_dtype(torch.double)
 
 
-class QuadElement:
+class Tria:
+    def __init__(self):
+        self.nodes = 3
+
+    def N(self, xi):
+        N_1 = 1.0 - xi[..., 0] - xi[..., 1]
+        N_2 = xi[..., 0]
+        N_3 = xi[..., 1]
+        return torch.stack([N_1, N_2, N_3], dim=2)
+
+    def B(self, _):
+        return torch.tensor([[-1.0, 1.0, 0.0], [-1.0, 0.0, 1.0]])
+
+    def ipoints(self):
+        return [[1.0 / 3.0, 1.0 / 3.0]]
+
+    def iweights(self):
+        return [0.5]
+
+
+class Quad:
+    def __init__(self):
+        self.nodes = 4
+
     def N(self, xi):
         N_1 = (1.0 - xi[..., 0]) * (1.0 - xi[..., 1])
         N_2 = (1.0 + xi[..., 0]) * (1.0 - xi[..., 1])
@@ -15,7 +38,7 @@ class QuadElement:
         N_4 = (1.0 - xi[..., 0]) * (1.0 + xi[..., 1])
         return 0.25 * torch.stack([N_1, N_2, N_3, N_4], dim=2)
 
-    def B_ref(self, xi):
+    def B(self, xi):
         return 0.25 * torch.tensor(
             [
                 [-(1.0 - xi[1]), (1.0 - xi[1]), (1.0 + xi[1]), -(1.0 + xi[1])],
@@ -23,21 +46,24 @@ class QuadElement:
             ]
         )
 
-    def integration_points(self):
+    def ipoints(self):
         return [
             [xi_1 / sqrt(3.0), xi_2 / sqrt(3.0)]
             for xi_2 in [-1.0, 1.0]
             for xi_1 in [-1.0, 1.0]
         ]
 
+    def iweights(self):
+        return [1.0, 1.0, 1.0, 1.0]
+
 
 class FEM:
-    def __init__(self, nodes, elements, forces, constraints, E, nu):
+    def __init__(self, nodes, elements, forces, constraints, E, nu, etype=Quad()):
         self.nodes = nodes
         self.elements = elements
         self.forces = forces
         self.constraints = constraints
-        self.quad = QuadElement()
+        self.etype = etype
         # Plain strain state
         self.C = (E / ((1.0 + nu) * (1.0 - 2.0 * nu))) * torch.tensor(
             [[1.0 - nu, nu, 0.0], [nu, 1.0 - nu, 0.0], [0.0, 0.0, 0.5 - nu]]
@@ -48,9 +74,9 @@ class FEM:
         for j, element in enumerate(self.elements):
             nodes = self.nodes[element, :]
             area = 0.0
-            for q in self.quad.integration_points():
-                J = (self.quad.B_ref(q) @ nodes).T
-                area += torch.linalg.det(J)
+            for w, q in zip(self.etype.iweights(), self.etype.ipoints()):
+                J = (self.etype.B(q) @ nodes).T
+                area += w * torch.linalg.det(J)
             areas[j] = area
         return areas
 
@@ -63,17 +89,17 @@ class FEM:
 
     def k0(self, element):
         # Element stiffness matrix
-        k = torch.zeros((8, 8))
-        B = torch.zeros((3, 8))
+        k = torch.zeros((2 * self.etype.nodes, 2 * self.etype.nodes))
+        B = torch.zeros((3, 2 * self.etype.nodes))
         nodes = self.nodes[element, :]
-        for q in self.quad.integration_points():
-            J = (self.quad.B_ref(q) @ nodes).T
-            JB = torch.linalg.inv(J) @ self.quad.B_ref(q)
+        for w, q in zip(self.etype.iweights(), self.etype.ipoints()):
+            J = (self.etype.B(q) @ nodes).T
+            JB = torch.linalg.inv(J) @ self.etype.B(q)
             B[0, 0::2] = JB[0, :]
             B[1, 1::2] = JB[1, :]
             B[2, 0::2] = JB[1, :]
             B[2, 1::2] = JB[0, :]
-            k += B.T @ self.C @ B * torch.linalg.det(J)
+            k += w * B.T @ self.C @ B * torch.linalg.det(J)
         return k
 
     def stiffness(self, d):
@@ -161,7 +187,7 @@ class FEM:
         plt.axis("off")
 
 
-def get_cantilever(size, Lx, Ly, E=100, nu=0.3):
+def get_cantilever(size, Lx, Ly, E=100, nu=0.3, etype=Quad()):
     # Dimensions
     Nx = int(Lx / size)
     Ny = int(Ly / size)
@@ -176,8 +202,15 @@ def get_cantilever(size, Lx, Ly, E=100, nu=0.3):
     elem = []
     for j in range(Ny - 1):
         for i in range(Nx - 1):
-            n0 = i + j * Nx
-            elem.append([n0, n0 + 1, n0 + Nx + 1, n0 + Nx])
+            if type(etype) == Quad:
+                # Quad elements
+                n0 = i + j * Nx
+                elem.append([n0, n0 + 1, n0 + Nx + 1, n0 + Nx])
+            else:
+                # Tria elements
+                n0 = i + j * Nx
+                elem.append([n0, n0 + 1, n0 + Nx + 1])
+                elem.append([n0 + Nx + 1, n0 + Nx, n0])
     elements = torch.tensor(elem)
 
     # Load at tip
@@ -189,4 +222,4 @@ def get_cantilever(size, Lx, Ly, E=100, nu=0.3):
     for i in range(Ny):
         constraints[i * Nx, :] = True
 
-    return FEM(nodes, elements, forces, constraints, E, nu)
+    return FEM(nodes, elements, forces, constraints, E, nu, etype=etype)
