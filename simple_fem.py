@@ -60,7 +60,9 @@ class Quad:
 class FEM:
     def __init__(self, nodes, elements, forces, constraints, E, nu, etype=Quad()):
         self.nodes = nodes
+        self.n_dofs = torch.numel(self.nodes)
         self.elements = elements
+        self.n_elem = self.elements.shape[0]
         self.forces = forces
         self.constraints = constraints
         self.etype = etype
@@ -68,9 +70,15 @@ class FEM:
         self.C = (E / ((1.0 + nu) * (1.0 - 2.0 * nu))) * torch.tensor(
             [[1.0 - nu, nu, 0.0], [nu, 1.0 - nu, 0.0], [0.0, 0.0, 0.5 - nu]]
         )
+        # Save distances between element centers
+        ecenters = [torch.mean(self.nodes[e], dim=0) for e in self.elements]
+        self.dist = torch.zeros((self.n_elem, self.n_elem))
+        for i, ec_i in enumerate(ecenters):
+            for j, ec_j in enumerate(ecenters):
+                self.dist[i, j] = torch.linalg.norm(ec_j - ec_i)
 
     def areas(self):
-        areas = torch.zeros((self.elements.shape[0]))
+        areas = torch.zeros((self.n_elem))
         for j, element in enumerate(self.elements):
             nodes = self.nodes[element, :]
             area = 0.0
@@ -81,7 +89,7 @@ class FEM:
         return areas
 
     def element_strain_energies(self, u):
-        w = torch.zeros((self.elements.shape[0]))
+        w = torch.zeros((self.n_elem))
         for j, element in enumerate(self.elements):
             u_j = torch.tensor([u[int(n), i] for n in element for i in [0, 1]])
             w[j] = 0.5 * u_j @ self.k0(element) @ u_j
@@ -104,8 +112,7 @@ class FEM:
 
     def stiffness(self, d):
         # Assemble global stiffness matrix
-        n_dofs = torch.numel(self.nodes)
-        K = torch.zeros((n_dofs, n_dofs))
+        K = torch.zeros((self.n_dofs, self.n_dofs))
         for j, element in enumerate(self.elements):
             k = d[j] * self.k0(element)
             for i, I in enumerate(element):
@@ -215,6 +222,7 @@ def get_cantilever(size, Lx, Ly, E=100, nu=0.3, etype=Quad()):
 
     # Load at tip
     forces = torch.zeros_like(nodes)
+    # forces[len(nodes) - 1, 1] = -1.0
     forces[(int(Ny / 2) + 1) * Nx - 1, 1] = -1.0
 
     # Constrained displacement at left end
