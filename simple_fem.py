@@ -171,7 +171,7 @@ class FEM:
                 x = pos[i][0]
                 y = pos[i][1]
                 plt.arrow(
-                    x, y, force[0], force[1], width=0.1, facecolor="gray", zorder=10
+                    x, y, force[0], force[1], width=0.3, facecolor="gray", zorder=10
                 )
 
         # Contraints
