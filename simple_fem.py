@@ -59,6 +59,7 @@ class Quad:
 
 class FEM:
     def __init__(self, nodes, elements, forces, constraints, E, nu, etype=Quad()):
+        print("Creating new FEM problem...")
         self.nodes = nodes
         self.n_dofs = torch.numel(self.nodes)
         self.elements = elements
@@ -73,6 +74,7 @@ class FEM:
         )
 
         # Precompute properties which do not change during runtime
+        print(" - Precomputing properties...")
         self.areas = torch.zeros((self.n_elem))
         self.k0 = torch.zeros((self.n_elem, 2 * etype.nodes, 2 * etype.nodes))
         for j, element in enumerate(self.elements):
@@ -94,6 +96,7 @@ class FEM:
             self.areas[j] = area
 
         # Save distances between element centers
+        print(" - Precomputing distance maps...")
         ecenters = [torch.mean(self.nodes[e], dim=0) for e in self.elements]
         self.dist = torch.zeros((self.n_elem, self.n_elem))
         for i, ec_i in enumerate(ecenters):
@@ -110,18 +113,13 @@ class FEM:
     def stiffness(self, d):
         # Assemble global stiffness matrix
         K = torch.zeros((self.n_dofs, self.n_dofs))
-        # k = torch.einsum("i, ijk->ijk", d, self.k0)
+        local_indices = [2 * n for n in range(self.etype.nodes)]
         for j, element in enumerate(self.elements):
             k = d[j] * self.k0[j]
             global_indices = [2 * n for n in element]
-            for i, I2 in enumerate(global_indices):
-                i2 = 2 * i
-                for j, J2 in enumerate(global_indices):
-                    j2 = 2 * j
-                    K[I2, J2] += k[i2, j2]
-                    K[I2 + 1, J2] += k[i2 + 1, j2]
-                    K[I2 + 1, J2 + 1] += k[i2 + 1, j2 + 1]
-                    K[I2, J2 + 1] += k[i2, j2 + 1]
+            for m, M in zip(local_indices, global_indices):
+                for n, N in zip(local_indices, global_indices):
+                    K[M : M + 2, N : N + 2] += k[m : m + 2, n : n + 2]
         return K
 
     def solve(self, d):
