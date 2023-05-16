@@ -75,6 +75,9 @@ class FEM:
 
         # Precompute properties which do not change during runtime
         print(" - Precomputing properties...")
+        ecenters = torch.stack([torch.mean(nodes[e], dim=0) for e in elements])
+        self.dist = torch.cdist(ecenters, ecenters)
+
         self.areas = torch.zeros((self.n_elem))
         self.k0 = torch.zeros((self.n_elem, 2 * etype.nodes, 2 * etype.nodes))
         for j, element in enumerate(self.elements):
@@ -84,7 +87,7 @@ class FEM:
             for i, (w, q) in enumerate(zip(etype.iweights(), etype.ipoints())):
                 # Jacobian
                 J = (etype.B(q) @ nodes).T
-                # Areas
+                # Area integration
                 area += w * torch.linalg.det(J)
                 # Element stiffness
                 JB = torch.linalg.inv(J) @ self.etype.B(q)
@@ -95,15 +98,8 @@ class FEM:
                 self.k0[j, :, :] += w * B.T @ self.C @ B * torch.linalg.det(J)
             self.areas[j] = area
 
-        # Save distances between element centers
-        print(" - Precomputing distance maps...")
-        ecenters = [torch.mean(self.nodes[e], dim=0) for e in self.elements]
-        self.dist = torch.zeros((self.n_elem, self.n_elem))
-        for i, ec_i in enumerate(ecenters):
-            for j, ec_j in enumerate(ecenters):
-                self.dist[i, j] = torch.linalg.norm(ec_j - ec_i)
-
     def element_strain_energies(self, u):
+        # Compute strain energies of all elements
         w = torch.zeros((self.n_elem))
         for j, element in enumerate(self.elements):
             u_j = torch.tensor([u[int(n), i] for n in element for i in [0, 1]])
