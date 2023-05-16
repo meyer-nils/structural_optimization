@@ -66,10 +66,33 @@ class FEM:
         self.forces = forces
         self.constraints = constraints
         self.etype = etype
+
         # Plain strain state
         self.C = (E / ((1.0 + nu) * (1.0 - 2.0 * nu))) * torch.tensor(
             [[1.0 - nu, nu, 0.0], [nu, 1.0 - nu, 0.0], [0.0, 0.0, 0.5 - nu]]
         )
+
+        # Precompute properties which do not change during runtime
+        self.areas = torch.zeros((self.n_elem))
+        self.k0 = torch.zeros((self.n_elem, 2 * etype.nodes, 2 * etype.nodes))
+        for j, element in enumerate(self.elements):
+            nodes = self.nodes[element, :]
+            area = 0.0
+            B = torch.zeros((3, 2 * etype.nodes))
+            for i, (w, q) in enumerate(zip(etype.iweights(), etype.ipoints())):
+                # Jacobian
+                J = (etype.B(q) @ nodes).T
+                # Areas
+                area += w * torch.linalg.det(J)
+                # Element stiffness
+                JB = torch.linalg.inv(J) @ self.etype.B(q)
+                B[0, 0::2] = JB[0, :]
+                B[1, 1::2] = JB[1, :]
+                B[2, 0::2] = JB[1, :]
+                B[2, 1::2] = JB[0, :]
+                self.k0[j, :, :] += w * B.T @ self.C @ B * torch.linalg.det(J)
+            self.areas[j] = area
+
         # Save distances between element centers
         ecenters = [torch.mean(self.nodes[e], dim=0) for e in self.elements]
         self.dist = torch.zeros((self.n_elem, self.n_elem))
@@ -77,50 +100,28 @@ class FEM:
             for j, ec_j in enumerate(ecenters):
                 self.dist[i, j] = torch.linalg.norm(ec_j - ec_i)
 
-    def areas(self):
-        areas = torch.zeros((self.n_elem))
-        for j, element in enumerate(self.elements):
-            nodes = self.nodes[element, :]
-            area = 0.0
-            for w, q in zip(self.etype.iweights(), self.etype.ipoints()):
-                J = (self.etype.B(q) @ nodes).T
-                area += w * torch.linalg.det(J)
-            areas[j] = area
-        return areas
-
     def element_strain_energies(self, u):
         w = torch.zeros((self.n_elem))
         for j, element in enumerate(self.elements):
             u_j = torch.tensor([u[int(n), i] for n in element for i in [0, 1]])
-            w[j] = 0.5 * u_j @ self.k0(element) @ u_j
+            w[j] = 0.5 * u_j @ self.k0[j] @ u_j
         return w
-
-    def k0(self, element):
-        # Element stiffness matrix
-        k = torch.zeros((2 * self.etype.nodes, 2 * self.etype.nodes))
-        B = torch.zeros((3, 2 * self.etype.nodes))
-        nodes = self.nodes[element, :]
-        for w, q in zip(self.etype.iweights(), self.etype.ipoints()):
-            J = (self.etype.B(q) @ nodes).T
-            JB = torch.linalg.inv(J) @ self.etype.B(q)
-            B[0, 0::2] = JB[0, :]
-            B[1, 1::2] = JB[1, :]
-            B[2, 0::2] = JB[1, :]
-            B[2, 1::2] = JB[0, :]
-            k += w * B.T @ self.C @ B * torch.linalg.det(J)
-        return k
 
     def stiffness(self, d):
         # Assemble global stiffness matrix
         K = torch.zeros((self.n_dofs, self.n_dofs))
+        # k = torch.einsum("i, ijk->ijk", d, self.k0)
         for j, element in enumerate(self.elements):
-            k = d[j] * self.k0(element)
-            for i, I in enumerate(element):
-                for j, J in enumerate(element):
-                    K[2 * I, 2 * J] += k[2 * i, 2 * j]
-                    K[2 * I + 1, 2 * J] += k[2 * i + 1, 2 * j]
-                    K[2 * I + 1, 2 * J + 1] += k[2 * i + 1, 2 * j + 1]
-                    K[2 * I, 2 * J + 1] += k[2 * i, 2 * j + 1]
+            k = d[j] * self.k0[j]
+            global_indices = [2 * n for n in element]
+            for i, I2 in enumerate(global_indices):
+                i2 = 2 * i
+                for j, J2 in enumerate(global_indices):
+                    j2 = 2 * j
+                    K[I2, J2] += k[i2, j2]
+                    K[I2 + 1, J2] += k[i2 + 1, j2]
+                    K[I2 + 1, J2 + 1] += k[i2 + 1, j2 + 1]
+                    K[I2, J2 + 1] += k[i2, j2 + 1]
         return K
 
     def solve(self, d):
