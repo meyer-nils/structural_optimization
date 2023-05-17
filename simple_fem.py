@@ -63,7 +63,7 @@ class FEM:
         self.nodes = nodes
         self.n_dofs = torch.numel(self.nodes)
         self.elements = elements
-        self.n_elem = self.elements.shape[0]
+        self.n_elem = len(self.elements)
         self.forces = forces
         self.constraints = constraints
         self.etype = etype
@@ -77,14 +77,20 @@ class FEM:
         print(" - Precomputing properties...")
         ecenters = torch.stack([torch.mean(nodes[e], dim=0) for e in elements])
         self.dist = torch.cdist(ecenters, ecenters)
-
         self.areas = torch.zeros((self.n_elem))
         self.k0 = torch.zeros((self.n_elem, 2 * etype.nodes, 2 * etype.nodes))
+        self.global_indices = []
+
         for j, element in enumerate(self.elements):
+            # Compute efficient mapping from local to global indices
+            indices = torch.tensor([2 * n + i for n in element for i in range(2)])
+            self.global_indices.append(torch.meshgrid(indices, indices, indexing="xy"))
+
+            # Perform integrations
             nodes = self.nodes[element, :]
             area = 0.0
             B = torch.zeros((3, 2 * etype.nodes))
-            for i, (w, q) in enumerate(zip(etype.iweights(), etype.ipoints())):
+            for w, q in zip(etype.iweights(), etype.ipoints()):
                 # Jacobian
                 J = (etype.B(q) @ nodes).T
                 # Area integration
@@ -109,13 +115,9 @@ class FEM:
     def stiffness(self, d):
         # Assemble global stiffness matrix
         K = torch.zeros((self.n_dofs, self.n_dofs))
-        local_indices = [2 * n for n in range(self.etype.nodes)]
-        for j, element in enumerate(self.elements):
+        for j in range(len(self.elements)):
             k = d[j] * self.k0[j]
-            global_indices = [2 * n for n in element]
-            for m, M in zip(local_indices, global_indices):
-                for n, N in zip(local_indices, global_indices):
-                    K[M : M + 2, N : N + 2] += k[m : m + 2, n : n + 2]
+            K[self.global_indices[j]] += k
         return K
 
     def solve(self, d):
@@ -201,19 +203,18 @@ def get_cantilever(size, Lx, Ly, E=100, nu=0.3, etype=Quad()):
     nodes = torch.stack([n1.ravel(), n2.ravel()], dim=1)
 
     # Create elements connecting nodes
-    elem = []
+    elements = []
     for j in range(Ny - 1):
         for i in range(Nx - 1):
             if type(etype) == Quad:
                 # Quad elements
                 n0 = i + j * Nx
-                elem.append([n0, n0 + 1, n0 + Nx + 1, n0 + Nx])
+                elements.append([n0, n0 + 1, n0 + Nx + 1, n0 + Nx])
             else:
                 # Tria elements
                 n0 = i + j * Nx
-                elem.append([n0, n0 + 1, n0 + Nx + 1])
-                elem.append([n0 + Nx + 1, n0 + Nx, n0])
-    elements = torch.tensor(elem)
+                elements.append([n0, n0 + 1, n0 + Nx + 1])
+                elements.append([n0 + Nx + 1, n0 + Nx, n0])
 
     # Load at tip
     forces = torch.zeros_like(nodes)
