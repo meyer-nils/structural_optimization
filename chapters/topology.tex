@@ -25,20 +25,21 @@ Let's consider a two-dimensional domain discretized with finite elements, in whi
 
 Mathematically, this problem is equivalent to the truss problem and can be solved in the same way: We formulate the Lagrangian
 \begin{equation}
-    \mathcal{L}(\mathbf{d}, \mu) = C(\mathbf{d}) + \mu \left( \mathbf{d} \cdot \mathbf{l} - V_0 \right) 
+    \mathcal{L}(\mathbf{d}, \mu) = C(\mathbf{d}) + \mu \left( \mathbf{d} \cdot \mathbf{A} - V_0 \right) 
 \end{equation}
 and determine its derivative
 \begin{equation}
     \frac{\partial \mathcal{L} (\mathbf{d}, \mu)}{\partial d_j} 
-    = - 2 w_j (\mathbf{d}) + \mu A_j
+    = \frac{\partial C(\mathbf{d})}{\partial d_j} + \mu A_j 
 \end{equation}
-with element strain energy 
+with 
 \begin{equation}
-    w_j(\mathbf{d}) = \frac{1}{2}\mathbf{u}_j  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j.
+    \frac{\partial C}{\partial d_j} = - \mathbf{u}_j(\mathbf{d})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\mathbf{d}).
+    \label{eq:sensitivity_sheet}
 \end{equation}
 In comparison to Equation \eqref{eq:compliance_sensitivity} for trusses with four degrees of freedom, the element displacement vector contains eight degrees of freedom for these 2D problems with linear quad elements ($\mathbf{u}_j \in \mathcal{R}^8, \mathbf{k}^0_j \in \mathcal{R}^{8\times 8}$). 
 
-Just like the truss problem, the variable thickness sheet problem can be approximated using MMA with lower asymptotes. Subsequently, it is solved with the dual method and a line search to find the Lagrange parameter $\mu$. The entire procedure is identical to Sections \ref{sec:sizing:mma} and \ref{sec:sizing:solution}, if we replace the truss cross sections $\mathbf{a}$ with element thicknesses $\mathbf{d}$.
+Just like the truss problem, the variable thickness sheet problem can be approximated using MMA with lower asymptotes only. Subsequently, it is solved with the dual method and a line search to find the Lagrange parameter $\mu$. The entire procedure is identical to Sections \ref{sec:sizing:mma} and \ref{sec:sizing:solution}, if we replace the truss cross sections $\mathbf{a}$ with element thicknesses $\mathbf{d}$ and the truss lengths $\mathbf{l}$ with element areas $\mathbf{A}$.
 
 \begin{example}{Cantilever beam}{cantileveroptimizationexample}
     Consider a FEM cantilever beam from the previous example. Instead of just computing the displacements, we are now interested in finding the optimal thickness of each element given a volume constraint.
@@ -67,12 +68,12 @@ Just like the truss problem, the variable thickness sheet problem can be approxi
         \item Evaluate the analytical solution
             \begin{align}
                 \hat{d}_j(\mu) &= L_j^k + \sqrt{\frac{2 w_j (\mathbf{d}^k)
-                (L^k_j-d^k_j)^2}{\mu l_j}} \\
+                (L^k_j-d^k_j)^2}{\mu A_j}} \\
                 \mathbf{d}^* (\mu) &= \max\left(\tilde{\mathbf{d}}^{l,k}, \min \left(\hat{\mathbf{d}}(\mu), \mathbf{d}_u \right)\right)
             \end{align}
         \item Perform a line search to find the root $\mu^*>0$ in 
         \begin{equation}
-            \frac{\partial \underline{\mathcal{L}}}{\partial \mu}(\mu) = \mathbf{l} \cdot \mathbf{d}^* (\mu) - V_0  = 0
+            \frac{\partial \underline{\mathcal{L}}}{\partial \mu}(\mu) = \mathbf{A} \cdot \mathbf{d}^* (\mu) - V_0  = 0
         \end{equation}
         with Newton's method or bisection method. 
         \item Repeat with steps 2-7 until convergence or a maximum number of iterations is reached.
@@ -86,7 +87,7 @@ Just like the truss problem, the variable thickness sheet problem can be approxi
 
 \section{Solid isotropic material with penalization (SIMP)}
 
-The problem in Equation \eqref{eq:sheet_optimization} is essentially a sizing optimization problem. In a topology optimization, we seek a material distribution, where each element is either completely filled or completely unfilled with material. We can formulate such a problem by reinterpreting the thickness variable as a normalized material density $\pmb{\rho}$, where $\rho_j=1$ indicates presence of material and $\rho_j=0$ indicates absence of material in element $j$. The stiffness of each element becomes a function of $\rho_j$, e.g. 
+The problem stated in Equation \eqref{eq:sheet_optimization} is essentially a sizing optimization problem. In a topology optimization, we seek a material distribution, where each element is either completely filled or completely unfilled with material. We can formulate such a problem by reinterpreting the thickness variable as a normalized material density $\pmb{\rho}$, where $\rho_j=1$ indicates presence of material and $\rho_j=0$ indicates absence of material in element $j$. The stiffness of each element becomes a function of $\rho_j$, e.g. 
 \begin{equation}
     \mathbb{C}(\rho_j)=
     \begin{cases}
@@ -105,20 +106,35 @@ Then, the problem statement reads
     \label{eq:topology_optimization}
 \end{equation}
 
-where the only change compared to Equation \eqref{eq:sheet_optimization} is the discrete nature of the design variables $\pmb{\rho}$. Unfortunately, the binary problem is notoriously hard to solve, because we cannot compute gradients on the solution and testing all solutions is computationally inaccessible. Hence we try to formulate a continuous relation between stiffness and normalized density that still results in a binary result. One such formulation is called \emph{Solid Isotropic Material with Penalization} (SIMP) and denoted as 
+where the only change compared to Equation \eqref{eq:sheet_optimization} is the discrete nature of the design variables $\pmb{\rho}$ (and the name of the design variables). Unfortunately, the binary problem is notoriously hard to solve, because we cannot compute gradients on the solution and testing all solutions is computationally inaccessible. Hence we try to formulate a continuous relation between stiffness and normalized density that still results in a binary result. One such formulation is called \emph{Solid Isotropic Material with Penalization} (SIMP) and denoted as 
 \begin{equation}
     \mathbb{C}(\rho_j)= \rho_j^p \mathbb{C}
 \end{equation}
 with a penalization parameter $p \ge 1$. The effect of penalization is shown in Figure \ref{fig:simp} for typical values of $p$. We may observe for $p>1$ that the stiffness per invested material is unattractive for intermediate density values. For example, choosing $\rho_j=0.5$ adds half an element volume to the total volume, but contributes only a quarter of the stiffness compared to a fully filled element. An optimization that tries to minimize compliance for a given volume will therefore rather favor elements that provide the full stiffness benefit ($\rho=1$) or do not count towards the constraint ($\rho=\rho^l$). 
 
-\begin{figure}
+\begin{figure}[!htpb]
     \centering
     \includegraphics[width=0.7\textwidth]{figures/simp.pdf}
     \caption{Penalization factors in SIMP.}
     \label{fig:simp}
 \end{figure}
 
-% SIMP 
+Incorporating the SIMP method to the optimization is straight-forward. We just need to adjust the sensitivity (see Equation \ref{eq:sensitivity_sheet}) slightly to
+\begin{equation}
+    \frac{\partial C}{\partial d_j} = - p (d_j)^{p-1} \mathbf{u}_j(\mathbf{d})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\mathbf{d}).
+\end{equation}
+
+\begin{example}{Cantilever beam with SIMP}{cantileversimpoptimizationexample}
+    Consider a FEM cantilever beam from the previous example. We only adjust the solution in Step 6 towards 
+    \begin{equation}
+        \hat{d}_j(\mu) = L_j^k + \sqrt{\frac{2 w_j (\mathbf{d}^k)
+        (L^k_j-d^k_j)^2}{\mu A_j}}
+    \end{equation}
+    and end up with the following solution:
+    
+    \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_optimized_binary.pdf}
+       
+\end{example}
 
 % discuss numerical problems and unique solution
 
