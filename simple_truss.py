@@ -8,7 +8,9 @@ torch.set_default_dtype(torch.double)
 class Truss:
     def __init__(self, nodes, elements, forces, constraints, E):
         self.nodes = nodes
+        self.n_dofs = torch.numel(self.nodes)
         self.elements = elements
+        self.n_elem = len(self.elements)
         self.forces = forces
         self.constraints = constraints
         self.E = E
@@ -32,7 +34,7 @@ class Truss:
         return self.E / l0 * m
 
     def element_lengths(self):
-        l0 = torch.zeros((self.elements.shape[0]))
+        l0 = torch.zeros((self.n_elem))
         for j, element in enumerate(self.elements):
             n1 = int(element[0])
             n2 = int(element[1])
@@ -42,7 +44,7 @@ class Truss:
         return l0
 
     def element_strain_energies(self, u):
-        w = torch.zeros((self.elements.shape[0]))
+        w = torch.zeros((self.n_elem))
         for j, element in enumerate(self.elements):
             n1 = int(element[0])
             n2 = int(element[1])
@@ -84,7 +86,7 @@ class Truss:
         f = f.reshape((-1, 2))
 
         # Evaluate stress
-        sigma = torch.zeros((self.elements.shape[0]))
+        sigma = torch.zeros((self.n_elem))
         for j, element in enumerate(self.elements):
             n1 = int(element[0])
             n2 = int(element[1])
@@ -106,7 +108,7 @@ class Truss:
             a_max = torch.max(a)
             linewidth = 5.0 * a / a_max
         else:
-            linewidth = 2.0 * torch.ones(self.elements.shape[0])
+            linewidth = 2.0 * torch.ones(self.n_elem)
 
         # Line color from stress (if present)
         if sigma is not None:
@@ -119,7 +121,7 @@ class Truss:
             )
             plt.colorbar(sm, label="Stress", shrink=0.5)
         else:
-            color = self.elements.shape[0] * ["black"]
+            color = self.n_elem * ["black"]
 
         # Nodes
         pos = self.nodes + u
