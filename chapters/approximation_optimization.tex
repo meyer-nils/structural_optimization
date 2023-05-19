@@ -113,7 +113,7 @@ This method is termed \emph{Convex Linearization} or CONLIN \cite{Fleury1989}. T
 \begin{example}{CONLIN}{conlinexample}
     The volume of a four-bar truss \cite{Christensen2008} should be minimized under the displacement constraint $\delta \le \delta_0$. There is a force $P>0$ and all bars have identical lengths $l$ and identical Young's moduli $E$. The modifiable structural variables are the cross sectional areas $A_1=A_4$ and $A_2=A_3$. We define $A_0 = Pl / (10\delta_0E)$ and constrain the variables $0.2A_0 \le A_j \le 2.5 A_0$. Then we can use dimensionless design variables $a_1=A_1/A_0 \in [0.2, 2.5]$ and $a_2=A_2/A_0 \in [0.2, 2.5]$.
     \begin{center}
-        \includegraphics[width=0.8\textwidth]{figures/four_bar_truss.png}
+        \includegraphics[width=0.8\textwidth]{figures/four_bar_truss_transparent.png}
     \end{center}
     The optimization problem is 
     \begin{equation}
@@ -199,13 +199,13 @@ Svanbergs original version uses the same asymptotes $L_j^k$ and $U_j^k$ for the 
     Consider the previous example with the optimization problem
     \begin{equation}
         \begin{aligned}
-            \min_{\mathbf{x}} \quad & f(\mathbf{x})= x_1 + x_2\\
-            \textrm{s.t.} \quad     & g(\mathbf{x}) = \frac{8}{16x_1+9x_2} - \frac{4.5}{9x_1+16x_2} -0.1 \le 0  \\
-            \quad     & \mathbf{x} \in [0.2,2.5]^2
+            \min_{\mathbf{a}} \quad & f(\mathbf{a})= a_1 + a_2\\
+            \textrm{s.t.} \quad     & g(\mathbf{a}) = \frac{8}{16a_1+9a_2} - \frac{4.5}{9a_1+16a_2} -0.1 \le 0  \\
+            \quad     & \mathbf{a} \in [0.2,2.5]^2
         \end{aligned}
     \end{equation}
 
-    A MMA approximation at $\mathbf{x}^0=(2,1)^\top$ is illustrated in the following image with the dashed line for $s_0=0.2$. 
+    A MMA approximation at $\mathbf{a}^0=(2,1)^\top$ is illustrated in the following image with the dashed line for $s_0=0.2$. 
     \begin{center}
         \includegraphics[width=0.6\textwidth]{figures/four_bar_example_mma_0.pdf}
     \end{center}
