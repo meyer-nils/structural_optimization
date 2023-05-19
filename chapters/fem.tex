@@ -1,5 +1,5 @@
 \chapter{Finite element analysis in a nutshell}
-In the previous chapter we learned to optimize discrete structures. However, most structures are not discrete in nature. They are continua and need to be transferred to a discrete representation for structural optimization. The most common method for this is the \emph{Finite Element Method} (FEM) and we quickly summarize this method in this section for further use in structural optimization.
+In the previous chapter we learned to optimize discrete truss structures. However, most structures are not discrete by nature. They are continua and need to be transferred to a discrete representation for structural optimization. The most common method for this is the \emph{Finite Element Method} (FEM) and we quickly summarize this method in this chapter for further use in structural optimization. If you are interested in more details, you may refer to the excellent book by Fish and Belytschko \cite{Fish2007}.
 
 \begin{objectives}{}{objectives_fem}
 After studying this chapter and finishing the exercise, you should be able to 
@@ -9,7 +9,7 @@ After studying this chapter and finishing the exercise, you should be able to
     \item formulate the weak form of the linear elastic problem and explain advantages of that formulation
     \item describe the concept of discretization by finite elements 
     \item formulate the shape functions and derivatives for a 2D quadrilateral linear element 
-    \item transform the weak form to a linear system of equations using shape functions and numerical integration
+    \item transform the weak form into a linear system of equations using shape functions and numerical integration
     \item assemble the global FEM system and draw analogies to truss systems
 \end{itemize}
 \end{objectives}
@@ -22,7 +22,7 @@ The fundamental equation to solve in static structural problems is the balance o
     \mathbf{x} \in \Omega
     \label{eq:linear_momentum_balance}
 \end{equation}
-with the symmetric stress tensor $\mathbf{S}=\mathbf{S}^\top \in \mathcal{R}^{d \times d}$ and a prescribed body force field $\mathbf{b} \in \mathcal{R}^d$ describing a force per volume. The term \emph{static} means that we do not consider any time derivatives, i.e. we are searching for a stationary solution.  The domain $\Omega$ describes for example a structural component in three dimensions and we use $\partial \Omega$ to denote the boundary of that domain. This equilibrium basically states that the divergence of stresses (inner forces) must balance the body force field in all points of a domain $\Omega$. 
+with the symmetric stress tensor $\mathbf{S}=\mathbf{S}^\top \in \mathcal{R}^{d \times d}$ and a prescribed body force field $\mathbf{b} \in \mathcal{R}^d$ describing a force per volume. The term \emph{static} means that we do not consider any time derivatives, i.e. we are searching for a stationary solution.  The domain $\Omega$ describes for example all points of a structural component and we use $\partial \Omega$ to denote the boundary of that domain. This equilibrium basically states that the divergence of stresses (inner forces) must balance the body force field in all points of a domain $\Omega$ to remain stationary. 
 
 The stress tensor is related to the engineering strain tensor 
 \begin{equation}
@@ -31,12 +31,12 @@ The stress tensor is related to the engineering strain tensor
 \end{equation} 
 via a linear elastic material model 
 \begin{equation}
-    \mathbf{S}(\mathbf{x})  = \mathbb{C}(\mathbf{x})  : \mathbf{E}(\mathbf{u}) 
+    \mathbf{S}(\mathbf{x})  = \mathbb{C}  : \mathbf{E}(\mathbf{u}) 
     \label{eq:linear_elasticity}
 \end{equation}
-with a stiffness tensor $\mathbb{C}  \in \mathcal{R}^{d \times d \times d \times d}$. Here, it is assumed that $\mathbb{C}$ does not depend on the position $\mathbf{x}$, i.e. the same material is used in the entire structure. In case of an isotropic material, i.e. a material that behaves direction-independent, the right side of equation \eqref{eq:linear_elasticity} takes the form 
+with a stiffness tensor $\mathbb{C}  \in \mathcal{R}^{d \times d \times d \times d}$. Here, it is assumed that $\mathbb{C}$ does not depend on the position $\mathbf{x}$, i.e. the same material is used in the entire structure. In case of an isotropic material, i.e. a material that behaves direction-independent, we can write Equation \eqref{eq:linear_elasticity} as
 \begin{equation}
-    \mathbb{C}_\textrm{iso}  : \mathbf{E}(\mathbf{u})  =  2 G \mathbf{E}(\mathbf{u})  + \Lambda \textrm{tr}(\mathbf{E}(\mathbf{u}) ) \mathbf{I},
+    \mathbf{S}(\mathbf{x}) = \mathbb{C}_\textrm{iso}  : \mathbf{E}(\mathbf{u})  =  2 G \mathbf{E}(\mathbf{u})  + \Lambda \textrm{tr}(\mathbf{E}(\mathbf{u}) ) \mathbf{I},
     \label{eq:isotropic_material}
 \end{equation}
 with so-called the Lamé constants 
@@ -50,7 +50,7 @@ These two constants, respectively the two constants Young's modulus $E$ and Pois
 \begin{figure}[!htpb]
     \centering
     \includegraphics[width=0.5\textwidth]{figures/boundaries.png}
-    \caption{The domain $\Omega$ has a boundary $\partial \Omega = \partial \Omega_E \cup \partial \Omega_N, \partial \Omega_E \cap \partial \Omega_N = \emptyset$. We prescribe a displacement $\mathbf{u}_0$ at the essential boundary $\partial \Omega_E$, which is illustrated with gray lines in the image. The remaining boundary $\partial \Omega_N$ is subjected to a surface traction $\mathbf{t}(\mathbf{x})$.}
+    \caption{The domain $\Omega$ has a boundary $\partial \Omega = \partial \Omega_E \cup \partial \Omega_N, \partial \Omega_E \cap \partial \Omega_N = \emptyset$. We prescribe a displacement $\mathbf{u}_0$ at the essential boundary $\partial \Omega_E$ illustrated with gray lines in the image. The remaining boundary $\partial \Omega_N$ is subjected to a surface traction $\mathbf{t}(\mathbf{x})$. The surface takes the form of a force per boundary unit, e.g. Newton per Meter in a two-dimensional problem with a one-dimensional boundary.}
     \label{fig:boundaries}
 \end{figure}
 
@@ -94,7 +94,7 @@ With essential boundary conditions on $\partial \Omega_E$ and natural boundary c
     \textrm{s.t.} \quad \mathbf{S} &= \mathbb{C} : \mathbf{E}(\mathbf{u})
 \end{align}
  which should be solved for displacements $\mathbf{u}(\mathbf{x})$. This is a problem with three partial differential equations for three unknowns $u_1(\mathbf{x}), u_2(\mathbf{x}), u_3(\mathbf{x})$.
-Note that this is a second order problem, as we have to compute second derivatives of $\mathbf{u}$ in this problem. 
+Note that this is a second order problem, as we have to compute second derivatives of $\mathbf{u}$ in this problem, as it is differentiated once by $\mathbf{E}(\mathbf{u})$ and then once by $\nabla \cdot \mathbf{S}(\mathbf{x})$.
 
 % \begin{example}{Plane stress}{planestressexample} 
 %     We may reduce the elastic problem to two dimensions, if we make an assumption about the third dimension. If we analyze a structure that is very thin in the 3-direction, e.g. a plate or membrane, there are no out-of-plane stress components and we may assume \emph{plane stress}, i.e. $S_{13}=S_{23}=S_{33}=0$ and $\frac{\partial S_{11}}{\partial x_3}=\frac{\partial S_{12} }{\partial x_3}=\frac{\partial S_{22}}{\partial x_3}=0$. 
@@ -204,13 +204,33 @@ Note that this is a second order problem, as we have to compute second derivativ
 % \end{example}
 
 \section{Weak form}
-To solve Equation \eqref{eq:linear_momentum_balance}, which is known as the \emph{strong form} of the linear elastic problem, the displacement field has to be differentiable twice. 
+To solve Equation \eqref{eq:linear_momentum_balance}, which is known as the \emph{strong form} of the linear elastic problem, the displacement field has to be twice differentiable. 
 We can relax that requirement by computing the \emph{weak form} of the equation. This is done by contracting the equation with a test function $\mathbf{v} \in \mathcal{H}^1_0 (\Omega) $ and integrating it over the entire domain $\Omega$. Here, the test function is of the same type as $\mathbf{u}$, i.e. it is also a vector function. The space $\mathcal{H}^1_0 (\Omega)$ denotes the \emph{Sobolev space} on $\Omega$, i.e. a function space in which $\mathbf{v}$ becomes zero at the essential boundary and has square integrable derivatives. This is a bit technical, but the steps to get there are straight forward: 
 \begin{enumerate}
     \item Contract the equation with test function $\mathbf{v}$
     \item Integrate over domain $\Omega$
-    \item Simplify the expressions using integration by parts and divergence theorem
+    \item Simplify the expressions using the identity 
+        \begin{equation}
+            (\nabla \cdot \mathbf{S}) \cdot \mathbf{v} = \nabla \cdot (\mathbf{S} \cdot \mathbf{v}) - \mathbf{S} : \nabla \mathbf{v}
+            \label{eq:divergence_identity}
+        \end{equation}
+    and the divergence theorem
+    \begin{equation}
+        \int_\Omega \nabla \cdot (\bullet) \text{d}V = \int_{\partial \Omega} (\bullet) \cdot \mathbf{n} \text{d}A.
+        \label{eq:divergence_theorem}
+    \end{equation}
 \end{enumerate}
+
+\begin{example}{Using index notation to proof Equation \ref{eq:divergence_identity}}{divergence_identity_example} 
+    We can prove Equation \ref{eq:divergence_identity} using index notation and the product rule: 
+    \begin{equation}
+        \nabla \cdot (\mathbf{S} \cdot \mathbf{v}) = \sum_{i,j} \frac{\partial (S_{ij} v_j)}{\partial x_i} = \sum_{i,j}\frac{\partial S_{ij}}{\partial x_i} v_j + \sum_{i,j} S_{ij} \frac{\partial v_j}{\partial x_i}
+    \end{equation}
+    Rewriting the right side to symbolic notation yields
+    \begin{equation}
+        \nabla \cdot (\mathbf{S} \cdot \mathbf{v}) = (\nabla \cdot \mathbf{S}) \cdot \mathbf{v} + \mathbf{S} : \nabla \mathbf{v}.
+    \end{equation}
+\end{example}
 
 Contracting with the test function and integrating Equation \eqref{eq:linear_momentum_balance} gives
 \begin{equation}
@@ -218,40 +238,27 @@ Contracting with the test function and integrating Equation \eqref{eq:linear_mom
     + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega),
     \label{eq:weak_form_raw}
 \end{equation}
-which is a scalar equation.
-To simplify this expression, we first show the identity 
-\begin{equation}
-    \nabla \cdot (\mathbf{S} \cdot \mathbf{v}) = (\nabla \cdot \mathbf{S}) \cdot \mathbf{v} + \mathbf{S} : \nabla \mathbf{v},
-\end{equation}
-which can be rearranged to
-\begin{equation}
-    (\nabla \cdot \mathbf{S}) \cdot \mathbf{v} = \nabla \cdot (\mathbf{S} \cdot \mathbf{v}) - \mathbf{S} : \nabla \mathbf{v}
-\end{equation}
-and substituted in the weak form to give 
+which is a scalar equation. We can use the identity provided in Equation \eqref{eq:divergence_identity} to expand the first term yielding
 \begin{equation}
     \int_\Omega \nabla \cdot (\mathbf{S} \cdot \mathbf{v}) \text{d}V
     - \int_\Omega \mathbf{S} : \nabla \mathbf{v} \text{d}V
     + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega).
 \end{equation}
-We can now use the divergence theorem
+We can now use the divergence theorem in Equation \eqref{eq:divergence_theorem} to compute 
 \begin{equation}
-    \int_\Omega \nabla \cdot (\bullet) \text{d}V = \int_{\partial \Omega} (\bullet) \cdot \mathbf{n} \text{d}A
-\end{equation}
-to compute 
-\begin{equation}
-    \int_{\partial \Omega} (\mathbf{S} \cdot \mathbf{v}) \cdot \mathbf{n} \text{d}V
+    \int_{\partial \Omega} (\mathbf{S} \cdot \mathbf{v}) \cdot \mathbf{n} \text{d}A
     - \int_\Omega \mathbf{S} : \nabla \mathbf{v} \text{d}V
     + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = \mathbf{0} \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega).
 \end{equation}
 Using the fact that $\mathbf{v}$ is zero on the essential boundary, that $\mathbf{S}$ is symmetric and that $\mathbf{S}\cdot \mathbf{n} = \mathbf{t}$ at the natural boundary, we arrive at the simplified weak form of linear elasticity 
 \begin{equation}
-    \int_{\partial \Omega_N} \mathbf{t} \cdot \mathbf{v} \text{d}V
+    \int_{\partial \Omega_N} \mathbf{t} \cdot \mathbf{v} \text{d}A
     - \int_\Omega \mathbf{S} : \nabla \mathbf{v} \text{d}V
     + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega).
 \end{equation}
 Using the symmetry of $\mathbf{S}$ and replacing the material model, we may denote this in the commonly found form
 \begin{equation}
-    \int_{\partial \Omega_N} \mathbf{t} \cdot \mathbf{v} \text{d}V
+    \int_{\partial \Omega_N} \mathbf{t} \cdot \mathbf{v} \text{d}A
     - \int_\Omega \mathbf{E}(\mathbf{u}) : \mathbb{C} :  \mathbf{E}(\mathbf{v}) \text{d}V
     + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega).
 \end{equation}
@@ -291,7 +298,7 @@ The benefit of this formulation is that the solution $\mathbf{u}$ has to be only
 % \end{equation}
 
 \section{Spatial discretization in 2D}
-We can only solve the linear elastic problem analytically on simple geometries and with some assumptions. In general, on real world complex domains $\Omega$, we cannot solve it analytically, even though solutions exist. However, we can divide the problem in many small sub-problems on simple geometries and try to find a combined solution of these.
+We can only solve the linear elastic problem analytically on simple geometries and with some assumptions. In general, on real world complex domains $\Omega$, we cannot solve it analytically. However, we can divide the problem in many small sub-problems on simple geometries and try to find a combined solution of these.
 
 The core idea of finite elements is the discretization of a continuous domain $\Omega \subset \mathcal{R}^3$ into a finite number of $M$ small elements $\Omega_j$. Then, the weak form can be expressed as 
 \begin{equation}
@@ -303,9 +310,11 @@ The core idea of finite elements is the discretization of a continuous domain $\
 
 If we reduce the problem to a two dimensional domain, i.e. $\Omega \subset \mathcal{R}^2$ we can simplify this to  
 \begin{equation}
-    \sum_{j=0}^{M-1} \int_{\partial \Omega_{N,j}} \mathbf{t} \cdot \mathbf{v} \text{d}s
-    - \sum_{j=0}^{M-1} d_j  \int_{\Omega_j} \mathbf{E}(\mathbf{u}) : \mathbb{C} :  \mathbf{E}(\mathbf{v}) \text{d}A
-    + \sum_{j=0}^{M-1} \int_{\Omega_j} \mathbf{b} \cdot \mathbf{v} \text{d}A = 0 \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega).
+    \sum_{j=0}^{M-1} 
+    \underbrace{\int_{\partial \Omega_{N,j}} \mathbf{t} \cdot \mathbf{v} \text{d}s}_\textrm{Boundary traction}
+    - \sum_{j=0}^{M-1} d_j  
+    \underbrace{\int_{\Omega_j} \mathbf{E}(\mathbf{u}) : \mathbb{C} :  \mathbf{E}(\mathbf{v}) \text{d}A}_\textrm{Strain energy}
+    + \sum_{j=0}^{M-1} \underbrace{\int_{\Omega_j} \mathbf{b} \cdot \mathbf{v} \text{d}A}_\textrm{Body forces} = 0 \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega).
     \label{eq:discretized_weak_form}
 \end{equation}
 with the constant thickness of each element $d_j$, a traction $\mathbf{t}$ describing force per length and a body force $\mathbf{b}$ describing force per unit area.
@@ -365,7 +374,7 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
         \end{pmatrix}
     \end{align}
 
-    These gradients are formulated w.r.t. the reference system $\xi-1, \xi_2$. Employing the chain rule, we may formulate gradients w.r.t. to the global coordinates as 
+    These gradients are formulated w.r.t. the reference system $\xi_1, \xi_2$. Employing the chain rule, we may formulate gradients w.r.t. to the global coordinates as 
     \begin{equation}
         \nabla a = 
         \underbrace{
@@ -378,7 +387,7 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
         \mathbf{B}^\textrm{ref}(\pmb{\xi}) \cdot  \mathbf{a}_j
     \end{equation}
 
-    We may use the shape functions to interpolate the nodal positions of an element $j$, e.g. 
+    We may use the shape functions $\mathbf{N}(\pmb{\xi})$ to interpolate the nodal positions of an element $j$, e.g. 
     \begin{equation}
         \begin{pmatrix}
             x_1(\pmb{\xi}) &  x_2(\pmb{\xi})
@@ -393,7 +402,7 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
             {(x_1)}_j^3 &  {(x_2)}_j^3 \\
         \end{pmatrix}
     \end{equation}
-    and the \emph{Jacobian} 
+    or use the gradients of shape functions $\mathbf{B}^\textrm{ref}(\pmb{\xi})$ to compute the \emph{Jacobian} 
     \begin{equation}
         \mathbf{J}_j(\pmb{\xi})
         = 
@@ -411,7 +420,7 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
             {(x_1)}_j^3 &  {(x_2)}_j^3 \\
         \end{pmatrix}
     \end{equation}
-    The inverse Jacobian is just the missing term of the chain rule, hence we can determine the gradient as 
+    The inverse Jacobian is just the missing term of the chain rule, hence we can determine the interpolated gradient of $a$ as 
     \begin{equation}
         \nabla a = 
         \underbrace{
@@ -447,7 +456,7 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
     \begin{equation}
         \xi^1 = -\frac{1}{\sqrt{3}}, \quad \xi^2 = \frac{1}{\sqrt{3}}
     \end{equation}
-    and weights $w^1=1$ and $w^2=1$ enables exact integration of polynomials up to order 3, which is sufficient for our integrals as we approximate the integral functions with linear shape functions. This one-dimensional example can be extended canonically to higher dimensions by replacing $\frac{\text{d}x}{\text{d}\xi}$ with the determinant of the Jacobian and positions like 
+    and weights $w^1=1$ and $w^2=1$ enables exact integration of polynomials up to order 3, which is sufficient for our integrals as we approximate the integral functions with linear shape functions. This one-dimensional example can be extended canonically to higher dimensions by replacing $\frac{\text{d}x}{\text{d}\xi}$ with the determinant of the Jacobian and by using positions 
     \begin{equation}
         \pmb{\xi}^1 = \begin{pmatrix}-\frac{1}{\sqrt{3}} \\ -\frac{1}{\sqrt{3}}\end{pmatrix} 
         \quad
@@ -462,7 +471,7 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
 
 In conclusion, the definition of shape functions on an element allows us to interpolate nodal properties (like position, displacements or temperatures) and to compute gradients of these properties within the element. In addition, Gauss-Legendre quadrature allows us to integrate these properties over the element domain and thus to evaluate the integrals in Equation \eqref{eq:discretized_weak_form}. The following subsection addresses this procedure for each of the terms in Equation \eqref{eq:discretized_weak_form}.
 
-\subsection{Body force term}
+\subsection{External work by body forces}
 Let's start with the body force term and transform the integral from the original domain to the reference element as
 \begin{equation}
     \int_{\Omega_j} \mathbf{b} \cdot \mathbf{v} \text{d}A
@@ -475,10 +484,10 @@ using the determinant of the Jacobian as a scaling factor between $\text{d}A$ an
 We can then use Gauss–Legendre quadrature with two positions per dimension to perform a numerical integration of this term as
 \begin{equation}
     \int_{\Omega_j^\textrm{ref}} \mathbf{b} \cdot \mathbf{v}(\pmb{\xi}) \hspace{0.25em}\text{det}\left(\mathbf{J}_j(\pmb{\xi})\right)\text{d}A^\textrm{ref}
-    = \sum_k w^k \text{det}\left(\mathbf{J}_j(\pmb{\xi}^k)\right) \mathbf{b} \cdot \mathbf{v}(\pmb{\xi}^k) 
+    = \sum_{k=1}^4 w^k \text{det}\left(\mathbf{J}_j(\pmb{\xi}^k)\right) \mathbf{b} \cdot \mathbf{v}(\pmb{\xi}^k).
 \end{equation}
-which essentially turns the integral into a weighted sum of function values at specific positions $\pmb{\xi}^k$. In this case, we chose $w^k=1$ and positions according to Equation \eqref{eq:gaussian_weights}.
-Using the shape functions, we may then express the term using the nodal values of the trial function $\mathbf{v}_j$ as  
+Essentially, this turns the integral into a weighted sum of function values at specific positions $\pmb{\xi}^k$. In this case, we chose $w^k=1$ and positions according to Equation \eqref{eq:gaussian_weights}.
+Using the shape functions, we may then express the last variable using the nodal values of the trial function $\mathbf{v}_j$ as  
 \begin{equation}
     \mathbf{v}(\pmb{\xi}^k) 
     =
@@ -518,7 +527,7 @@ to a scalar vector product
     \cdot 
     \mathbf{v}_j
 \end{equation}
-where $\mathbf{f}^\Omega_j \in \mathcal{R}^8$ describes the nodal body forces. 
+where $\mathbf{f}^\Omega_j \in \mathcal{R}^8$ describes the nodal body forces on element $j$. 
 
 \subsection{Strain energy term}
 Similar to the body force term, we can evaluate the strain energy term of an element in Equation \eqref{eq:discretized_weak_form} by transforming the integral and applying Gauss-Legendre quadrature as 
@@ -526,22 +535,29 @@ Similar to the body force term, we can evaluate the strain energy term of an ele
     \int_{\Omega_j} \mathbf{E}(\mathbf{u}) : \mathbb{C} :  \mathbf{E}(\mathbf{v}) \text{d}A 
     = \sum_k \mathbf{E}\left(\mathbf{u}(\pmb{\xi^k})\right) : \mathbb{C} :  \mathbf{E}\left(\mathbf{v}(\pmb{\xi^k})\right)  \text{det}\left(\mathbf{J}_j(\pmb{\xi}^k)\right).
 \end{equation}
-The double contraction is a bit too complex for a two-dimensional problem and we can simplify it as follows:
+The double contraction is unnecessarily complex for a two-dimensional problem and we can simplify it as follows:
 \begin{equation}
     \mathbf{E}\left(\mathbf{u}(\pmb{\xi^k})\right) : \mathbb{C} :  \mathbf{E}\left(\mathbf{v}(\pmb{\xi^k})\right) = 
     \pmb{\varepsilon}\left(\mathbf{u}(\pmb{\xi}^k)\right)
     \cdot 
-    \underbrace{
-    \begin{pmatrix}
-        2G+\Lambda & \Lambda & 0 \\
-        \Lambda & 2G+\Lambda &  0 \\
-        0 & 0 & G/4 \\
-    \end{pmatrix}
-    }_{\mathbf{C}}
+    \mathbf{C}
     \cdot 
     \pmb{\varepsilon}\left(\mathbf{v}(\pmb{\xi}^k)\right)
 \end{equation}
-for a plane-strain state with
+with a two-dimensional stiffness matrix
+\begin{align}
+        \mathbf{C} &= \begin{pmatrix}
+        2G+\Lambda & \Lambda & 0 \\
+        \Lambda & 2G+\Lambda &  0 \\
+        0 & 0 & G/4 \\
+    \end{pmatrix} \textrm{(isotropic plane strain)}\\
+    \mathbf{C} &= \frac{E}{1-\nu^2}\begin{pmatrix}
+        1 & \nu & 0 \\
+        \nu & 1 &  0 \\
+        0 & 0 & (1-\nu)/8 \\
+    \end{pmatrix} \textrm{(isotropic plane stress)}
+\end{align}
+and with two-dimensional strains
 \begin{equation}
     \pmb{\varepsilon}(\mathbf{u}) = 
     \begin{pmatrix}
@@ -592,7 +608,7 @@ to a matrix vector product
 \end{equation}
 with an element stiffness matrix $\mathbf{k}_j = d_j  \mathbf{k}^0_j \in \mathcal{R}^{8x8}$. 
 
-\subsection{Boundary traction term}
+\subsection{External work by boundary traction}
 Finally, the boundary traction term in Equation \eqref{eq:discretized_weak_form} is treated in a similar fashion to the previous terms. However, the boundary of a two-dimensional domain is just a line and we integrate it with two points along the element edge as 
 \begin{equation}
     \int_{\partial \Omega_{N,j}} \mathbf{t} \cdot \mathbf{v} \text{d}s
@@ -612,10 +628,11 @@ Using Equation \eqref{eq:shape_interpolation}, we may denote this as
     \cdot 
     \mathbf{v}_j
 \end{equation}
+where $\mathbf{f}^\Gamma_j \in \mathcal{R}^8$ describes the nodal traction forces on element $j$. 
 
 \section{Assembly of linear systems of equations}
 
-At this point, we have transformed Equation \eqref{eq:discretized_weak_form} to 
+At this point, we can transform Equation \eqref{eq:discretized_weak_form} to 
 \begin{equation}
     \sum_{j=0}^{M-1} \mathbf{f}^\Gamma_j \cdot \mathbf{v}_j
     - \sum_{j=0}^{M-1} \mathbf{u}_j \cdot \mathbf{k}_j \cdot \mathbf{v}_j
@@ -709,6 +726,8 @@ just like previously with the truss system in Chapter 5. Now it comes down to so
     \end{center}
 \end{example}
 
+\bibliographystyle{unsrtnat}
+\bibliography{literature} 
 
 
 
