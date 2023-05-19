@@ -59,7 +59,6 @@ class Quad:
 
 class FEM:
     def __init__(self, nodes, elements, forces, constraints, E, nu, etype=Quad()):
-        print("Creating new FEM problem...")
         self.nodes = nodes
         self.n_dofs = torch.numel(self.nodes)
         self.elements = elements
@@ -74,7 +73,6 @@ class FEM:
         )
 
         # Precompute properties which do not change during runtime
-        print(" - Precomputing properties...")
         ecenters = torch.stack([torch.mean(nodes[e], dim=0) for e in elements])
         self.dist = torch.cdist(ecenters, ecenters)
         self.areas = torch.zeros((self.n_elem))
