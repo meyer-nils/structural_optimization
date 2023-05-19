@@ -80,9 +80,11 @@ Just like the truss problem, the variable thickness sheet problem can be approxi
     \end{enumerate}
 
     The following image shows a result of the algorithm for the cantilever problem stated above. Black areas use the full maximum thickness $\mathbf{d}^u$ and white areas use the minimum thickness $\mathbf{d}^l$. The intermediate values are represented by different shades of gray.
+
+    \begin{center}
+        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_optimized.pdf}
+    \end{center}
     
-    \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_optimized.pdf}
-       
 \end{example}
 
 \section{Solid isotropic material with penalization (SIMP)}
@@ -110,11 +112,12 @@ where the only change compared to Equation \eqref{eq:sheet_optimization} is the 
 \begin{equation}
     \mathbb{C}(\rho_j)= \rho_j^p \mathbb{C}
 \end{equation}
-with a penalization parameter $p \ge 1$. The effect of penalization is shown in Figure \ref{fig:simp} for typical values of $p$. We may observe for $p>1$ that the stiffness per invested material is unattractive for intermediate density values. For example, choosing $\rho_j=0.5$ adds half an element volume to the total volume, but contributes only a quarter of the stiffness compared to a fully filled element. An optimization that tries to minimize compliance for a given volume will therefore rather favor elements that provide the full stiffness benefit ($\rho=1$) or do not count towards the constraint ($\rho=\rho^l$). 
+with a penalization parameter $p \ge 1$. 
+The effect of penalization is shown in Figure \ref{fig:simp} for typical values of $p$. We may observe for $p>1$ that the stiffness per invested material is unattractive for intermediate density values. For example, choosing $\rho_j=0.5$ adds half an element volume to the total volume, but contributes only a quarter of the stiffness compared to a fully filled element. An optimization that tries to minimize compliance for a given volume will therefore rather favor elements that provide the full stiffness benefit ($\rho=1$) or do not count towards the constraint ($\rho=\rho^l$). 
 
 \begin{figure}[!htpb]
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/simp.pdf}
+    \includegraphics[width=0.9\textwidth]{figures/simp.pdf}
     \caption{Penalization factors in SIMP.}
     \label{fig:simp}
 \end{figure}
@@ -131,20 +134,42 @@ Incorporating the SIMP method to the optimization is straight-forward. We just n
         (L^k_j-d^k_j)^2}{\mu A_j}}
     \end{equation}
     and end up with the following solution:
-    
-    \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_optimized_binary.pdf}
-       
+
+    \begin{center}
+        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_optimized_binary.pdf}
+    \end{center}
 \end{example}
 
-% discuss numerical problems and unique solution
-
-
 \section{Filters}
+Obviously, the SIMP approach helps us to find a binary solution of the discretized problem stated in Equation \eqref{eq:topology_optimization}. However, we may ask ourselves if there is a unique solution to this problem independent of discretization. And it turns out, the answer is no: You can improve any given design by replacing it with finer structures in a process that goes on indefinitely \cite{Christensen2008}. 
+
+\begin{example}{Cantilever beam discretizations}{cantileverdiscoptimizationexample}
+    We can increase the resolution of the previous examples to achieve better results. 
+    Previous example ($C^*=0.54842$)
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{figures/cantilever_fem_optimized_binary.pdf}
+    \end{center}
+    Finer resolution ($C^*=0.54508$)
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{figures/cantilever_fem_optimized_binary_fine.pdf}
+    \end{center}
+    Even finer resolution ($C^*=$)
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine.pdf}
+    \end{center}
+\end{example}
+
+In addition to the theoretical non-existence of the solution, this also means that our solution is \emph{mesh-dependent}: If we want to refine the solution, we may end up with a totally different solution. On top of that, we may also observe checkerboard-like patterns on the structure. These are numerical artifacts from the fact that we use linear shape functions which lead to an overestimation of the stiffness for that configuration.
+
+We can address both problems with the introduction of filters \cite{Harzheim2014, Lazarov2011}.
 
 
 % Filters (unique solution, no fine structures and checkerboarding)
 %   - densities
 %   - sensitivities (simple!)
+
+\section{Convexity}
+Finally, there is one more challenge: For $p>1$, the problem is not convex anymore and different starting points may result in different local minima. A strategy to cure temrination at non-global minima is a gradual increase of $p$ starting from $p=1$.
 
 \section{Alternative methods}
 
@@ -152,3 +177,7 @@ Incorporating the SIMP method to the optimization is straight-forward. We just n
 %   - optimality constraints in SIMP (OC)
 %   - Empirical topology optimization (SKO)
 %   - Level set function 
+
+
+\bibliographystyle{unsrtnat}
+\bibliography{literature} 
