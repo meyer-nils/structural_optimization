@@ -195,33 +195,33 @@ def get_cantilever(size, Lx, Ly, E=100, nu=0.3, etype=Quad()):
     Ny = int(Ly / size)
 
     # Create nodes
-    n1 = torch.linspace(0.0, Lx, Nx)
-    n2 = torch.linspace(0.0, Ly, Ny)
+    n1 = torch.linspace(0.0, Lx, Nx + 1)
+    n2 = torch.linspace(0.0, Ly, Ny + 1)
     n1, n2 = torch.stack(torch.meshgrid(n1, n2, indexing="xy"))
     nodes = torch.stack([n1.ravel(), n2.ravel()], dim=1)
 
     # Create elements connecting nodes
     elements = []
-    for j in range(Ny - 1):
-        for i in range(Nx - 1):
+    for j in range(Ny):
+        for i in range(Nx):
             if type(etype) == Quad:
                 # Quad elements
-                n0 = i + j * Nx
-                elements.append([n0, n0 + 1, n0 + Nx + 1, n0 + Nx])
+                n0 = i + j * (Nx + 1)
+                elements.append([n0, n0 + 1, n0 + Nx + 2, n0 + Nx + 1])
             else:
                 # Tria elements
-                n0 = i + j * Nx
-                elements.append([n0, n0 + 1, n0 + Nx + 1])
-                elements.append([n0 + Nx + 1, n0 + Nx, n0])
+                n0 = i + j * (Nx + 1)
+                elements.append([n0, n0 + 1, n0 + Nx + 2])
+                elements.append([n0 + Nx + 2, n0 + Nx + 1, n0])
 
     # Load at tip
     forces = torch.zeros_like(nodes)
-    # forces[len(nodes) - 1, 1] = -1.0
-    forces[(int(Ny / 2) + 1) * Nx - 1, 1] = -1.0
+    # forces[-1, 1] = -1.0
+    forces[(int((Ny + 1) / 2) + 1) * (Nx + 1) - 1, 1] = -1.0
 
     # Constrained displacement at left end
     constraints = torch.zeros_like(nodes, dtype=bool)
-    for i in range(Ny):
-        constraints[i * Nx, :] = True
+    for i in range(Ny + 1):
+        constraints[i * (Nx + 1), :] = True
 
     return FEM(nodes, elements, forces, constraints, E, nu, etype=etype)
