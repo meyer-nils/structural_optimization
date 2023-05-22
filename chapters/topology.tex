@@ -82,7 +82,7 @@ Just like the truss problem, the variable thickness sheet problem can be approxi
     The following image shows a result of the algorithm for the cantilever problem stated above. Black areas use the full maximum thickness $\mathbf{d}^u$ and white areas use the minimum thickness $\mathbf{d}^l$. The intermediate values are represented by different shades of gray.
 
     \begin{center}
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_optimized.pdf}
+        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized.pdf}
     \end{center}
     
 \end{example}
@@ -124,59 +124,104 @@ The effect of penalization is shown in Figure \ref{fig:simp} for typical values 
 
 Incorporating the SIMP method to the optimization is straight-forward. We just need to adjust the sensitivity (see Equation \ref{eq:sensitivity_sheet}) slightly to
 \begin{equation}
-    \frac{\partial C}{\partial d_j} = - p (d_j)^{p-1} \mathbf{u}_j(\mathbf{d})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\mathbf{d}).
+    \frac{\partial C}{\partial \rho_j} = - p \rho_j^{p-1} \mathbf{u}_j(\pmb{\rho})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\pmb{\rho}).
+    \label{eq:sensitivity_topology}
 \end{equation}
 
 \begin{example}{Cantilever beam with SIMP}{cantileversimpoptimizationexample}
     Consider a FEM cantilever beam from the previous example. We only adjust the solution in Step 6 towards 
     \begin{equation}
-        \hat{d}_j(\mu) = L_j^k + \sqrt{\frac{2 w_j (\mathbf{d}^k)
+        \hat{\rho}_j(\mu) = L_j^k + \sqrt{\frac{2 w_j (\pmb{\rho}^k)
         (L^k_j-d^k_j)^2}{\mu A_j}}
     \end{equation}
     and end up with the following solution:
 
     \begin{center}
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_optimized_binary.pdf}
+        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized_binary.pdf}
     \end{center}
 \end{example}
 
 \section{Filters}
 Obviously, the SIMP approach helps us to find a binary solution of the discretized problem stated in Equation \eqref{eq:topology_optimization}. However, we may ask ourselves if there is a unique solution to this problem independent of discretization. And it turns out, the answer is no: You can improve any given design by replacing it with finer structures in a process that goes on indefinitely \cite{Christensen2008}. 
+In addition to the theoretical non-existence of a solution, this also means that our solution is \emph{mesh-dependent}: If we want to refine the solution, we may end up with a totally different solution. 
 
-\begin{example}{Cantilever beam discretizations}{cantileverdiscoptimizationexample}
-    We can increase the resolution of the previous examples to achieve better results. 
-    Previous example ($C^*=0.54842$)
+\begin{example}{Cantilever beam mesh dependency}{cantileverdiscoptimizationexample}
+    We can increase the resolution of the previous examples to achieve better compliance results. However, this demonstrates the mesh-dependence of the solution and we observe structures which might be difficult to manufacture.
+    
+    Finer resolution:
     \begin{center}
-        \includegraphics[width=0.5\linewidth]{figures/cantilever_fem_optimized_binary.pdf}
+        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized_binary_fine.pdf}
     \end{center}
-    Finer resolution ($C^*=0.54508$)
+    
+    Even finer resolution:
     \begin{center}
-        \includegraphics[width=0.5\linewidth]{figures/cantilever_fem_optimized_binary_fine.pdf}
-    \end{center}
-    Even finer resolution ($C^*=$)
-    \begin{center}
-        \includegraphics[width=0.5\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine.pdf}
+        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine.pdf}
     \end{center}
 \end{example}
 
-In addition to the theoretical non-existence of the solution, this also means that our solution is \emph{mesh-dependent}: If we want to refine the solution, we may end up with a totally different solution. On top of that, we may also observe checkerboard-like patterns on the structure. These are numerical artifacts from the fact that we use linear shape functions which lead to an overestimation of the stiffness for that configuration.
+Even if we were to accept mesh dependence and the theoretical problems, we are still left with challenges in the resulting designs. First of all, fine structures may be hard to manufacture. Even additive manufacturing methods are limited to some minimal structure size. Secondly, we may observe checkerboard-like patterns on the structure. These are numerical artifacts from the fact that we use linear shape functions which lead to an overestimation of the stiffness for that configuration.
 
-We can address both problems with the introduction of filters \cite{Harzheim2014, Lazarov2011}.
+We can address all these problems with the introduction of filters as a regularization \cite{Harzheim2014, Lazarov2011}. There are two traditional approaches for mesh-independent filtering: \emph{density filtering} and \emph{sensitivity filtering}. In density filtering, we replace the density $\pmb{\rho}$ with a weighted sum of neighboring densities, and use this filtered density $\tilde{\pmb{\rho}}$ in the stiffness evaluation
+\begin{equation}
+    \mathbb{C}(\rho_j)= \tilde{\rho}_j^p(\pmb{\rho}) \mathbb{C}.
+\end{equation}
+The filtered density is computed according to 
+\begin{equation}
+    \tilde{\rho}_j (\pmb{\rho}) = \frac{\sum_i w_j(\mathbf{x}_i) A_i \rho_i}{\sum_i w_j(\mathbf{x}_i) A_i}
+\end{equation}
+with a distance weighting function 
+\begin{equation}
+    w_j(\mathbf{x}) = 
+    \begin{cases}
+        R-\lVert \mathbf{x} - \mathbf{x}_j\rVert & \text{if} \quad \lVert \mathbf{x} - \mathbf{x}_j\rVert \le R \\
+        0 & \text{else},
+    \end{cases}
+\end{equation}
+where $R$ describes the filter radius. This filter results in a structural weakening of structures finer than $R$, as they get smeared with neighboring empty elements. Hence, the filter solves the mesh-dependency problem, prevents structures that cannot be manufactured and prevents checkerboard patterns. However, we need to account for the filter during sensitivity computation by 
+\begin{equation}
+    \frac{\partial C}{\partial \rho_j} 
+    = \frac{\partial C}{\partial \tilde{\rho}_m} \frac{\partial \tilde{\rho}_m}{\partial \rho_j}
+    = \frac{\partial C}{\partial \tilde{\rho}_m}  \frac{w_j(\mathbf{x}_m) A_m }{\sum_i w_j(\mathbf{x}_i) A_i}
+\end{equation}
+and in the volume constraint.
 
+An alternative to filtering densities is filtering of sensitivities. We may compute the filtered sensitivity as
+\begin{equation}
+    \widetilde{\frac{\partial C}{\partial \rho_j}} = \frac{1}{\rho_j} \frac{\sum_i w_j(\mathbf{x}_i) A_i \rho_i \frac{\partial C}{\partial \rho_i} }{\sum_i w_j(\mathbf{x}_i) A_i}
+\end{equation}
+which is a purely heuristic concept, i.e. there is no mathematical proof for this filter to work \cite{Sigmund1998}. However, we can implement this formulation simply by replacing the sensitivities in \eqref{eq:sensitivity_topology} with filtered sensitivities. This is very efficient, simple to implement and experience shows that this filter works quite well.
 
-% Filters (unique solution, no fine structures and checkerboarding)
-%   - densities
-%   - sensitivities (simple!)
+\begin{example}{Cantilever beam  with sensitivity filtering}{cantileverfilterexample}
+    The following images show the cantilever beams from previous examples with enabled sensitivity filtering.
+
+    Previous example:
+    \begin{center}
+        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized_binary.pdf}
+    \end{center}
+    
+    Finer resolution:
+    \begin{center}
+        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized_binary_fine.pdf}
+    \end{center}
+    
+    Even finer resolution:
+    \begin{center}
+        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine.pdf}
+    \end{center}
+\end{example}
+
 
 \section{Convexity}
-Finally, there is one more challenge: For $p>1$, the problem is not convex anymore and different starting points may result in different local minima. A strategy to cure temrination at non-global minima is a gradual increase of $p$ starting from $p=1$.
+Finally, there is one more challenge: For $p>1$, the problem is not convex anymore and different starting points may result in different local minima. A strategy to cure termination at non-global minima is a gradual increase of $p$ starting from $p=1$.
+
+A heuristic for that is for example ...
 
 \section{Alternative methods}
+\subsection{Optimality conditions}
+\subsection{Empirical growth rules}
+\subsection{Level set functions}
 
-% Other methods 
-%   - optimality constraints in SIMP (OC)
-%   - Empirical topology optimization (SKO)
-%   - Level set function 
+\section{Interpretation}
 
 
 \bibliographystyle{unsrtnat}
