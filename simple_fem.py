@@ -67,7 +67,7 @@ class FEM:
         self.constraints = constraints
         self.etype = etype
 
-        # Plain strain state
+        # Plain stress state
         self.C = (E / ((1.0 + nu) * (1.0 - 2.0 * nu))) * torch.tensor(
             [[1.0 - nu, nu, 0.0], [nu, 1.0 - nu, 0.0], [0.0, 0.0, 0.5 - nu]]
         )
