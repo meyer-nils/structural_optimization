@@ -141,7 +141,7 @@ class FEM:
         return u, f
 
     @torch.no_grad()
-    def plot(self, u=0.0, node_property=None, element_property=None):
+    def plot(self, u=0.0, node_property=None, element_property=None, node_labels=False):
         # Compute deformed positions
         pos = self.nodes + u
 
@@ -160,6 +160,9 @@ class FEM:
         # Nodes
         if len(pos) < 200:
             plt.scatter(pos[:, 0], pos[:, 1], color="black", marker="o")
+            if node_labels:
+                for i, node in enumerate(pos):
+                    plt.annotate(i, (node[0] + 0.01, node[1] + 0.1), color="black")
 
         # Elements
         for element in self.elements:
