@@ -229,3 +229,20 @@ def get_cantilever(size, Lx, Ly, E=100, nu=0.3, etype=Quad()):
         constraints[i * (Nx + 1), :] = True
 
     return FEM(nodes, elements, forces, constraints, E, nu, etype=etype)
+
+
+def export_mesh(fem, filename, nodal_data=[], elem_data=[]):
+    from meshio import Mesh
+
+    if type(fem.etype) == Quad:
+        etype = "quad"
+    elif type(fem.etype) == Tria:
+        etype = "triangle"
+
+    mesh = Mesh(
+        points=fem.nodes,
+        cells={etype: fem.elements},
+        # point_data=nodal_data,
+        # cell_data={etype: elem_data},
+    )
+    mesh.write(filename)
