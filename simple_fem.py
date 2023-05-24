@@ -90,16 +90,17 @@ class FEM:
             B = torch.zeros((3, 2 * etype.nodes))
             for w, q in zip(etype.iweights(), etype.ipoints()):
                 # Jacobian
-                J = (etype.B(q) @ nodes).T
+                J = etype.B(q) @ nodes
+                detJ = torch.linalg.det(J)
                 # Area integration
-                area += w * torch.linalg.det(J)
+                area += w * detJ
                 # Element stiffness
                 JB = torch.linalg.inv(J) @ self.etype.B(q)
                 B[0, 0::2] = JB[0, :]
                 B[1, 1::2] = JB[1, :]
                 B[2, 0::2] = JB[1, :]
                 B[2, 1::2] = JB[0, :]
-                self.k0[j, :, :] += w * B.T @ self.C @ B * torch.linalg.det(J)
+                self.k0[j, :, :] += w * B.T @ self.C @ B * detJ
             self.areas[j] = area
 
     def element_strain_energies(self, u):
