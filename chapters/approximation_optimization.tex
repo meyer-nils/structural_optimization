@@ -33,7 +33,7 @@ In Sequential Linear Programming (SLP), we approximate the functions in Equation
 \end{align}
 and limit the validity of the approximation with so-called \emph{move limits} 
 \begin{equation}
-    \tilde{\mathbf{x}}^{l,k} \le \mathbf{x}^k \le \tilde{\mathbf{x}}^{u,k}.
+    \tilde{\mathbf{x}}^{l,k} \le \mathbf{x} \le \tilde{\mathbf{x}}^{u,k}.
 \end{equation}
 The resulting functions are explicit linear expressions and the set for $\mathbf{x}$ is compact, hence the resulting problem is strictly convex. We limit the set because i) the approximation is only valid close to $\mathbf{x}^k$ and ii) the linear problem requires a compact set to be strictly convex. 
 
@@ -92,7 +92,7 @@ for the objective function, but obviously the same principals apply for constrai
 Employing the chain rule
 \begin{equation}
     \frac{\partial f}{\partial y_j} (\mathbf{x}^k) 
-    = \frac{\partial x_j}{\partial y_j} \frac{\partial f}{\partial x_j} (\mathbf{x}^k)   
+    = \frac{\partial x_j}{\partial y_j}(\mathbf{x}^k) \frac{\partial f}{\partial x_j} (\mathbf{x}^k)   
     = -x^2_j \frac{\partial f}{\partial x_j}(\mathbf{x}^k) 
 \end{equation}
 this can be simplified to an expression without $y_j$
@@ -139,7 +139,7 @@ CONLIN is an effective method to turn structural optimization problems into conv
 
 We may obtain an adjustable method by defining
 \begin{equation}
-    \tilde{f}(\mathbf{x}) = r(\mathbf{x}^k) + \sum_j \frac{p_{j}^k}{U^k_j-x_j} + \frac{q_{j}^k}{x_j-L^k_j} 
+    \tilde{f}(\mathbf{x}) = r(\mathbf{x}^k) + \sum_j \left( \frac{p_{j}^k}{U^k_j-x_j} + \frac{q_{j}^k}{x_j-L^k_j} \right) 
     \label{eq:mma_start}
 \end{equation}
 where
@@ -154,14 +154,14 @@ where
          0 &\quad \text{if} \quad \frac{\partial f}{\partial x_j} (\mathbf{x}^k) \ge 0 \\
         - (x^k_j-L^k_j)^2 \frac{\partial f}{\partial x_j} (\mathbf{x}^k) &\quad \text{if} \quad \frac{\partial f}{\partial x_j} (\mathbf{x}^k) < 0.
     \end{cases} \\ 
-    r_j^k &= f(\mathbf{x}^k) - \sum_j \frac{p_{j}^k}{U^k_j-x^k_j} + \frac{q_{j}^k}{x^k_j-L^k_j} 
+    r_j^k &= f(\mathbf{x}^k) - \sum_j \left(\frac{p_{j}^k}{U^k_j-x^k_j} + \frac{q_{j}^k}{x^k_j-L^k_j}  \right)
     \label{eq:mma_end}
 \end{align}
 with $L^k_j < x_j < U^k_j$. The parameters $L^k_j$ and $U_j^k$ are called the lower and upper asymptotes, respectively. They can be adjusted ("move"), hence the method is termed \emph{Method of Moving Asymptotes} (MMA) \cite{Svanberg1987}. It can be proven that this is a generalization, as setting $L^k_j \rightarrow 0$ and $U^k_j \rightarrow \infty$ recovers the CONLIN method and setting  $L^k_j \rightarrow -\infty$ and $U^k_j \rightarrow \infty$ recovers the SLP method.
 
 To prevent singularities by reaching the asymptotes, we use move limits 
 \begin{equation}
-    L^k_j \le \tilde{x}_j^{l,k} \le x_j^{l,k} \le \tilde{x}_j^{u,k} \le U_j^k.
+    L^k_j \le \tilde{x}_j^{l,k} \le x_j \le \tilde{x}_j^{u,k} \le U_j^k.
 \end{equation}
 similar to SLP. These could be chosen for example as 
 \begin{align}
@@ -173,22 +173,21 @@ The advantage of these adjustable asymptotes is that we can bring the asymptotes
 \begin{enumerate}
     \item In the first two iterations, set 
         \begin{align}
-            L_j^k &= x_j^k - s_0 (x^u_j - x^l_j) \\
-            U^k_j &= x_j^k + s_0 (x^u_j - x^l_j)
+            L_j^k &= x_j^k - s (x^u_j - x^l_j) \\
+            U^k_j &= x_j^k + s (x^u_j - x^l_j)
         \end{align}
-    with $s_0 \in (0,1)$.
+    with $s \in (0,1)$.
     \item For the following iterations ($k>1$) check for each design variable, if it oscillates. If it oscillates, i.e. $(x_j^k-x_j^{k-1})(x_j^{k-1}-x_j^{k-2}) < 0$, bring asymptotes closer to $x_j^k$ by   
         \begin{align}            
             \label{eq:mma_heuristic_first}
-            l_j^k &= x_j^k - s (x_j^{k-1} - l_j^{k-1}) \\
-            u_j^k &= x_j^k + s (u_j^{k-1} - x_j^{k-1})
+            L_j^k &= x_j^k - s (x_j^{k-1} - L_j^{k-1}) \\
+            U_j^k &= x_j^k + s (U_j^{k-1} - x_j^{k-1}).
         \end{align}
-    with $s \in (0,1)$. 
 
     If the solution does not oscillate, i.e. $(x_j^k-x_j^{k-1})(x_j^{k-1}-x_j^{k-2}) \ge 0$, move the asymptotes further away from $x_j^k$ by   
         \begin{align}
-            l_j^k &= x_j^k - \frac{1}{\sqrt{s}} (x_j^{k-1} - l_j^{k-1}) \\
-            u_j^k &= x_j^k + \frac{1}{\sqrt{s}} (u_j^{k-1} - x_j^{k-1}).
+            L_j^k &= x_j^k - \frac{1}{\sqrt{s}} (x_j^{k-1} - L_j^{k-1}) \\
+            U_j^k &= x_j^k + \frac{1}{\sqrt{s}} (U_j^{k-1} - x_j^{k-1}).
             \label{eq:mma_heuristic_last}
         \end{align}
 \end{enumerate}
