@@ -6,16 +6,18 @@ torch.set_default_dtype(torch.double)
 
 
 class Truss:
-    def __init__(self, nodes, elements, forces, constraints, E):
+    def __init__(self, nodes, elements, forces, constraints, areas, E):
         self.nodes = nodes
         self.n_dofs = torch.numel(self.nodes)
         self.elements = elements
         self.n_elem = len(self.elements)
         self.forces = forces
         self.constraints = constraints
+        self.areas = areas
         self.E = E
 
-    def k0(self, element):
+    def k(self, j):
+        element = self.elements[j]
         n1 = int(element[0])
         n2 = int(element[1])
         dx = self.nodes[n1][0] - self.nodes[n2][0]
@@ -31,7 +33,7 @@ class Truss:
                 [-s * c, -(s**2), s * c, s**2],
             ]
         )
-        return self.E / l0 * m
+        return self.areas[j] * self.E / l0 * m
 
     def element_lengths(self):
         l0 = torch.zeros((self.n_elem))
@@ -49,25 +51,25 @@ class Truss:
             n1 = int(element[0])
             n2 = int(element[1])
             u_j = torch.tensor([u[n1, 0], u[n1, 1], u[n2, 0], u[n2, 1]])
-            w[j] = 0.5 * u_j @ self.k0(element) @ u_j
+            k0 = self.k(j) / self.areas[j]
+            w[j] = 0.5 * u_j @ k0 @ u_j
         return w
 
-    def stiffness(self, a):
+    def stiffness(self):
         n_dofs = torch.numel(self.nodes)
         K = torch.zeros((n_dofs, n_dofs))
         for j, element in enumerate(self.elements):
             n1 = int(element[0])
             n2 = int(element[1])
-            k = a[j] * self.k0(element)
-            K[n1 * 2 : n1 * 2 + 2, n1 * 2 : n1 * 2 + 2] += k[0:2, 0:2]
-            K[n1 * 2 : n1 * 2 + 2, n2 * 2 : n2 * 2 + 2] += k[0:2, 2:4]
-            K[n2 * 2 : n2 * 2 + 2, n1 * 2 : n1 * 2 + 2] += k[2:4, 0:2]
-            K[n2 * 2 : n2 * 2 + 2, n2 * 2 : n2 * 2 + 2] += k[2:4, 2:4]
+            K[n1 * 2 : n1 * 2 + 2, n1 * 2 : n1 * 2 + 2] += self.k(j)[0:2, 0:2]
+            K[n1 * 2 : n1 * 2 + 2, n2 * 2 : n2 * 2 + 2] += self.k(j)[0:2, 2:4]
+            K[n2 * 2 : n2 * 2 + 2, n1 * 2 : n1 * 2 + 2] += self.k(j)[2:4, 0:2]
+            K[n2 * 2 : n2 * 2 + 2, n2 * 2 : n2 * 2 + 2] += self.k(j)[2:4, 2:4]
         return K
 
-    def solve(self, a):
+    def solve(self):
         # Compute global stiffness matrix
-        K = self.stiffness(a)
+        K = self.stiffness()
         # Get reduced stiffness matrix
         uncon = torch.nonzero(~self.constraints.ravel(), as_tuple=False).ravel()
         K_red = torch.index_select(K, 0, uncon)
@@ -102,11 +104,11 @@ class Truss:
         return [u, f, sigma]
 
     @torch.no_grad()
-    def plot(self, u=0.0, sigma=None, a=None, node_labels=True):
-        # Line widths from diameters (if present)
-        if a is not None:
-            a_max = torch.max(a)
-            linewidth = 5.0 * a / a_max
+    def plot(self, u=0.0, sigma=None, node_labels=True, show_thickness=False):
+        # Line widths from areas
+        if show_thickness:
+            a_max = torch.max(self.areas)
+            linewidth = 5.0 * self.areas / a_max
         else:
             linewidth = 2.0 * torch.ones(self.n_elem)
 
