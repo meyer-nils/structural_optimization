@@ -18,8 +18,8 @@ class Truss:
 
     def k(self, j):
         element = self.elements[j]
-        n1 = int(element[0])
-        n2 = int(element[1])
+        n1 = element[0]
+        n2 = element[1]
         dx = self.nodes[n1][0] - self.nodes[n2][0]
         dy = self.nodes[n1][1] - self.nodes[n2][1]
         l0 = torch.sqrt(dx**2 + dy**2)
@@ -38,8 +38,8 @@ class Truss:
     def element_lengths(self):
         l0 = torch.zeros((self.n_elem))
         for j, element in enumerate(self.elements):
-            n1 = int(element[0])
-            n2 = int(element[1])
+            n1 = element[0]
+            n2 = element[1]
             dx = self.nodes[n1][0] - self.nodes[n2][0]
             dy = self.nodes[n1][1] - self.nodes[n2][1]
             l0[j] = torch.sqrt(dx**2 + dy**2)
@@ -48,8 +48,8 @@ class Truss:
     def element_strain_energies(self, u):
         w = torch.zeros((self.n_elem))
         for j, element in enumerate(self.elements):
-            n1 = int(element[0])
-            n2 = int(element[1])
+            n1 = element[0]
+            n2 = element[1]
             u_j = torch.tensor([u[n1, 0], u[n1, 1], u[n2, 0], u[n2, 1]])
             k0 = self.k(j) / self.areas[j]
             w[j] = 0.5 * u_j @ k0 @ u_j
@@ -59,8 +59,8 @@ class Truss:
         n_dofs = torch.numel(self.nodes)
         K = torch.zeros((n_dofs, n_dofs))
         for j, element in enumerate(self.elements):
-            n1 = int(element[0])
-            n2 = int(element[1])
+            n1 = element[0]
+            n2 = element[1]
             K[n1 * 2 : n1 * 2 + 2, n1 * 2 : n1 * 2 + 2] += self.k(j)[0:2, 0:2]
             K[n1 * 2 : n1 * 2 + 2, n2 * 2 : n2 * 2 + 2] += self.k(j)[0:2, 2:4]
             K[n2 * 2 : n2 * 2 + 2, n1 * 2 : n1 * 2 + 2] += self.k(j)[2:4, 0:2]
@@ -90,8 +90,8 @@ class Truss:
         # Evaluate stress
         sigma = torch.zeros((self.n_elem))
         for j, element in enumerate(self.elements):
-            n1 = int(element[0])
-            n2 = int(element[1])
+            n1 = element[0]
+            n2 = element[1]
             dx = self.nodes[n1][0] - self.nodes[n2][0]
             dy = self.nodes[n1][1] - self.nodes[n2][1]
             l0 = torch.sqrt(dx**2 + dy**2)
@@ -134,8 +134,8 @@ class Truss:
 
         # Trusses
         for j, element in enumerate(self.elements):
-            n1 = int(element[0])
-            n2 = int(element[1])
+            n1 = element[0]
+            n2 = element[1]
             x = [pos[n1][0], pos[n2][0]]
             y = [pos[n1][1], pos[n2][1]]
             plt.plot(x, y, linewidth=linewidth[j], c=color[j])
