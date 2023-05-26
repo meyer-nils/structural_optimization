@@ -16,6 +16,12 @@ class Truss:
         self.areas = areas
         self.E = E
 
+        # Precompute mapping from local to global indices
+        self.global_indices = []
+        for element in self.elements:
+            indices = torch.tensor([2 * n + i for n in element for i in range(2)])
+            self.global_indices.append(torch.meshgrid(indices, indices, indexing="xy"))
+
     def k(self, j):
         element = self.elements[j]
         n1 = element[0]
@@ -58,13 +64,8 @@ class Truss:
     def stiffness(self):
         n_dofs = torch.numel(self.nodes)
         K = torch.zeros((n_dofs, n_dofs))
-        for j, element in enumerate(self.elements):
-            n1 = element[0]
-            n2 = element[1]
-            K[n1 * 2 : n1 * 2 + 2, n1 * 2 : n1 * 2 + 2] += self.k(j)[0:2, 0:2]
-            K[n1 * 2 : n1 * 2 + 2, n2 * 2 : n2 * 2 + 2] += self.k(j)[0:2, 2:4]
-            K[n2 * 2 : n2 * 2 + 2, n1 * 2 : n1 * 2 + 2] += self.k(j)[2:4, 0:2]
-            K[n2 * 2 : n2 * 2 + 2, n2 * 2 : n2 * 2 + 2] += self.k(j)[2:4, 2:4]
+        for j in range(len(self.elements)):
+            K[self.global_indices[j]] += self.k(j)
         return K
 
     def solve(self):
