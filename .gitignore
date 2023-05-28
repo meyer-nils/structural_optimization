@@ -9,3 +9,14 @@ __pycache__
 
 # VS Code 
 .vscode
+
+# LaTeX 
+main.pdf
+*.aux
+*.bbl
+*.blg
+*.fls 
+*.log
+*.out
+*.fdb_latexmk
+*.toc 
