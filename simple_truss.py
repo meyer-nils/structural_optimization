@@ -105,7 +105,14 @@ class Truss:
         return [u, f, sigma]
 
     @torch.no_grad()
-    def plot(self, u=0.0, sigma=None, node_labels=True, show_thickness=False):
+    def plot(
+        self,
+        u=0.0,
+        sigma=None,
+        node_labels=True,
+        show_thickness=False,
+        default_color="black",
+    ):
         # Line widths from areas
         if show_thickness:
             a_max = torch.max(self.areas)
@@ -124,14 +131,14 @@ class Truss:
             )
             plt.colorbar(sm, label="Stress", shrink=0.5)
         else:
-            color = self.n_elem * ["black"]
+            color = self.n_elem * [default_color]
 
         # Nodes
         pos = self.nodes + u
-        plt.scatter(pos[:, 0], pos[:, 1], color="black", marker="o")
+        plt.scatter(pos[:, 0], pos[:, 1], color=default_color, marker="o")
         if node_labels:
             for i, node in enumerate(pos):
-                plt.annotate(i, (node[0] + 0.01, node[1] + 0.1), color="black")
+                plt.annotate(i, (node[0] + 0.01, node[1] + 0.1), color=default_color)
 
         # Trusses
         for j, element in enumerate(self.elements):
