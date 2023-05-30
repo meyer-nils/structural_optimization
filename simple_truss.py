@@ -31,12 +31,12 @@ class Truss:
         l0 = torch.sqrt(dx**2 + dy**2)
         c = dx / l0
         s = dy / l0
-        m = torch.tensor(
+        m = torch.stack(
             [
-                [c**2, s * c, -(c**2), -s * c],
-                [s * c, s**2, -s * c, -(s**2)],
-                [-(c**2), -s * c, (c**2), s * c],
-                [-s * c, -(s**2), s * c, s**2],
+                torch.stack([c**2, s * c, -(c**2), -s * c]),
+                torch.stack([s * c, s**2, -s * c, -(s**2)]),
+                torch.stack([-(c**2), -s * c, (c**2), s * c]),
+                torch.stack([-s * c, -(s**2), s * c, s**2]),
             ]
         )
         return self.areas[j] * self.E / l0 * m
@@ -56,7 +56,7 @@ class Truss:
         for j, element in enumerate(self.elements):
             n1 = element[0]
             n2 = element[1]
-            u_j = torch.tensor([u[n1, 0], u[n1, 1], u[n2, 0], u[n2, 1]])
+            u_j = torch.stack([u[n1, 0], u[n1, 1], u[n2, 0], u[n2, 1]])
             k0 = self.k(j) / self.areas[j]
             w[j] = 0.5 * u_j @ k0 @ u_j
         return w
