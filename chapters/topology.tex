@@ -12,6 +12,7 @@ After studying this chapter and finishing the exercise, you should be able to
 \end{objectives}
 
 \section{Variable thickness sheet problem}
+\label{sec:variable_thickness_sheet}
 Let's consider a two-dimensional domain discretized with finite elements, in which we can adjust the thickness of each element. We may seek the best distribution of thicknesses $\mathbf{d}$ to minimize compliance $C$ with a constrained amount of material volume $V_0$. This problem can be formulated in analogy to the standard problem of sizing optimization stated in Equation \eqref{eq:size_optimization}: 
 
 \begin{equation}
@@ -89,7 +90,7 @@ Just like the truss problem, the variable thickness sheet problem can be approxi
 \end{example}
 
 \section{Solid isotropic material with penalization (SIMP)}
-
+\label{sec:simp}
 The problem stated in Equation \eqref{eq:sheet_optimization} is essentially a sizing optimization problem. In a topology optimization, we seek a material distribution, where each element is either completely filled or completely unfilled with material. We can formulate such a problem by reinterpreting the thickness variable as a normalized material density $\pmb{\rho}$, where $\rho_j=1$ indicates presence of material and $\rho_j=0$ indicates absence of material in element $j$. The stiffness of each element becomes a function of $\rho_j$, e.g. 
 \begin{equation}
     \mathbb{C}(\rho_j)=
