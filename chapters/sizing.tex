@@ -1,14 +1,14 @@
-\chapter{Sizing optimization}
-After summarizing fundamentals of optimization in previous chapter, we can finally focus on structural optimization problems. In this chapter, we focus on the optimization of discrete truss structures. 
+\chapter{Size optimization of trusses}
+After summarizing fundamentals of optimization in previous chapters, we can finally focus on structural optimization problems. In this chapter, we focus on the optimization of discrete truss structures. 
 
 A general procedure to solve such problems involves the following steps:
 \begin{enumerate}
     \item Definition of the truss with all nodes, elements, material properties, constraints and initial design choice
-    \item Solution of unknown displacements for each node in the truss for the current design
+    \item Solution of unknown displacements for each node in the truss given the current design
     \item Evaluation of the objective function and its gradients w.r.t. the design variables
-    \item Formulation of an MMA approximation and update asymptotes
-    \item Solution of the dual problem 
-    \item Repetition of steps 1,2,3, and 4 until a maximum of iterations is reached or until there is no improvement of the objective function any more
+    \item Approximation of the problem with MMA at the current design
+    \item Solution of the approximated dual problem to find the next design
+    \item Repetition of steps 2,3,4 and 5 until a maximum of iterations is reached or until there is no improvement of the objective function any more
 \end{enumerate}
 
 
@@ -16,7 +16,7 @@ A general procedure to solve such problems involves the following steps:
 After studying this chapter and finishing the exercise, you should be able to 
 \begin{itemize}[label=$\dots$]
     \item explain how general 2D truss problems can be solved employing element stiffness matrices and global stiffness matrices
-    \item define an optimization problem to minimize compliance of two-dimensional trusses with volume constraints
+    \item define an optimization problem to minimize compliance of two-dimensional trusses with a volume constraint
     \item explain properties of the aforementioned optimization problem
     \item employ MMA to solve two-dimensional truss optimization problems
 \end{itemize}
@@ -242,6 +242,7 @@ An exemplary solution for the example shown in Figure \ref{fig:truss_example} is
 
 
 \section{The standard structural optimization problem}
+\label{sec:standard_truss_problem}
 One possible objective in truss optimization is the search for the cross sectional areas $\mathbf{a}$ resulting in the stiffest truss. The corresponding objective function could be simply the displacement at a specific node or a global displacement measure $\mathbf{u} (\mathbf{a}) \cdot \mathbf{u} (\mathbf{a})$. However, we choose to minimize the compliance $C: \mathcal{R}^{2N} \rightarrow \mathcal{R}$ defined as 
 \begin{equation}
     C(\mathbf{a}) = \mathbf{f} \cdot \mathbf{u}(\mathbf{a})
