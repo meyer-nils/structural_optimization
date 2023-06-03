@@ -116,7 +116,7 @@ class Truss:
         # Line widths from areas
         if show_thickness:
             a_max = torch.max(self.areas)
-            linewidth = 5.0 * self.areas / a_max
+            linewidth = 8.0 * self.areas / a_max
         else:
             linewidth = 2.0 * torch.ones(self.n_elem)
 
