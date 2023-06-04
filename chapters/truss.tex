@@ -1,4 +1,4 @@
-\chapter{Truss structures in a nutshell}
+\chapter{Trusses in a nutshell}
 After summarizing fundamentals of optimization in previous chapters, we can finally focus on the structural part of \emph{structural optimization}. Hence, we start with fundamentals of discrete truss structures in this chapter and optimize those in the next chapter. 
 
 
@@ -19,16 +19,16 @@ A two-dimensional truss structure is defined by a finite set of $N$ nodes
 \begin{equation}
     \mathcal{E} = \{(\mathbf{x}^0_j, \mathbf{x}^1_j), j \in [0, M-1]\}
 \end{equation} 
-connecting exactly two nodes $\mathbf{x}^0_j,  \mathbf{x}^1_j \in \mathcal{N}$ each. An example of a two-dimensional truss structure with 10 nodes and 20 elements is shown in Figure \ref{fig:truss_example}.
+connecting exactly two nodes $\mathbf{x}^0_j,  \mathbf{x}^1_j \in \mathcal{N}$ each. While $\mathcal{N}$ defines the geometry of a truss, $\mathcal{E}$ defines the topology of a truss. An example of a two-dimensional truss structure with 10 nodes and 20 elements is shown in Figure \ref{fig:truss_example}.
 
 \begin{figure}[!htpb]
     \centering
-    \includegraphics[width=\textwidth]{figures/truss_sample.pdf}
+    \includegraphics[width=0.75\textwidth]{figures/truss_sample.pdf}
     \caption{Example of a truss with $N=10$ numbered nodes.}
     \label{fig:truss_example}
 \end{figure}
 
-In this lecture, all elements transfer only axial forces (positive for tension, negative for compression), have a constant Young's modulus $E$, and have element-wise constant cross sectional areas $a_j$, which will act as design variables during sizing. Each node has two degrees of freedom to deform $\mathbf{u}^i \in \mathcal{R}^2$, unless a degree of freedom is constrained by a support. The actual value of each degree of freedom depends on the truss design. At each node, there may also act an external force $\mathbf{f}^i \in \mathcal{R}^2$, which is independent of the truss design.
+In this lecture, all elements transfer only axial forces (positive for tension, negative for compression), have a constant Young's modulus $E$, and have element-wise constant cross sectional areas $\mathbf{a} \in \mathcal{R}^M$. Each node has two degrees of freedom to deform $\mathbf{u}^i \in \mathcal{R}^2$, unless a degree of freedom is constrained by a support. The actual values of $\mathbf{u}^i$ depend on the truss design, i.e. the cross sectional areas or positions of nodes. At each node, there may also act an external force $\mathbf{f}^i \in \mathcal{R}^2$, which is independent of the truss design.
 
 \begin{figure}[!htpb]
     \centering
@@ -64,6 +64,7 @@ where $\mathbf{u}_j \in \mathcal{R}^4$ and $\mathbf{f}_j \in \mathcal{R}^4$.
 The displacements can be related to the nodal forces via 
 \begin{equation}
     \mathbf{f}_j = \mathbf{k}_j \cdot \mathbf{u}_j
+    \label{eq:local_truss_stiffness}
 \end{equation}
 with an element stiffness matrix $\mathbf{k}_j \in \mathcal{R}^{4\times4}$ defined as \cite{Christensen2008}
 \begin{equation}
@@ -79,14 +80,16 @@ using the orientation angle of the element $\phi = \arctan\left(\frac{x^0_2-x^1_
 \begin{equation}
     l_j = \sqrt{(x^0_2-x^1_2)^2 + (x^0_1-x^1_1)^2}.
 \end{equation}
-This element stiffness matrix is symmetric and positive semi-definite, i.e. $\mathbf{v} \cdot \mathbf{k}_j \cdot \mathbf{v} \ge 0 \hspace{0.5em} \forall \mathbf{v}$. 
+This element stiffness matrix is symmetric and positive semi-definite, i.e. \begin{equation}
+    \mathbf{v} \cdot \mathbf{k}_j \cdot \mathbf{v} \ge 0 \hspace{0.5em} \forall \mathbf{v}.
+\end{equation}
 
-Similar, we can denote a relation for all degrees of freedom $\mathbf{u} \in \mathcal{R}^{2N}$ and all forces $\mathbf{f} \in \mathcal{R}^{2N}$ as 
+Similar to the local relation in Equation \eqref{eq:local_truss_stiffness}, we can denote a global relation for all degrees of freedom $\mathbf{u} \in \mathcal{R}^{2N}$ and all forces $\mathbf{f} \in \mathcal{R}^{2N}$ as 
 \begin{equation}
     \mathbf{f} = \mathbf{K} \cdot  \mathbf{u} 
     \label{eq:global_stiffness}
 \end{equation}
-with a global stiffness matrix $\mathbf{K} \in \mathcal{R}^{2N \times 2N}$. This global stiffness matrix is assembled from element stiffness matrices by adding entries of all element stiffness matrices at the correct positions. This can be written as 
+with a global stiffness matrix $\mathbf{K} \in \mathcal{R}^{2N \times 2N}$. This global stiffness matrix is \emph{assembled} from element stiffness matrices by adding entries of all element stiffness matrices at the correct positions. This can be written as 
 \begin{equation}
     \underbrace{
     \begin{pmatrix}
@@ -114,14 +117,21 @@ with a global stiffness matrix $\mathbf{K} \in \mathcal{R}^{2N \times 2N}$. This
 where the degrees of freedom $(u_1)^0_j, (u_2)^0_j$ etc. are at the positions in the vector corresponding to the global node displacements $\mathbf{u}$. The matrices $\mathbf{K}_j$ are zero everywhere except for the 16 positions at which they are filled with values from $\mathbf{k}_j$.
 The global stiffness matrix is symmetric and positive semi-definite, just like the element stiffness matrix.
 
-Before solving the global system of equations, we need to remove those entries containing constrained degrees of freedom. This is achieved by simply removing all constrained entries in $\mathbf{f}$ and $\mathbf{u}$ and the corresponding rows and columns in the global stiffness matrix $\mathbf{K}$. If we do not remove sufficient degrees of freedom, the matrix would be singular and cannot be solved. The physical interpretation of this behavior is simple: The truss is statically undetermined and can move freely. 
+Before solving the global system of equations, we need to remove those entries containing constrained degrees of freedom. This is achieved by simply removing all constrained entries in $\mathbf{f}$ and $\mathbf{u}$ and the corresponding rows and columns in the global stiffness matrix $\mathbf{K}$. If we do not remove sufficient degrees of freedom, the matrix would be singular and cannot be solved. The physical interpretation of this behavior is simple: The truss would be statically undetermined and can experience rigid body motions.
 
-Finally, we end up with a reduced system of equations 
+Finally, after removing constraints, we end up with a reduced system of equations 
 \begin{equation}
      \mathbf{f}_\textrm{red} = \mathbf{K}_\textrm{red}  \cdot \mathbf{u}_\textrm{red} 
      \label{eq:reduced_system}
 \end{equation}
-where $\mathbf{K}_\textrm{red}$ is strictly positive definite and not singular (if sufficient boundary conditions have been applied). Solving this system of equation gives us the unknown node displacements. 
+where $\mathbf{K}_\textrm{red}$ is strictly positive definite and not singular (if sufficient boundary conditions have been applied). Solving this system of equation gives us the unknown node displacements $\mathbf{u}$. 
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=\textwidth]{figures/truss_sample_solved.pdf}
+    \caption{Exemplary solution of a truss computation for the example shown in Figure \ref{fig:truss_example}.}
+    \label{fig:truss_example_solved}
+\end{figure}
 
 As a post-processing step, we may compute the stress in each element via
 \begin{equation}
@@ -133,14 +143,7 @@ As a post-processing step, we may compute the stress in each element via
     \mathbf{u}_j.
 \end{equation}
 
-An exemplary solution for the example shown in Figure \ref{fig:truss_example} is given in Figure \ref{fig:truss_example_solved} with colors indicating the stresses in trusses. For this computation, it was assumed that all cross sections are identical.
-
-\begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=\textwidth]{figures/truss_sample_solved.pdf}
-    \caption{Exemplary solution of a truss computation for the example shown in Figure \ref{fig:truss_example}.}
-    \label{fig:truss_example_solved}
-\end{figure}
+An exemplary solution for the example shown in Figure \ref{fig:truss_example} is given in Figure \ref{fig:truss_example_solved} with colors indicating the stresses in trusses.
 
 \begin{example}{Three bar truss}{trussexample}
     Consider the truss shown below, which is subjected to a force $P$ indicated by the gray arrow and supports indicated by gray triangles. It has three nodes 
@@ -230,7 +233,33 @@ An exemplary solution for the example shown in Figure \ref{fig:truss_example} is
 \end{example}
 
 \section{Optimization types for trusses}
-Truss structures may be optimized by size optimization, topology optimization and shape optimization. In size optimization, we seek the optimal truss cross section areas $\mathbf{a}$ for fixed node positions $\mathbf{x}$ and a fixed topology, i.e. fixed connections $\mathcal{E}$. An example for this is shown in Figure .
+Truss structures may be optimized by size optimization, topology optimization and shape optimization: 
+\begin{description}
+    \item[Size:]{In size optimization, we seek the optimal truss cross section areas $\mathbf{a}$ for fixed node positions $\mathbf{x}$ and a fixed topology, i.e. fixed connections $\mathcal{E}$. An example for this is shown in Figure \ref{fig:bridge_size}.} 
+    \item[Topology:]{In topology optimization, we want find the optimal connections in a truss $\mathcal{E}$ with cross sectional areas being either the maximum or minimum value for fixed node positions $\mathbf{x}$. An example for this is shown in Figure \ref{fig:bridge_topology}.}
+    \item[Shape:]{In shape optimization, we want to find the optimal positions of nodes $\mathbf{x}$ in a truss for fixed cross sectional areas $\mathbf{a}$ and a fixed topology $\mathcal{E}$.}
+\end{description}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\textwidth]{figures/bridge_size_optimized.pdf}
+    \caption{Bridge truss size optimization}
+    \label{fig:bridge_size}
+\end{figure}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\textwidth]{figures/bridge_topology_optimized.pdf}
+    \caption{Bridge truss topology optimization}
+    \label{fig:bridge_topology}
+\end{figure}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\textwidth]{figures/bridge_shape_optimized.pdf}
+    \caption{Bridge truss shape optimization}
+    \label{fig:bridge_shape}
+\end{figure}
 
 
 
