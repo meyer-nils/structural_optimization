@@ -1,7 +1,5 @@
-\chapter{Size optimization of trusses}
-After summarizing fundamentals of optimization in previous chapters, we can finally focus on structural optimization problems. In this chapter, we focus on the optimization of discrete truss structures. 
-
-A general procedure to solve such problems involves the following steps:
+\chapter{Optimization of trusses}
+In this chapter, we focus on the optimization of discrete truss structures. A general procedure to solve such problems involves the following steps:
 \begin{enumerate}
     \item Definition of the truss with all nodes, elements, material properties, constraints and initial design choice
     \item Solution of unknown displacements for each node in the truss given the current design
@@ -12,238 +10,20 @@ A general procedure to solve such problems involves the following steps:
 \end{enumerate}
 
 
-\begin{objectives}{}{objectives_sizing}
+\begin{objectives}{}{objectives_shape}
 After studying this chapter and finishing the exercise, you should be able to 
 \begin{itemize}[label=$\dots$]
-    \item explain how general 2D truss problems can be solved employing element stiffness matrices and global stiffness matrices
-    \item define an optimization problem to minimize compliance of two-dimensional trusses with a volume constraint
+    \item define optimization problems to minimize compliance of two-dimensional trusses with a volume constraint
     \item explain properties of the aforementioned optimization problem
     \item employ MMA to solve two-dimensional truss optimization problems
 \end{itemize}
 \end{objectives}
 
-\section{General 2D trusses}
-A two-dimensional truss structure is defined by a finite set of $N$ nodes 
-\begin{equation}
-    \mathcal{N}=\{\mathbf{x}^i \in \mathcal{R}^2, i \in [0, N-1]\}
-\end{equation} and a finite set of $M$ element tuples 
-\begin{equation}
-    \mathcal{E} = \{(\mathbf{x}^0_j, \mathbf{x}^1_j), j \in [0, M-1]\}
-\end{equation} 
-connecting exactly two nodes $\mathbf{x}^0_j,  \mathbf{x}^1_j \in \mathcal{N}$ each. An example of a two-dimensional truss structure with 10 nodes and 20 elements is shown in Figure \ref{fig:truss_example}.
+\section{Size Optimization}
 
-\begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=\textwidth]{figures/truss_sample.pdf}
-    \caption{Example of a truss with $N=10$ numbered nodes.}
-    \label{fig:truss_example}
-\end{figure}
-
-In this lecture, all elements transfer only axial forces (positive for tension, negative for compression), have a constant Young's modulus $E$, and have element-wise constant cross sectional areas $a_j$, which will act as design variables during sizing. Each node has two degrees of freedom to deform $\mathbf{u}^i \in \mathcal{R}^2$, unless a degree of freedom is constrained by a support. The actual value of each degree of freedom depends on the truss design. At each node, there may also act an external force $\mathbf{f}^i \in \mathcal{R}^2$, which is independent of the truss design.
-
-\begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=0.4\textwidth]{figures/single_truss.pdf}
-    \caption{A single truss element with two nodes.}
-    \label{fig:single_truss}
-\end{figure}
-
-
-Without considering optimization for now, we are generally interested in solving the truss problem for the unknown displacements $\mathbf{u}^i$. To do so, we take a look at a single element, like the one shown in Figure \ref{fig:single_truss}. This truss element is defined by two nodes at positions $\mathbf{x}^0_j$ and $\mathbf{x}^1_j$. It has four degrees of freedom 
-\begin{equation}
-    \mathbf{u}_j = 
-    \begin{pmatrix}
-        \mathbf{u}^0_j \\  \mathbf{u}^1_j
-    \end{pmatrix}
-    = 
-    \begin{pmatrix}
-        (u_1)^0_j \\ (u_2)^0_j \\  (u_1)^1_j \\ (u_2)^1_j
-    \end{pmatrix}
-\end{equation} 
-and four nodal forces 
-\begin{equation}
-    \mathbf{f}_j = 
-    \begin{pmatrix}
-        \mathbf{f}^0_j \\  \mathbf{f}^1_j
-    \end{pmatrix}
-    = 
-    \begin{pmatrix}
-        (f_1)^0_j\\ (f_2)^0_j\\ (f_1)^1_j \\ (f_2)^1_j
-    \end{pmatrix},
-\end{equation} 
-where $\mathbf{u}_j \in \mathcal{R}^4$ and $\mathbf{f}_j \in \mathcal{R}^4$. 
-The displacements can be related to the nodal forces via 
-\begin{equation}
-    \mathbf{f}_j = \mathbf{k}_j \cdot \mathbf{u}_j
-\end{equation}
-with an element stiffness matrix $\mathbf{k}_j \in \mathcal{R}^{4\times4}$ defined as 
-\begin{equation}
-    \mathbf{k}_j = \frac{a_j E}{l_j}
-    \begin{pmatrix}
-    \cos{\phi}^2 & \cos{\phi}\sin{\phi} & -\cos{\phi}^2 & -\cos{\phi}\sin{\phi} \\
-    \cos{\phi}\sin{\phi} & \sin{\phi}^2 & -\cos{\phi}\sin{\phi} & -\sin{\phi}^2 \\
-    -\cos{\phi}^2 & \cos{\phi}\sin{\phi} & \cos{\phi}^2 &\cos{\phi}\sin{\phi} \\
-    -\cos{\phi}\sin{\phi} & -\sin{\phi}^2 & \cos{\phi}\sin{\phi} & \sin{\phi}^2 \\
-    \end{pmatrix}
-\end{equation}
-using the orientation angle of the element $\phi = \arctan\left(\frac{x^0_2-x^1_2}{x^0_1-x^1_1}\right)$, the cross sectional area of an element $a_j$, and the length 
-\begin{equation}
-    l_j = \sqrt{(x^0_2-x^1_2)^2 + (x^0_1-x^1_1)^2}.
-\end{equation}
-This element stiffness matrix is symmetric and positive semi-definite, i.e. $\mathbf{v} \cdot \mathbf{k}_j \cdot \mathbf{v} \ge 0 \hspace{0.5em} \forall \mathbf{v}$. 
-
-Similar, we can denote a relation for all degrees of freedom $\mathbf{u} \in \mathcal{R}^{2N}$ and all forces $\mathbf{f} \in \mathcal{R}^{2N}$ as 
-\begin{equation}
-    \mathbf{f} = \mathbf{K} \cdot  \mathbf{u} 
-    \label{eq:global_stiffness}
-\end{equation}
-with a global stiffness matrix $\mathbf{K} \in \mathcal{R}^{2N \times 2N}$. This global stiffness matrix is assembled from element stiffness matrices by adding entries of all element stiffness matrices at the correct positions. This can be written as 
-\begin{equation}
-    \underbrace{
-    \begin{pmatrix}
-        \dots \\ (f_1)^0_j \\ (f_2)^0_j \\ \dots \\ (f_1)^1_j \\ (f_2)^1_j \\ \dots \\
-    \end{pmatrix}}_{\mathbf{f}}
-    =
-    \underbrace{
-    \sum_j
-    \underbrace{
-    \begin{pmatrix}
-    \dots & \dots & \dots & \dots & \dots & \dots & \dots \\
-    \dots & (k_{11})_j & (k_{12})_j & \dots & (k_{13})_j & (k_{14})_j & \dots  \\
-    \dots & (k_{21})_j & (k_{22})_j & \dots & (k_{23})_j & (k_{24})_j & \dots  \\
-    \dots & \dots & \dots & \dots & \dots & \dots & \dots  \\
-    \dots & (k_{31})_j & (k_{32})_j & \dots & (k_{33})_j & (k_{34})_j & \dots  \\
-    \dots & (k_{41})_j & (k_{42})_j & \dots & (k_{43})_j & (k_{44})_j & \dots  \\
-    \dots & \dots & \dots & \dots & \dots & \dots & \dots  \\
-    \end{pmatrix}}_{\mathbf{K}_j}
-    }_{\mathbf{K}}
-    \underbrace{
-    \begin{pmatrix}
-        \dots \\ (u_1)^0_j \\ (u_2)^0_j \\ \dots \\ (u_1)^1_j \\ (u_2)^1_j \\ \dots \\
-    \end{pmatrix}}_{\mathbf{u} (\mathbf{a})},
-\end{equation}
-where the degrees of freedom $(u_1)^0_j, (u_2)^0_j$ etc. are at the positions in the vector corresponding to the global node displacements $\mathbf{u}$. The matrices $\mathbf{K}_j$ are zero everywhere except for the 16 positions at which they are filled with values from $\mathbf{k}_j$.
-The global stiffness matrix is symmetric and positive semi-definite, just like the element stiffness matrix.
-
-Before solving the global system of equations, we need to remove those entries containing constrained degrees of freedom. This is achieved by simply removing all constrained entries in $\mathbf{f}$ and $\mathbf{u}$ and the corresponding rows and columns in the global stiffness matrix $\mathbf{K}$. If we do not remove sufficient degrees of freedom, the matrix would be singular and cannot be solved. The physical interpretation of this behavior is simple: The truss is statically undetermined and can move freely. 
-
-Finally, we end up with a reduced system of equations 
-\begin{equation}
-     \mathbf{f}_\textrm{red} = \mathbf{K}_\textrm{red}  \cdot \mathbf{u}_\textrm{red} 
-     \label{eq:reduced_system}
-\end{equation}
-where $\mathbf{K}_\textrm{red}$ is strictly positive definite and not singular (if sufficient boundary conditions have been applied). Solving this system of equation gives us the unknown node displacements. 
-
-As a post-processing step, we may compute the stress in each element via
-\begin{equation}
-    S_j = \frac{E}{l_j} 
-    \begin{pmatrix}
-        \cos{\phi} & \sin{\phi} & -\cos{\phi} & \sin{\phi}
-    \end{pmatrix}
-    \cdot 
-    \mathbf{u}_j.
-\end{equation}
-
-An exemplary solution for the example shown in Figure \ref{fig:truss_example} is given in Figure \ref{fig:truss_example_solved} with colors indicating the stresses in trusses. For this computation, it was assumed that all cross sections are identical.
-
-\begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=\textwidth]{figures/truss_sample_solved.pdf}
-    \caption{Exemplary solution of a truss computation for the example shown in Figure \ref{fig:truss_example}.}
-    \label{fig:truss_example_solved}
-\end{figure}
-
-\begin{example}{Three bar truss}{trussexample}
-    Consider the truss shown below, which is subjected to a force $P$ indicated by the gray arrow and supports indicated by gray triangles. It has three nodes 
-    \begin{equation}
-        \mathcal{N} = \{\mathbf{x}^0=(1,0)^\top, \mathbf{x}^1=(0,0)^\top,\mathbf{x}^2=(0,1)^\top \}
-    \end{equation}
-    and three elements 
-    \begin{equation}
-        \mathcal{E} = \{(\mathbf{x}^0, \mathbf{x}^1), (\mathbf{x}^0, \mathbf{x}^2), (\mathbf{x}^1, \mathbf{x}^2)\}.
-    \end{equation}
-
-    \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/three_bar_truss.pdf}
-    \end{center}
-
-    The element stiffness matrices in global coordinates are 
-    \begin{equation}
-        \mathbf{K}_0 = E a_0
-        \begin{pmatrix}
-             1 & 0 & -1 & 0 \\
-             0 & 0 &  0 & 0 \\
-            -1 & 0 &  1 & 0 \\
-             0 & 0 &  0 & 0
-        \end{pmatrix},
-    \end{equation}
-    \begin{equation}
-        \mathbf{K}_1 = \frac{E a_1}{2\sqrt{2}}
-        \begin{pmatrix}
-             1 & -1 & -1 &  1 \\
-            -1 &  1 &  1 & -1 \\
-            -1 &  1 &  1 & -1 \\
-             1 & -1 & -1 &  1
-        \end{pmatrix}
-    \end{equation}
-    and 
-    \begin{equation}
-        \mathbf{K}_2 = E a_2
-        \begin{pmatrix}
-            0 &  0 & 0 &  0 \\
-            0 &  1 & 0 & -1 \\
-            0 &  0 & 0 &  0 \\
-            0 & -1 & 0 &  1 
-        \end{pmatrix}.
-    \end{equation}
-
-    The global stiffness matrix is 
-    \begin{equation}
-        \mathbf{K} = E
-        \begin{pmatrix}
-             a_0 + \frac{a_1}{2\sqrt{2}}&  -\frac{a_1}{2\sqrt{2}} & \cellcolor{aux_green!10}-a_0 &  \cellcolor{aux_green!10}0 & -\cellcolor{aux_green!10} \frac{a_1}{2\sqrt{2}} &  \frac{a_1}{2\sqrt{2}}\\
-            -\frac{a_1}{2\sqrt{2}} &  \frac{a_1}{2\sqrt{2}} & \cellcolor{aux_green!10} 0 & \cellcolor{aux_green!10} 0 & \cellcolor{aux_green!10}\frac{a_1}{2\sqrt{2}} &  -\frac{a_1}{2\sqrt{2}} \\
-            \rowcolor{aux_green!10}
-             -a_0 &  a_0 & 0 &  0 & 0 & 0\\
-             \rowcolor{aux_green!10}
-            0 &  0 & 0 &  a_2 & 0 &  -a_2 \\
-            \rowcolor{aux_green!10}
-             -\frac{a_1}{2\sqrt{2}} &  \frac{a_1}{2\sqrt{2}} & 0 &  0 & \frac{a_1}{2\sqrt{2}} &  -\frac{a_1}{2\sqrt{2}}\\
-            \frac{a_1}{2\sqrt{2}} &  -\frac{a_1}{2\sqrt{2}} & \cellcolor{aux_green!10} 0 &  \cellcolor{aux_green!10} -a_2 & \cellcolor{aux_green!10} -\frac{a_1}{2\sqrt{2}} &  a_2 + \frac{a_1}{2\sqrt{2}}\\
-        \end{pmatrix}
-    \end{equation}
-    with colored rows and columns indicating those entries which will be removed due to constraints. This leads to the reduced system 
-    \begin{equation}
-        \begin{pmatrix}
-            0 \\ -P \\ 0  \\
-        \end{pmatrix}
-         = E
-        \begin{pmatrix}
-             a_0 + \frac{a_1}{2\sqrt{2}}&  -\frac{a_1}{2\sqrt{2}} &  \frac{a_1}{2\sqrt{2}}\\
-            -\frac{a_1}{2\sqrt{2}} &  \frac{a_1}{2\sqrt{2}} &  -\frac{a_1}{2\sqrt{2}} \\
-            \frac{a_1}{2\sqrt{2}} &  -\frac{a_1}{2\sqrt{2}} &  a_2 + \frac{a_1}{2\sqrt{2}}
-        \end{pmatrix}
-        \mathbf{u}_\textrm{red}
-    \end{equation}
-    which can be solved for 
-    \begin{equation}
-        \mathbf{u}_\textrm{red} = 
-        \begin{pmatrix}
-            -\frac{P}{Ea_0} \\  \frac{2\sqrt{2}P}{Ea_2} - \frac{P}{Ea_0} - \frac{P}{Ea_1} \\ -\frac{P}{Ea_1}  \\
-        \end{pmatrix}
-    \end{equation}
-
-    The final result of the computation is shown below.
-    
-    \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/three_bar_truss_solved.pdf}
-    \end{center}    
-\end{example}
-
-
-\section{The standard structural optimization problem}
+\subsection{The standard optimization problem}
 \label{sec:standard_truss_problem}
-One possible objective in truss optimization is the search for the cross sectional areas $\mathbf{a}$ resulting in the stiffest truss. The corresponding objective function could be simply the displacement at a specific node or a global displacement measure $\mathbf{u} (\mathbf{a}) \cdot \mathbf{u} (\mathbf{a})$. However, we choose to minimize the compliance $C: \mathcal{R}^{2N} \rightarrow \mathcal{R}$ defined as 
+One possible objective in truss optimization is the search for the cross sectional areas $\mathbf{a}$ resulting in the stiffest truss. The corresponding objective function could be simply the displacement at a specific node or a global displacement measure $\mathbf{u} (\mathbf{a}) \cdot \mathbf{u} (\mathbf{a})$. However, we choose to minimize the compliance $C: \mathcal{R}^{M} \rightarrow \mathcal{R}$ defined as 
 \begin{equation}
     C(\mathbf{a}) = \mathbf{f} \cdot \mathbf{u}(\mathbf{a})
 \end{equation} 
@@ -269,7 +49,7 @@ In conclusion, the standard truss optimization problem may be noted as follows:
     \label{eq:size_optimization}
 \end{equation}
 
-\section{Analysis of the standard optimization problem}
+\subsection{Analysis of the standard optimization problem}
 The objective function $C(\mathbf{a})$ is convex, the inequality constraint $\mathbf{a} \cdot \mathbf{l} - V_0$ is convex, and the set $\mathcal{A}$ is compact and convex. Therefore, finding a KKT point is equivalent to finding the global unique solution of the problem. We can denote the Lagrangian 
 \begin{equation}
     \mathcal{L}(\mathbf{a}, \mu) = C(\mathbf{a}) + \mu \left( \mathbf{a} \cdot \mathbf{l} - V_0 \right) 
@@ -345,7 +125,7 @@ An example for a Michell truss structure is given in Figure \ref{fig:michell}.
     \label{fig:michell}
 \end{figure}
 
-\section{Approximation of the standard optimization problem with MMA}
+\subsection{Approximation of the standard optimization problem with MMA}
 \label{sec:sizing:mma}
 
 The standard optimization problem for trusses is convex, but it is not separable and explicit, because we cannot find an explicit expression for $\mathbf{a}^*(\mu)$ at the stationary point of the Lagrangian. Therefore we linearize the problem using MMA in $1/(a_j-L_j^k)$. The linearization of the objective function becomes
@@ -371,7 +151,7 @@ The approximated optimization problem becomes
 \end{equation}
 with lower move limits $\tilde{\mathbf{a}}^{l,k} = \max(\mathbf{a}^l,  0.9 \mathbf{L}^k + 0.1 \mathbf{a}^k)$ preventing division by zero. The constraint is already linear and thus we do not approximate it.
 
-\section{Solution of the approximated standard optimization problem}
+\subsection{Solution of the approximated standard optimization problem}
 \label{sec:sizing:solution}
 The Lagrangian of the approximated problem with Lagrangian duality
 \begin{equation}
@@ -418,12 +198,8 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
 
     We formulate the following algorithm to solve that problem: 
     \begin{enumerate}
-        \item Define the truss with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, design limits $\mathbf{a}_l, \mathbf{a}_u$ and the initial design choice $\mathbf{a}^0$.
+        \item Define the truss with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, design limits $\mathbf{a}^l, \mathbf{a}^u$ and the initial design choice $\mathbf{a}^0$.
         \item Compute the displacements $\mathbf{u}^k = \mathbf{u}(\mathbf{a}^k)$ by solving the truss system for the current design $\mathbf{a}^k$.
-        \item Compute the strain energies per area for all elements using the previously computed displacements   
-        \begin{equation}
-            w^k_j(\mathbf{a}^k) = \frac{1}{2}\mathbf{u}^k_j  \cdot \mathbf{k}^0_j \cdot \mathbf{u}^k_j
-        \end{equation}
         \item Compute the lower asymptotes as $\mathbf{L}^k =\mathbf{a}^k - s (\mathbf{a}^u - \mathbf{a}^l)$ with $s \in (0,1)$ during the first two iterations and according to 
         \begin{equation}
             L^k_j = 
@@ -437,12 +213,20 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
         \begin{equation}
             \tilde{\mathbf{a}}^{l,k} = \max(\mathbf{a}_l,  0.9 \mathbf{L}^k + 0.1 \mathbf{a}^k)
         \end{equation}
-        \item Evaluate the analytical solution
+        \item Compute the gradient of the objective function (strain energies per area) for all elements using the previously computed displacements
+        \begin{equation}
+            w^k_j(\mathbf{a}^k) = \frac{1}{2}\mathbf{u}^k_j  \cdot \mathbf{k}^0_j \cdot \mathbf{u}^k_j
+        \end{equation}
+        \item Evaluate the analytical solution for
             \begin{align}
                 \hat{a}_j(\mu) &= L_j^k + \sqrt{\frac{2 w_j (\mathbf{a}^k)
                 (L^k_j-a^k_j)^2}{\mu l_j}} \\
                 \mathbf{a}^* (\mu) &= \max\left(\tilde{\mathbf{a}}^{l,k}, \min \left(\hat{\mathbf{a}}(\mu), \mathbf{a}_u \right)\right)
             \end{align}
+            to define the dual function 
+            \begin{equation}
+                \underline{\mathcal{L}}(\mu) = \mathcal{L}(\mathbf{a}^* (\mu), \mu)
+            \end{equation}
         \item Perform a line search to find the root $\mu^*>0$ in 
         \begin{equation}
             \frac{\partial \underline{\mathcal{L}}}{\partial \mu}(\mu) = \mathbf{l} \cdot \mathbf{a}^* (\mu) - V_0 = 0
@@ -487,6 +271,152 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
     \end{center}
 \end{example}
 
+\section{Topology optimization}
+In topology optimization of trusses, we want to identify those bars which should stay in our design and those trusses which may be removed. As seen in the last examples of the previous chapter, this is closely related to size optimization - the difference is that we seek a binary design (bar or no bar) instead of a continuous design with variable cross sections. Hence, we change the box constraint to a discrete constraint with a bar being either at maximum cross sectional area or minimum cross sectional area, but nothing in between.
+
+\subsection{The standard optimization problem}
+The topology optimization problem of minimizing compliance for a given volume constraint has similar structure as the sizing problem. The only change is that $\mathbf{a}$ is now either the maximum or minimum cross section. Thus, we have 
+\begin{equation}
+    \begin{aligned}
+        \min_{\mathbf{a}} \quad & C(\mathbf{a}) = \mathbf{f} \cdot \mathbf{u}(\mathbf{a})\\
+        \textrm{s.t.} \quad & \mathbf{a} \cdot \mathbf{l} - V_0 \le 0  \\
+                            & a_j \in \{a_j^l, a_j^u\}\\
+    \end{aligned}
+    \label{eq:truss_topology_optimization}
+\end{equation}
+
+\subsection{Analysis of the standard optimization problem}
+Unfortunately, the binary problem is notoriously hard to solve, because we cannot compute gradients on the solution and testing all solutions is computationally inaccessible. Hence we try to formulate a continuous relation between stiffness and normalized density that still results in a binary result. One such formulation is called \emph{Solid Isotropic Material with Penalization} (SIMP) and denoted as 
+\begin{equation}
+    E(a_j)= \left(\frac{a_j}{a_j^u}\right)^p E
+\end{equation}
+with a penalization parameter $p \ge 1$. 
+The effect of penalization is shown in Figure \ref{fig:simp_truss} for typical values of $p$. We may observe for $p>1$ that the stiffness per invested material is unattractive for intermediate density values. For example, choosing $a_j/a_j^u=0.5$ adds half an element volume to the total volume, but contributes only a quarter of the stiffness compared to a fully filled element. An optimization that tries to minimize compliance for a given volume will therefore rather favor elements that provide the full stiffness benefit or add only a minimal contribution to the total volume.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/simp.pdf}
+    \caption{Penalization factors in SIMP.}
+    \label{fig:simp_truss}
+\end{figure}
+
+After introducing SIMP, the only change in comparison to size optimization is the computation of the sensitivity
+\begin{align}
+    \frac{\partial C (\mathbf{a})}{\partial a_j} 
+    &= - \mathbf{u}_j (\mathbf{a}) \cdot \frac{\partial \mathbf{k}_j(a_j)}{\partial a_j} \cdot \mathbf{u}_j (\pmb{\rho})  \\
+    &= - p \left(\frac{a_j}{a_j^u}\right)^{p-1} \mathbf{u}_j (\mathbf{a}) \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j (\mathbf{a})  \\
+    &= - 2 p \left(\frac{a_j}{a_j^u}\right)^{p-1} w_j (\mathbf{a}),
+\end{align}
+which now accounts for the penalty factor. Note that for $p=1$, this is identical to Equation \eqref{eq:compliance_sensitivity}. 
+The entire remaining approximation procedure and solution procedure is identical to the size optimization discussed in the previous section.
+
+\section{Shape optimization}
+So far, we have performed size optimization of trusses by adjusting the cross sectional areas and we have performed topology optimization of trusses by allowing bars to disappear. However, the node positions remained fixed in all these cases. 
+In this section, we want to optimize the position of nodes $\mathbf{x}$ for a fixed topology and fixed cross sectional areas $\mathbf{a}$.
+
+\subsection{The standard optimization problem}
+The truss shape optimization problem may be denoted as follows:
+\begin{equation}
+    \begin{aligned}
+        \min_{\mathbf{x}} \quad & C(\mathbf{x}) = \mathbf{f} \cdot \mathbf{u}(\mathbf{x})\\
+        \textrm{s.t.} \quad & g(\mathbf{x}) = \mathbf{a} \cdot \mathbf{l}(\mathbf{x}) - V_0 \le 0  \\
+                            & \mathbf{x} \in \mathcal{X}\\
+    \end{aligned}
+    \label{eq:shape_optimization}
+\end{equation}
+
+
+\subsection{Analysis of the standard optimization problem}
+
+\begin{equation}
+    \frac{\partial \mathcal{L} (\mathbf{x}, \mu)}{\partial x_i} 
+    = \frac{\partial C (\mathbf{x})}{\partial x_i} + \mu \mathbf{a} \cdot \frac{\partial \mathbf{l}(\mathbf{x})}{\partial x_i}
+    \label{eq:lagrange_truss_shape_problem}
+\end{equation}
+
+\subsection{Approximation of the standard optimization problem with MMA}
+
+Both, the target function $C(\mathbf{x})$ and the constraint $g(\mathbf{x})$, are in general non-linear coupled functions. Hence, we apply MMA to both functions to get sequential convex explicitly separable approximations. We can denote the Lagrangian of the approximated functions as 
+\begin{align}
+    \mathcal{L}(\mathbf{x}, \mu) &= \tilde{C}(\mathbf{x}) + \mu \tilde{g}(\mathbf{x}) \\
+    &= \mathcal{L}_0 + \sum_j \frac{p_j^k}{}
+\end{align}
+
+\subsection{Solution of the approximated optimization problem}
+
+\begin{example}{Three bar truss optimization}{trussshapeoptimizationexample}
+    Consider the truss from the previous chapter. Instead of computing optimal cross sectional areas, we now want to optimize its shape. To do so, we allow Node 0 and Node 2 to move a certain amount up or down. These two design variables are 
+    \begin{equation}
+        \mathbf{x} = 
+        \begin{pmatrix}
+            x_0^2 \\ x_2^0
+        \end{pmatrix}
+    \end{equation}
+    and they are constrained by 
+    \begin{equation}
+        \mathbf{x}^l = 
+        \begin{pmatrix}
+             -0.5\\ 0.5
+        \end{pmatrix} 
+        \quad 
+        \text{and}
+        \quad
+        \mathbf{x}^u = 
+        \begin{pmatrix}
+             0.5\\ 1.5
+        \end{pmatrix} 
+    \end{equation}
+    The range of motion is illustrated in the following Figure:
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{figures/three_bar_truss_shapes.pdf}
+    \end{center}
+
+    We want to solve for the optimal shape $\mathbf{x}^*$ that minimizes the compliance of the structure without exceeding the initial volume of the truss.
+
+    We formulate the following algorithm to solve that problem: 
+    \begin{enumerate}
+        \item Define the truss with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, design limits $\mathbf{x}^l, \mathbf{x}^u$ and the initial design choice $\mathbf{x}^0$.
+        \item Compute the displacements $\mathbf{u}^k = \mathbf{u}(\mathbf{x}^k)$ by solving the truss system for the current design $\mathbf{x}^k$.
+        \item Compute the lower asymptotes as $\mathbf{L}^k =\mathbf{a}^k - s (\mathbf{a}^u - \mathbf{a}^l)$ with $s \in (0,1)$ during the first two iterations and according to 
+        \begin{equation}
+            L^k_j = 
+            \begin{cases}
+                a^k_j - s  (a^{k-1}_j-L^{k-1}_j) & (a_j^k-a_j^{k-1})(a_j^{k-1}-a_j^{k-2}) < 0\\
+                a^k_j - \frac{1}{\sqrt{s}}  (a^{k-1}_j-L^{k-1}_j) & \text{else}
+            \end{cases}
+        \end{equation}
+        in the following iterations.
+
+
+        \item Compute the lower move limit as 
+        \begin{equation}
+            \tilde{\mathbf{a}}^{l,k} = \max(\mathbf{a}_l,  0.9 \mathbf{L}^k + 0.1 \mathbf{a}^k)
+        \end{equation}
+
+        \item Compute the gradients of the objective function...
+
+        \item Evaluate the analytical solution
+            \begin{align}
+                \hat{a}_j(\mu) &= L_j^k + \sqrt{\frac{2 w_j (\mathbf{a}^k)
+                (L^k_j-a^k_j)^2}{\mu l_j}} \\
+                \mathbf{a}^* (\mu) &= \max\left(\tilde{\mathbf{a}}^{l,k}, \min \left(\hat{\mathbf{a}}(\mu), \mathbf{a}_u \right)\right)
+            \end{align}
+        \item Perform a line search to find the root $\mu^*>0$ in 
+        \begin{equation}
+            \frac{\partial \underline{\mathcal{L}}}{\partial \mu}(\mu) = \mathbf{l} \cdot \mathbf{a}^* (\mu) - V_0 = 0
+        \end{equation}
+        with Newton's method or bisection method. 
+        \item Repeat with steps 2-7 until convergence or a maximum number of iterations is reached.
+    \end{enumerate}
+
+    The following figure plots the three design variables $a_1, a_2, a_3$ for the three bar truss with $\mathbf{a}^0=(0.5,0.2,0.3)^\top$, $\mathbf{a}^l=(0.1,0.1,0.1)^\top$, $\mathbf{a}^u=(1.0,1.0,1.0)^\top$ and $V_0=0.5$. After a couple of iterations, the solution converges towards the analytical solution plotted in gray.
+       
+\end{example}
 
 \bibliographystyle{unsrtnat}
 \bibliography{literature} 
+
+
+
+
+
