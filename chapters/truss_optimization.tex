@@ -4,8 +4,8 @@ In this chapter, we focus on the optimization of discrete truss structures. A ge
     \item Definition of the truss with all nodes, elements, material properties, constraints and initial design choice
     \item Solution of unknown displacements for each node in the truss given the current design
     \item Evaluation of the objective function and its gradients w.r.t. the design variables
-    \item Approximation of the problem with MMA at the current design
-    \item Solution of the approximated dual problem to find the next design
+    \item Approximation of the problem with MMA at the current design point
+    \item Solution of the approximated dual problem to find the next design point
     \item Repetition of steps 2,3,4 and 5 until a maximum of iterations is reached or until there is no improvement of the objective function any more
 \end{enumerate}
 
@@ -29,7 +29,7 @@ One possible objective in truss optimization is the search for the cross section
 \end{equation} 
 of the truss instead. The minimal compliance results also in the stiffest truss, but this formulation is preferred over the pure displacement formulation, because $C(\mathbf{a})$ is convex \cite{Svanberg1984}. The convexity is proven by showing that the Hessian $\nabla^2 C(\mathbf{a})$ is positive semi-definite, a property that is inherited from the positive semi-definiteness of $\mathbf{K}(\mathbf{a})$ (see Chapter 5.2.1 in \cite{Christensen2008} for details).
 
-We employ box constraints $\mathcal{A}$ on the upper and lower limit of the design variables. The upper limit $\mathbf{a}^u$ could be a manufacturing constraint that prevents very thick elements. The lower limit $\mathbf{a}^l$ should be larger than $0$ to prevent deletion of truss elements. If the cross sectional area of all elements connected to a node would become $0$, i.e. all trusses are deleted, the displacement of that node would be undetermined and the stiffness matrix would become singular. In this chapter, we prevent this by demanding $a_j^l > \epsilon > 0$.
+We employ box constraints $\mathcal{A}$ on the upper and lower limit of the design variables. The upper limit $\mathbf{a}^u$ could be a manufacturing constraint that prevents very thick elements. The lower limit $\mathbf{a}^l$ should be larger than $0$ to prevent deletion of truss elements. If the cross sectional area of all elements connected to a node would become $0$, i.e. all trusses are deleted, the displacement of that node would be undetermined and the stiffness matrix would become singular. In this chapter, we prevent this by demanding $a_j^l > 0$.
 
 A typical inequality constraint is a volume constraint for the total truss volume used in the assembly. If we would not have a volume constraint, the optimization would predict a trivial solution with all cross sections at their maximum area. However, we are interested in solutions that put a limited material resource to its best use and thus limit the total volume to be 
 \begin{equation}
@@ -38,7 +38,7 @@ A typical inequality constraint is a volume constraint for the total truss volum
 where $V_0$ describes the maximum volume used in the design
 In order to find a solution at all, we must obviously choose $V_0 \ge \mathbf{a}^l \cdot \mathbf{l}$, otherwise it would be impossible to find any $\mathbf{a}$ fulfilling the constraint. 
 
-In conclusion, the standard truss optimization problem may be noted as follows:
+In conclusion, the standard truss size optimization problem may be noted as follows:
 
 \begin{equation}
     \begin{aligned}
@@ -54,14 +54,14 @@ The objective function $C(\mathbf{a})$ is convex, the inequality constraint $\ma
 \begin{equation}
     \mathcal{L}(\mathbf{a}, \mu) = C(\mathbf{a}) + \mu \left( \mathbf{a} \cdot \mathbf{l} - V_0 \right) 
 \end{equation}
-and need to compute the gradient $\frac{\partial \mathcal{L}}{\partial a_j}$ to solve the optimization problem with Lagrangian duality. This gradient is 
+and need to compute the gradient $\frac{\partial \mathcal{L}}{\partial a_j}$ to solve the optimization problem. It is 
 \begin{equation}
     \frac{\partial \mathcal{L} (\mathbf{a}, \mu)}{\partial a_j} 
     = \frac{\partial C (\mathbf{a})}{\partial a_j} + \mu l_j
     = \mathbf{f} \cdot \frac{\partial \mathbf{u} (\mathbf{a})}{\partial a_j} + \mu l_j,
     \label{eq:lagrange_truss_problem}
 \end{equation}
-where the gradient $\frac{\partial \mathbf{u} (\mathbf{a})}{\partial a_j}$ remains to be determined. It can be obtained by differentiating Equation \eqref{eq:global_stiffness}
+where the gradient $\frac{\partial \mathbf{u} (\mathbf{a})}{\partial a_j}$ remains to be determined. It can be obtained by differentiating Equation \eqref{eq:global_stiffness} w.r.t $\mathbf{a}$
 \begin{align}
         \frac{\partial}{\partial a_j} \mathbf{f} &= \frac{\partial}{\partial a_j} \left( \mathbf{K} (\mathbf{a}) \cdot \mathbf{u} (\mathbf{a}) \right) \\
         0 &= \frac{\partial \mathbf{K} (\mathbf{a})}{\partial a_j} \cdot \mathbf{u} (\mathbf{a}) + \mathbf{K} (\mathbf{a}) \cdot \frac{\partial \mathbf{u} (\mathbf{a})}{\partial a_j}
@@ -272,7 +272,7 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
 \end{example}
 
 \section{Topology optimization}
-In topology optimization of trusses, we want to identify those bars which should stay in our design and those trusses which may be removed. As seen in the last examples of the previous chapter, this is closely related to size optimization - the difference is that we seek a binary design (bar or no bar) instead of a continuous design with variable cross sections. Hence, we change the box constraint to a discrete constraint with a bar being either at maximum cross sectional area or minimum cross sectional area, but nothing in between.
+In topology optimization of trusses, we want to identify those bars which should stay in our design and those trusses which may be removed. As seen in the last examples of the previous chapter, this is closely related to size optimization - the difference is that we seek a binary design (bar or no bar) instead of continuous cross section variables. Hence, we change the box constraint to a discrete constraint with a bar being either at maximum cross sectional area or minimum cross sectional area, but nothing in between.
 
 \subsection{The standard optimization problem}
 The topology optimization problem of minimizing compliance for a given volume constraint has similar structure as the sizing problem. The only change is that $\mathbf{a}$ is now either the maximum or minimum cross section. Thus, we have 
@@ -286,7 +286,7 @@ The topology optimization problem of minimizing compliance for a given volume co
 \end{equation}
 
 \subsection{Analysis of the standard optimization problem}
-Unfortunately, the binary problem is notoriously hard to solve, because we cannot compute gradients on the solution and testing all solutions is computationally inaccessible. Hence we try to formulate a continuous relation between stiffness and normalized density that still results in a binary result. One such formulation is called \emph{Solid Isotropic Material with Penalization} (SIMP) and denoted as 
+Unfortunately, the binary problem is notoriously hard to solve, because we cannot compute gradients on the solution and testing all solutions is computationally inaccessible. Hence we try to formulate a continuous relation between stiffness and normalized density that still results in a binary result. One such formulation is called \emph{Solid Isotropic Material with Penalization} (SIMP) and we denote it here as 
 \begin{equation}
     E(a_j)= \left(\frac{a_j}{a_j^u}\right)^p E
 \end{equation}
@@ -312,10 +312,10 @@ The entire remaining approximation procedure and solution procedure is identical
 
 \section{Shape optimization}
 So far, we have performed size optimization of trusses by adjusting the cross sectional areas and we have performed topology optimization of trusses by allowing bars to disappear. However, the node positions remained fixed in all these cases. 
-In this section, we want to optimize the position of nodes $\mathbf{x}$ for a fixed topology and fixed cross sectional areas $\mathbf{a}$.
+In this section, we want to optimize the position of nodes $\mathbf{x}$ for a fixed topology $\mathcal{E}$ and fixed cross sectional areas $\mathbf{a}$.
 
 \subsection{The standard optimization problem}
-The truss shape optimization problem may be denoted as follows:
+The truss shape optimization for minimum compliance with a volume constraint has a structure similar to the previous problems. However, the design variable changes to the nodal positions $\mathbf{x}$ or a subset of those nodal positions (if not all nodes are allowed to change position). While the cross sectional areas of the constraint are fixed, the element lengths are a function of design variables now. The full standard problem may be denoted as follows:
 \begin{equation}
     \begin{aligned}
         \min_{\mathbf{x}} \quad & C(\mathbf{x}) = \mathbf{f} \cdot \mathbf{u}(\mathbf{x})\\
@@ -324,7 +324,6 @@ The truss shape optimization problem may be denoted as follows:
     \end{aligned}
     \label{eq:shape_optimization}
 \end{equation}
-
 
 \subsection{Analysis of the standard optimization problem}
 
