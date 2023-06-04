@@ -167,6 +167,7 @@ similar to SLP. These could be chosen for example as
 \begin{align}
     \tilde{x}_j^{l,k} &= \max(x_j^l,  0.9 L_j^k + 0.1 x_j^k) \\
     \tilde{x}_j^{u,k} &= \min(x^u_j, 0.9 U_j^k + 0.1 x_j^k).
+    \label{eq:mma_move_limits}
 \end{align}
 
 The advantage of these adjustable asymptotes is that we can bring the asymptotes closer to the current approximation $\mathbf{x}^k$ to obtain a more conservative approximation and move them further away to accelerate convergence speed. But how do we chose the asymptotes? Svanberg \cite{Svanberg1987} suggested the following heuristic approach: 

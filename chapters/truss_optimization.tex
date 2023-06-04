@@ -20,9 +20,6 @@ After studying this chapter and finishing the exercise, you should be able to
 \end{objectives}
 
 \section{Size Optimization}
-
-\subsection{The standard optimization problem}
-\label{sec:standard_truss_problem}
 One possible objective in truss optimization is the search for the cross sectional areas $\mathbf{a}$ resulting in the stiffest truss. The corresponding objective function could be simply the displacement at a specific node or a global displacement measure $\mathbf{u} (\mathbf{a}) \cdot \mathbf{u} (\mathbf{a})$. However, we choose to minimize the compliance $C: \mathcal{R}^{M} \rightarrow \mathcal{R}$ defined as 
 \begin{equation}
     C(\mathbf{a}) = \mathbf{f} \cdot \mathbf{u}(\mathbf{a})
@@ -38,7 +35,7 @@ A typical inequality constraint is a volume constraint for the total truss volum
 where $V_0$ describes the maximum volume used in the design
 In order to find a solution at all, we must obviously choose $V_0 \ge \mathbf{a}^l \cdot \mathbf{l}$, otherwise it would be impossible to find any $\mathbf{a}$ fulfilling the constraint. 
 
-In conclusion, the standard truss size optimization problem may be noted as follows:
+In conclusion, the size optimization problem for a stiff truss with limited volume may be noted as follows:
 
 \begin{equation}
     \begin{aligned}
@@ -49,7 +46,6 @@ In conclusion, the standard truss size optimization problem may be noted as foll
     \label{eq:size_optimization}
 \end{equation}
 
-\subsection{Analysis of the standard optimization problem}
 The objective function $C(\mathbf{a})$ is convex, the inequality constraint $\mathbf{a} \cdot \mathbf{l} - V_0$ is convex, and the set $\mathcal{A}$ is compact and convex. Therefore, finding a KKT point is equivalent to finding the global unique solution of the problem. We can denote the Lagrangian 
 \begin{equation}
     \mathcal{L}(\mathbf{a}, \mu) = C(\mathbf{a}) + \mu \left( \mathbf{a} \cdot \mathbf{l} - V_0 \right) 
@@ -104,31 +100,27 @@ Finally, the gradient of the Lagrangian becomes
     \label{eq:lagrange_sensitivity}
 \end{equation}
 
-If we could solve this expression for $\mathbf{a}^*(\mu)$ at the stationary point of the Lagrangian, we could use Lagrangian duality to compute the solution easily. Unfortunately, the solution is not easy, as $w_j$ depends on the global design $\mathbf{a}$ and not just on the design variable in its element $a_j$. For this reason, we will use MMA to solve the problem in the next section.
+If we could solve this expression for $\mathbf{a}^*(\mu)$ at the stationary point of the Lagrangian, we could use Lagrangian duality to compute the solution easily. Unfortunately, the solution is not easy, as $w_j$ depends on the global design $\mathbf{a}$ and not just on the design variable in its element $a_j$. For this reason, we will use MMA to solve the problem.
 
-However, we can still learn something about the solution if we consider Equation \eqref{eq:element_strain_energy}. If we substitute it in Equation \eqref{eq:lagrange_sensitivity}, we can write 
-\begin{equation}
-    \frac{\partial \mathcal{L} (\mathbf{a}, \mu)}{\partial a_j} = - \frac{S^2_j}{E} l_j + \mu l_j
-\end{equation}
-and conclude that for an optimal point $\mathbf{a}^l < \mathbf{a}^* < \mathbf{a}^u$ with $\mu^*>0$, i.e. the maximum volume $V_0$ is used and box constraints are not reached, all stress magnitudes are identical with
-\begin{equation}
-    S_j = \pm \sqrt{\frac{\mu^*}{E}}.
-\end{equation}
+\begin{example}{Fully stressed design}{mitchellexample}
+    We can still learn something about the solution if we consider Equation \eqref{eq:element_strain_energy}. If we substitute it in Equation \eqref{eq:lagrange_sensitivity}, we can write 
+    \begin{equation}
+        \frac{\partial \mathcal{L} (\mathbf{a}, \mu)}{\partial a_j} = - \frac{S^2_j}{E} l_j + \mu l_j
+    \end{equation}
+    and conclude that for an optimal point $\mathbf{a}^l < \mathbf{a}^* < \mathbf{a}^u$ with $\mu^*>0$, i.e. the maximum volume $V_0$ is used and box constraints are not reached, all stress magnitudes are identical with
+    \begin{equation}
+        S_j = \pm \sqrt{\frac{\mu^*}{E}}.
+    \end{equation}
+    
+    This is called a \emph{fully stressed design} and is related to a theorem by Australian engineer A.G.M. Michell published in 1904 \cite{Michell1904}. The theorem states that elements of an optimal truss structure lie along the principal directions of a virtual stress field, such that all of them experience an equal stress magnitude \cite{Arora2019}.
+    An example for a Michell truss structure is given in the following picture \cite{Picelli2015}. All truss elements in this design experience the same stress magnitude (either in compression or in tension).
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{figures/michell.png}
+    \end{center}
+    
+\end{example}
 
-This is called a \emph{fully stressed design} and is related to a theorem by Australian engineer A.G.M. Michell published in 1904 \cite{Michell1904}. The theorem states that elements of an optimal truss structure lie along the principal directions of a virtual stress field, such that all of them experience an equal stress magnitude \cite{Arora2019}.
-An example for a Michell truss structure is given in Figure \ref{fig:michell}.
-
-\begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=0.5\textwidth]{figures/michell.png}
-    \caption{Example of a Michell truss \cite{Picelli2015}. All truss elements in this design experience the same stress magnitude (either in compression or in tension).}
-    \label{fig:michell}
-\end{figure}
-
-\subsection{Approximation of the standard optimization problem with MMA}
-\label{sec:sizing:mma}
-
-The standard optimization problem for trusses is convex, but it is not separable and explicit, because we cannot find an explicit expression for $\mathbf{a}^*(\mu)$ at the stationary point of the Lagrangian. Therefore we linearize the problem using MMA in $1/(a_j-L_j^k)$. The linearization of the objective function becomes
+The problem in Equation \eqref{eq:size_optimization} is convex, but it is not separable and explicit, because we cannot find an explicit expression for $\mathbf{a}^*(\mu)$ at the stationary point of the Lagrangian. Therefore we linearize the problem using MMA in $1/(a_j-L_j^k)$. The linearization of the objective function becomes
 \begin{align}
     \tilde{C}(\mathbf{a}) &= C(\mathbf{a}^k) + \sum_j \frac{\partial C}{\partial a_j}(\mathbf{a}^k) (a^k_j-L^k_j) - \sum_j \frac{\partial C}{\partial a_j}(\mathbf{a}^k) \frac{(a^k_j-L^k_j)^2}{a_j-L^k_j}\\
     &=C(\mathbf{a}^k) 
@@ -151,9 +143,7 @@ The approximated optimization problem becomes
 \end{equation}
 with lower move limits $\tilde{\mathbf{a}}^{l,k} = \max(\mathbf{a}^l,  0.9 \mathbf{L}^k + 0.1 \mathbf{a}^k)$ preventing division by zero. The constraint is already linear and thus we do not approximate it.
 
-\subsection{Solution of the approximated standard optimization problem}
-\label{sec:sizing:solution}
-The Lagrangian of the approximated problem with Lagrangian duality
+The Lagrangian of the approximated problem is
 \begin{equation}
     \mathcal{L}(\mathbf{a}, \mu) = \tilde{C}(\mathbf{a}) + \mu \left( \mathbf{a} \cdot \mathbf{l} - V_0 \right)
 \end{equation}
@@ -179,7 +169,7 @@ We simply clip this result with box constraints to obtain the explicit relation
 \begin{equation}
     \mathbf{a}^* (\mu) = \max\left(\tilde{\mathbf{a}}^{l,k}, \min \left(\hat{\mathbf{a}}(\mu), \mathbf{a}_u \right)\right). 
 \end{equation}
-Finally we can plug this result in the dual Lagrangian 
+Finally we can plug this result in the Lagrangian to get the dual function
 \begin{equation}
     \underline{\mathcal{L}}(\mu) = \mathcal{L}(\mathbf{a}^* (\mu), \mu)
 \end{equation}
@@ -211,7 +201,7 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
         in the following iterations.
         \item Compute the lower move limit as 
         \begin{equation}
-            \tilde{\mathbf{a}}^{l,k} = \max(\mathbf{a}_l,  0.9 \mathbf{L}^k + 0.1 \mathbf{a}^k)
+            \tilde{\mathbf{a}}^{l,k} = \max(\mathbf{a}^l,  0.9 \mathbf{L}^k + 0.1 \mathbf{a}^k)
         \end{equation}
         \item Compute the gradient of the objective function (strain energies per area) for all elements using the previously computed displacements
         \begin{equation}
@@ -249,7 +239,7 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
 \end{example}
 
 \begin{example}{Truss optimization}{trussoptimizationexample}
-    The following figure plots the deformed configuration of a sizing optimization result for the truss shown in Figure \ref{fig:truss_example}. Line thicknesses correspond to the design variables and colors indicate stresses. Note that this is not a fully stressed design (the stress magnitudes are not all identical), because some design variables reach their upper limit. Essentially, the outcome is close to a topology optimization, because it indicates elimination of some elements. However, a complete elimination is not possible as this would result in a singular stiffness matrix, i.e. the displacement of node 9 would be undetermined. 
+    The following figure plots the deformed configuration of a size optimization result for the truss shown in Figure \ref{fig:truss_example}. Line thicknesses correspond to the design variables and colors indicate stresses. Note that this is not a fully stressed design (the stress magnitudes are not all identical), because some design variables reach their upper limit. Essentially, the outcome is close to a topology optimization, because it indicates elimination of some elements. However, a complete elimination is not possible as this would result in a singular stiffness matrix, i.e. the displacement of node 9 would be undetermined. 
 
     \begin{center}
         \includegraphics[width=0.9\textwidth]{figures/truss_sample_optimized.pdf} 
@@ -272,23 +262,22 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
 \end{example}
 
 \section{Topology optimization}
+\label{sec:truss_topology}
 In topology optimization of trusses, we want to identify those bars which should stay in our design and those trusses which may be removed. As seen in the last examples of the previous chapter, this is closely related to size optimization - the difference is that we seek a binary design (bar or no bar) instead of continuous cross section variables. Hence, we change the box constraint to a discrete constraint with a bar being either at maximum cross sectional area or minimum cross sectional area, but nothing in between.
 
-\subsection{The standard optimization problem}
-The topology optimization problem of minimizing compliance for a given volume constraint has similar structure as the sizing problem. The only change is that $\mathbf{a}$ is now either the maximum or minimum cross section. Thus, we have 
+\subsection{Minimizing mass with a volume constraint}
+The topology optimization problem of minimizing compliance for a given volume constraint has similar structure as the size optimization problem. The only change is that $\mathbf{a}$ is now either the maximum or minimum cross section. Thus, we have 
 \begin{equation}
     \begin{aligned}
         \min_{\mathbf{a}} \quad & C(\mathbf{a}) = \mathbf{f} \cdot \mathbf{u}(\mathbf{a})\\
         \textrm{s.t.} \quad & \mathbf{a} \cdot \mathbf{l} - V_0 \le 0  \\
                             & a_j \in \{a_j^l, a_j^u\}\\
     \end{aligned}
-    \label{eq:truss_topology_optimization}
 \end{equation}
 
-\subsection{Analysis of the standard optimization problem}
 Unfortunately, the binary problem is notoriously hard to solve, because we cannot compute gradients on the solution and testing all solutions is computationally inaccessible. Hence we try to formulate a continuous relation between stiffness and normalized density that still results in a binary result. One such formulation is called \emph{Solid Isotropic Material with Penalization} (SIMP) and we denote it here as 
 \begin{equation}
-    E(a_j)= \left(\frac{a_j}{a_j^u}\right)^p E
+    E(a_j)= \left(\frac{a_j}{a_j^u}\right)^p E = \rho_j^p E
 \end{equation}
 with a penalization parameter $p \ge 1$. 
 The effect of penalization is shown in Figure \ref{fig:simp_truss} for typical values of $p$. We may observe for $p>1$ that the stiffness per invested material is unattractive for intermediate density values. For example, choosing $a_j/a_j^u=0.5$ adds half an element volume to the total volume, but contributes only a quarter of the stiffness compared to a fully filled element. An optimization that tries to minimize compliance for a given volume will therefore rather favor elements that provide the full stiffness benefit or add only a minimal contribution to the total volume.
@@ -300,6 +289,7 @@ The effect of penalization is shown in Figure \ref{fig:simp_truss} for typical v
     \label{fig:simp_truss}
 \end{figure}
 
+\subsection{Analysis of the problem}
 After introducing SIMP, the only change in comparison to size optimization is the computation of the sensitivity
 \begin{align}
     \frac{\partial C (\mathbf{a})}{\partial a_j} 
@@ -314,8 +304,8 @@ The entire remaining approximation procedure and solution procedure is identical
 So far, we have performed size optimization of trusses by adjusting the cross sectional areas and we have performed topology optimization of trusses by allowing bars to disappear. However, the node positions remained fixed in all these cases. 
 In this section, we want to optimize the position of nodes $\mathbf{x}$ for a fixed topology $\mathcal{E}$ and fixed cross sectional areas $\mathbf{a}$.
 
-\subsection{The standard optimization problem}
-The truss shape optimization for minimum compliance with a volume constraint has a structure similar to the previous problems. However, the design variable changes to the nodal positions $\mathbf{x}$ or a subset of those nodal positions (if not all nodes are allowed to change position). While the cross sectional areas of the constraint are fixed, the element lengths are a function of design variables now. The full standard problem may be denoted as follows:
+\subsection{Minimizing mass with a volume constraint}
+The truss shape optimization for minimum compliance with a volume constraint has a structure similar to the previous problems. However, the design variable changes to the nodal positions $\mathbf{x}$ or a subset of those nodal positions (if not all nodes are allowed to change position). While the cross sectional areas of the constraint are fixed, the element lengths are a function of design variables now. The full shape optimization problem may be denoted as follows:
 \begin{equation}
     \begin{aligned}
         \min_{\mathbf{x}} \quad & C(\mathbf{x}) = \mathbf{f} \cdot \mathbf{u}(\mathbf{x})\\
@@ -325,25 +315,68 @@ The truss shape optimization for minimum compliance with a volume constraint has
     \label{eq:shape_optimization}
 \end{equation}
 
-\subsection{Analysis of the standard optimization problem}
+% \subsection{Analysis of problem}
+% We formulate the Lagrangian of the shape optimization problem as 
+% \begin{equation}
+%     \mathcal{L}(\mathbf{x}, \mu) = C(\mathbf{x}) + \mu g(\mathbf{x})
+% \end{equation}
+% and compute gradients to find KKT points. The gradient of the Lagrangian w.r.t $\mathbf{x}$ is  
+% \begin{equation}
+%     \frac{\partial \mathcal{L} (\mathbf{x}, \mu)}{\partial x_i} 
+%     = \frac{\partial C (\mathbf{x})}{\partial x_i} + \mu \mathbf{a} \cdot \frac{\partial \mathbf{l}(\mathbf{x})}{\partial x_i}.
+%     \label{eq:lagrange_truss_shape_problem}
+% \end{equation}
 
-\begin{equation}
-    \frac{\partial \mathcal{L} (\mathbf{x}, \mu)}{\partial x_i} 
-    = \frac{\partial C (\mathbf{x})}{\partial x_i} + \mu \mathbf{a} \cdot \frac{\partial \mathbf{l}(\mathbf{x})}{\partial x_i}
-    \label{eq:lagrange_truss_shape_problem}
-\end{equation}
-
-\subsection{Approximation of the standard optimization problem with MMA}
-
-Both, the target function $C(\mathbf{x})$ and the constraint $g(\mathbf{x})$, are in general non-linear coupled functions. Hence, we apply MMA to both functions to get sequential convex explicitly separable approximations. We can denote the Lagrangian of the approximated functions as 
+\subsection{Approximation and solution with MMA}
+Both, the target function $C(\mathbf{x})$ and the constraint $g(\mathbf{x})$, are in general non-linear non-separable functions. Hence, we apply MMA to both functions to get sequential convex explicitly separable approximations.
+We can denote the Lagrangian of the approximated functions as 
 \begin{align}
-    \mathcal{L}(\mathbf{x}, \mu) &= \tilde{C}(\mathbf{x}) + \mu \tilde{g}(\mathbf{x}) \\
-    &= \mathcal{L}_0 + \sum_j \frac{p_j^k}{}
+    \mathcal{L}(\mathbf{x}, \mu) &= \tilde{C}(\mathbf{x}) + \mu \tilde{g}(\mathbf{x})
 \end{align}
+which is a separable function and we can use it to solve the problem with the dual method. We need to distinguish cases for each separable term $\mathcal{L}_i(x_i, \mu)$ as the MMA approximations are different depending on the signs of $\frac{\partial C}{\partial x_i} (\mathbf{x}^k)$ and $\frac{\partial g}{\partial x_i} (\mathbf{x}^k)$. Hence, we distinguish four cases for the gradient computation:
+\begin{equation}
+    \frac{\partial \mathcal{L}_i (\mathbf{x}, \mu)}{\partial x_i} = 
+    \begin{cases}
+        \left(\frac{U_j^k-x_j^k}{U_j^k-x_j}\right)^2 \left(\frac{\partial C}{\partial x_i} + \mu \frac{\partial g}{\partial x_i} \right) 
+            &\textrm{if} \quad \frac{\partial C}{\partial x_i} > 0, \frac{\partial g}{\partial x_i} > 0 \\
+        \left(\frac{U_j^k-x_j^k}{U_j^k-x_j}\right)^2 \frac{\partial C}{\partial x_i}  + \mu \left(\frac{x_j^k-L_j^k}{x_j-L_j^k}\right)^2 \frac{\partial g}{\partial x_i} 
+            &\textrm{if} \quad \frac{\partial C}{\partial x_i}  > 0, \frac{\partial g}{\partial x_i} <0\\
+        \left(\frac{x_j^k-L_j^k}{x_j-L_j^k}\right)^2 \frac{\partial C}{\partial x_i}  + \mu \left(\frac{U_j^k-x_j^k}{U_j^k-x_j}\right)^2\frac{\partial g}{\partial x_i} 
+            &\textrm{if} \quad \frac{\partial C}{\partial x_i} < 0, \frac{\partial g}{\partial x_i}  > 0\\
+        \left(\frac{x_j^k-L_j^k}{x_j-L_j^k}\right)^2 \left(\frac{\partial C}{\partial x_i}  + \mu \frac{\partial g}{\partial x_i} \right) 
+            &\textrm{if} \quad \frac{\partial C}{\partial x_i}< 0, \frac{\partial g}{\partial x_i}< 0
+    \end{cases}
+\end{equation}
+where all gradients are evaluated at $\mathbf{x}^k$.
+To find the potential minimum $\hat{x}_i(\mu)$, we investigate for each case individually, under which conditions it vanishes. For the first case, the second term is always positive considering the KKT condition $\mu>0$. Therefore we find that in this case $x\rightarrow -\infty$ would be a minimum. Using the box constraint this yields $\hat{x}_i(\mu) = x^l_i$. Analogously, the last case yields $\hat{x}_i(\mu) = x^u_i$. The other cases are solved simply by re-arranging the equations and finally we get 
+\begin{equation}
+    \hat{x}_i (\mu) = 
+    \begin{cases}
+        x^l_i 
+            &\textrm{if} \quad \frac{\partial C}{\partial x_i} > 0, \frac{\partial g}{\partial x_i} > 0 \\
+        \frac{U_j^k\omega + L_j^k}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(x_j^k-L_j^k)^2\frac{\partial g}{\partial x_i}}{(U_j^k-x_j^k)^2\frac{\partial C}{\partial x_i}}}
+            &\textrm{if} \quad \frac{\partial C}{\partial x_i}  > 0, \frac{\partial g}{\partial x_i} <0\\
+        \frac{U_j^k-L_j^k\omega}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(U_j^k-x_j^k)^2\frac{\partial g}{\partial x_i}}{(x_j^k-L_j^k)^2\frac{\partial C}{\partial x_i}}} 
+            &\textrm{if} \quad \frac{\partial C}{\partial x_i} < 0, \frac{\partial g}{\partial x_i}  > 0\\
+        x^u_i 
+            &\textrm{if} \quad \frac{\partial C}{\partial x_i}< 0, \frac{\partial g}{\partial x_i} < 0.
+    \end{cases}
+\end{equation}
+With move limits $\tilde{\mathbf{x}}^{l,k}$ and $\tilde{\mathbf{x}}^{u,k}$ according to Equation \eqref{eq:mma_move_limits}, we can find the box-constrained minimum of the approximated Lagrangian w.r.t to $\mathbf{x}$ as
+\begin{equation}
+    \mathbf{x}^*(\mu) = \max\left(\tilde{\mathbf{x}}^{l,k}, \min \left(\hat{\mathbf{x}}(\mu), \tilde{\mathbf{x}}^{u,k} \right)\right).
+\end{equation}
+Finally we can plug this result in the Lagrangian to get the dual fucntion 
+\begin{equation}
+    \underline{\mathcal{L}}(\mu) = \mathcal{L}(\mathbf{x}^* (\mu), \mu)
+\end{equation}
+and solve 
+\begin{equation}
+    \max_{\mu} \underline{\mathcal{L}}(\mu)
+\end{equation}
+for $\mu^*>0$. 
 
-\subsection{Solution of the approximated optimization problem}
-
-\begin{example}{Three bar truss optimization}{trussshapeoptimizationexample}
+\begin{example}{Three bar truss shape optimization}{trussshapeoptimizationexample}
     Consider the truss from the previous chapter. Instead of computing optimal cross sectional areas, we now want to optimize its shape. To do so, we allow Node 0 and Node 2 to move a certain amount up or down. These two design variables are 
     \begin{equation}
         \mathbf{x} = 
@@ -370,45 +403,79 @@ Both, the target function $C(\mathbf{x})$ and the constraint $g(\mathbf{x})$, ar
         \includegraphics[width=0.5\linewidth]{figures/three_bar_truss_shapes.pdf}
     \end{center}
 
-    We want to solve for the optimal shape $\mathbf{x}^*$ that minimizes the compliance of the structure without exceeding the initial volume of the truss.
+    We want to solve for the optimal shape $\mathbf{x}^*$ that minimizes the compliance of the structure without exceeding the initial volume of the truss. The original optimization problem and the MMA approximation are illustrated in the following two plots on the left and right, respectively.
 
-    We formulate the following algorithm to solve that problem: 
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{figures/three_bar_truss_shape_original.pdf}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{figures/three_bar_truss_shape_mma.pdf}
+    \end{minipage}
+
+    We formulate the following algorithm to solve the approximated problem: 
     \begin{enumerate}
         \item Define the truss with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, design limits $\mathbf{x}^l, \mathbf{x}^u$ and the initial design choice $\mathbf{x}^0$.
-        \item Compute the displacements $\mathbf{u}^k = \mathbf{u}(\mathbf{x}^k)$ by solving the truss system for the current design $\mathbf{x}^k$.
-        \item Compute the lower asymptotes as $\mathbf{L}^k =\mathbf{a}^k - s (\mathbf{a}^u - \mathbf{a}^l)$ with $s \in (0,1)$ during the first two iterations and according to 
+        \item Compute the displacements $\mathbf{u}^k$ by solving the truss system for the current design $\mathbf{x}^k$.
+        \item Compute the asymptotes as $\mathbf{L}^k =\mathbf{x}^k - s (\mathbf{x}^u - \mathbf{x}^l)$ and $\mathbf{U}^k =\mathbf{x}^k + s (\mathbf{x}^u - \mathbf{x}^l)$ with $s \in (0,1)$ during the first two iterations. In the following iterations, compute the lower asymptotes according to 
         \begin{equation}
             L^k_j = 
             \begin{cases}
-                a^k_j - s  (a^{k-1}_j-L^{k-1}_j) & (a_j^k-a_j^{k-1})(a_j^{k-1}-a_j^{k-2}) < 0\\
-                a^k_j - \frac{1}{\sqrt{s}}  (a^{k-1}_j-L^{k-1}_j) & \text{else}
+                x^k_j - s  (x^{k-1}_j-L^{k-1}_j) & (x_j^k-a_j^{k-1})(x_j^{k-1}-x_j^{k-2}) < 0\\
+                x^k_j - \frac{1}{\sqrt{s}}  (a^{k-1}_j-L^{k-1}_j) & \text{else}
             \end{cases}
         \end{equation}
-        in the following iterations.
-
-
-        \item Compute the lower move limit as 
+        and the upper asymptotes according to 
         \begin{equation}
-            \tilde{\mathbf{a}}^{l,k} = \max(\mathbf{a}_l,  0.9 \mathbf{L}^k + 0.1 \mathbf{a}^k)
+            U^k_j = 
+            \begin{cases}
+                x^k_j - s  (U^{k-1}_j-x^{k-1}_j) & (x_j^k-a_j^{k-1})(x_j^{k-1}-x_j^{k-2}) < 0\\
+                x^k_j - \frac{1}{\sqrt{s}}  (U^{k-1}_j-a^{k-1}_j) & \text{else}
+            \end{cases}
         \end{equation}
 
-        \item Compute the gradients of the objective function...
+        \item Compute the move limits as 
+        \begin{align}
+            \tilde{\mathbf{x}}^{l,k} &= \max(\mathbf{x}^l,  0.9 \mathbf{L}^k + 0.1 \mathbf{x}^k) \\
+            \tilde{\mathbf{x}}^{u,k} &= \min(\mathbf{x}^u,  0.9 \mathbf{U}^k + 0.1 \mathbf{x}^k)
+        \end{align}
+
+        \item Evaluate the gradients of the objective function $\frac{\partial C}{\partial x_i}$ and the constraint $\frac{\partial g}{\partial x_i}$ at $\mathbf{x}^k$ using automatic differentiation. 
 
         \item Evaluate the analytical solution
             \begin{align}
-                \hat{a}_j(\mu) &= L_j^k + \sqrt{\frac{2 w_j (\mathbf{a}^k)
-                (L^k_j-a^k_j)^2}{\mu l_j}} \\
-                \mathbf{a}^* (\mu) &= \max\left(\tilde{\mathbf{a}}^{l,k}, \min \left(\hat{\mathbf{a}}(\mu), \mathbf{a}_u \right)\right)
+                \hat{x}_i(\mu) &= 
+                \begin{cases}
+                    x^l_i 
+                        &\textrm{if} \quad \frac{\partial C}{\partial x_i} > 0, \frac{\partial g}{\partial x_i} > 0 \\
+                    \frac{U_j^k\omega + L_j^k}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(x_j^k-L_j^k)^2\frac{\partial g}{\partial x_i}}{(U_j^k-x_j^k)^2\frac{\partial C}{\partial x_i}}}
+                        &\textrm{if} \quad \frac{\partial C}{\partial x_i}  > 0, \frac{\partial g}{\partial x_i} <0\\
+                    \frac{U_j^k-L_j^k\omega}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(U_j^k-x_j^k)^2\frac{\partial g}{\partial x_i}}{(x_j^k-L_j^k)^2\frac{\partial C}{\partial x_i}}} 
+                        &\textrm{if} \quad \frac{\partial C}{\partial x_i} < 0, \frac{\partial g}{\partial x_i}  > 0\\
+                    x^u_i 
+                        &\textrm{if} \quad \frac{\partial C}{\partial x_i}< 0, \frac{\partial g}{\partial x_i} < 0.
+                \end{cases} \\
+                \mathbf{x}^* (\mu) &= \max\left(\tilde{\mathbf{x}}^{l,k}, \min \left(\hat{\mathbf{x}}(\mu), \tilde{\mathbf{x}}^{u,k} \right)\right)
             \end{align}
-        \item Perform a line search to find the root $\mu^*>0$ in 
-        \begin{equation}
-            \frac{\partial \underline{\mathcal{L}}}{\partial \mu}(\mu) = \mathbf{l} \cdot \mathbf{a}^* (\mu) - V_0 = 0
-        \end{equation}
-        with Newton's method or bisection method. 
+        \item Perform a line search to find the maximum in 
+            \begin{equation}
+                \max_{\mu>0} \underline{\mathcal{L}}(\mu)
+            \end{equation}
+            with a gradient decent method. Once again, we may use automatic differentiation to compute the gradient for the optimization.
         \item Repeat with steps 2-7 until convergence or a maximum number of iterations is reached.
     \end{enumerate}
+    
+    The following figures plot the optimization path and the optimal truss shape for the final solution $\mathbf{x}^* = (0.5, 1.12)^\top$.
 
-    The following figure plots the three design variables $a_1, a_2, a_3$ for the three bar truss with $\mathbf{a}^0=(0.5,0.2,0.3)^\top$, $\mathbf{a}^l=(0.1,0.1,0.1)^\top$, $\mathbf{a}^u=(1.0,1.0,1.0)^\top$ and $V_0=0.5$. After a couple of iterations, the solution converges towards the analytical solution plotted in gray.
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{figures/three_bar_truss_shape_optimization.pdf}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{figures/three_bar_truss_shape_optimized.pdf}
+    \end{minipage}
        
 \end{example}
 
