@@ -111,6 +111,7 @@ class Truss:
         sigma=None,
         node_labels=True,
         show_thickness=False,
+        thickness_threshold=0.0,
         default_color="black",
     ):
         # Line widths from areas
@@ -119,6 +120,7 @@ class Truss:
             linewidth = 8.0 * self.areas / a_max
         else:
             linewidth = 2.0 * torch.ones(self.n_elem)
+            linewidth[self.areas < thickness_threshold] = 0.0
 
         # Line color from stress (if present)
         if sigma is not None:
