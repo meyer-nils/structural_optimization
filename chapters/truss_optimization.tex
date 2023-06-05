@@ -1,4 +1,4 @@
-\chapter{Optimization of trusses}
+\chapter{Optimization of truss structures}
 In this chapter, we focus on the optimization of discrete truss structures. A general procedure to solve such problems involves the following steps:
 \begin{enumerate}
     \item Definition of the truss with all nodes, elements, material properties, constraints and initial design choice
@@ -265,7 +265,6 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
 \label{sec:truss_topology}
 In topology optimization of trusses, we want to identify those bars which should stay in our design and those trusses which may be removed. As seen in the last examples of the previous chapter, this is closely related to size optimization - the difference is that we seek a binary design (bar or no bar) instead of continuous cross section variables. Hence, we change the box constraint to a discrete constraint with a bar being either at maximum cross sectional area or minimum cross sectional area, but nothing in between.
 
-\subsection{Minimizing mass with a volume constraint}
 The topology optimization problem of minimizing compliance for a given volume constraint has similar structure as the size optimization problem. The only change is that $\mathbf{a}$ is now either the maximum or minimum cross section. Thus, we have 
 \begin{equation}
     \begin{aligned}
@@ -289,7 +288,6 @@ The effect of penalization is shown in Figure \ref{fig:simp_truss} for typical v
     \label{fig:simp_truss}
 \end{figure}
 
-\subsection{Analysis of the problem}
 After introducing SIMP, the only change in comparison to size optimization is the computation of the sensitivity
 \begin{align}
     \frac{\partial C (\mathbf{a})}{\partial a_j} 
@@ -304,7 +302,6 @@ The entire remaining approximation procedure and solution procedure is identical
 So far, we have performed size optimization of trusses by adjusting the cross sectional areas and we have performed topology optimization of trusses by allowing bars to disappear. However, the node positions remained fixed in all these cases. 
 In this section, we want to optimize the position of nodes $\mathbf{x}$ for a fixed topology $\mathcal{E}$ and fixed cross sectional areas $\mathbf{a}$.
 
-\subsection{Minimizing mass with a volume constraint}
 The truss shape optimization for minimum compliance with a volume constraint has a structure similar to the previous problems. However, the design variable changes to the nodal positions $\mathbf{x}$ or a subset of those nodal positions (if not all nodes are allowed to change position). While the cross sectional areas of the constraint are fixed, the element lengths are a function of design variables now. The full shape optimization problem may be denoted as follows:
 \begin{equation}
     \begin{aligned}
@@ -326,8 +323,49 @@ The truss shape optimization for minimum compliance with a volume constraint has
 %     = \frac{\partial C (\mathbf{x})}{\partial x_i} + \mu \mathbf{a} \cdot \frac{\partial \mathbf{l}(\mathbf{x})}{\partial x_i}.
 %     \label{eq:lagrange_truss_shape_problem}
 % \end{equation}
+% # def dkdx(self, j):
+% #     element = self.elements[j]
+% #     n1 = element[0]
+% #     n2 = element[1]
+% #     dx = self.nodes[n1][0] - self.nodes[n2][0]
+% #     dy = self.nodes[n1][1] - self.nodes[n2][1]
+% #     l0 = torch.sqrt(dx**2 + dy**2)
+% #     c = dx / l0
+% #     s = dy / l0
+% #     m = torch.tensor(
+% #         [
+% #             [c**2, s * c, -(c**2), -s * c],
+% #             [s * c, s**2, -s * c, -(s**2)],
+% #             [-(c**2), -s * c, (c**2), s * c],
+% #             [-s * c, -(s**2), s * c, s**2],
+% #         ]
+% #     )
+% #     dmdphi = torch.tensor(
+% #         [
+% #             [-2 * s * c, c**2 - s**2, 2 * s * c, s**2 - c**2],
+% #             [c**2 - s**2, 2 * s * c, s**2 - c**2, -2 * s * c],
+% #             [2 * s * c, s**2 - c**2, -2 * s * c, c**2 - s**2],
+% #             [s**2 - c**2, -2 * s * c, c**2 - s**2, 2 * s * c],
+% #         ]
+% #     )
+% #     dkdx1 = (
+% #         -self.areas[j] * self.E * dx / l0**3 * m
+% #         - self.areas[j] * self.E / l0 * dmdphi * dy
+% #     )
+% #     dkdx2 = (
+% #         -self.areas[j] * self.E * dy / l0**3 * m
+% #         + self.areas[j] * self.E / l0 * dmdphi * dx
+% #     )
+% #     dkdx3 = (
+% #         self.areas[j] * self.E * dx / l0**3 * m
+% #         + self.areas[j] * self.E / l0 * dmdphi * dy
+% #     )
+% #     dkdx4 = (
+% #         self.areas[j] * self.E * dy / l0**3 * m
+% #         - self.areas[j] * self.E / l0 * dmdphi * dx
+% #     )
+% #     return [dkdx1, dkdx2, dkdx3, dkdx4]
 
-\subsection{Approximation and solution with MMA}
 Both, the target function $C(\mathbf{x})$ and the constraint $g(\mathbf{x})$, are in general non-linear non-separable functions. Hence, we apply MMA to both functions to get sequential convex explicitly separable approximations.
 We can denote the Lagrangian of the approximated functions as 
 \begin{align}

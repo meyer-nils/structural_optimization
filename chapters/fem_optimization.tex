@@ -1,5 +1,5 @@
-\chapter{Topology optimization in continua}
-In the previous chapter, we learned how to transform a continuous elastic problem on a two-dimensional domain into a discrete problem using finite elements. 
+\chapter{Optimization of continuum structures}
+In the previous chapter, we learned how to transform a continuous elastic problem on a two-dimensional domain into a discrete problem using finite elements. Now we want to optimize such problems.
 
 \begin{objectives}{}{objectives_topology}
 After studying this chapter and finishing the exercise, you should be able to 
@@ -11,7 +11,7 @@ After studying this chapter and finishing the exercise, you should be able to
 \end{itemize}
 \end{objectives}
 
-\section{Variable thickness sheet problem}
+\section{Size optimization}
 \label{sec:variable_thickness_sheet}
 Let's consider a two-dimensional domain discretized with finite elements, in which we can adjust the thickness of each element. We may seek the best distribution of thicknesses $\mathbf{d}$ to minimize compliance $C$ with a constrained amount of material volume $V_0$. This problem can be formulated in analogy to the standard problem of sizing optimization stated in Equation \eqref{eq:size_optimization}: 
 
@@ -89,9 +89,8 @@ Just like the truss problem, the variable thickness sheet problem can be approxi
     
 \end{example}
 
-\section{Solid isotropic material with penalization (SIMP)}
-\label{sec:simp}
-The problem stated in Equation \eqref{eq:sheet_optimization} is essentially a sizing optimization problem. In a topology optimization, we seek a material distribution, where each element is either completely filled or completely unfilled with material. We can formulate such a problem by reinterpreting the thickness variable as a normalized material density $\pmb{\rho}$, where $\rho_j=1$ indicates presence of material and $\rho_j=0$ indicates absence of material in element $j$. The stiffness of each element becomes a function of $\rho_j$, e.g. 
+\section{Topology optimization with MMA}
+In a topology optimization, we seek a material distribution, where each element is either completely filled or completely unfilled with material. We can formulate such a problem by reinterpreting the thickness variable as a normalized material density $\pmb{\rho}$, where $\rho_j=1$ indicates presence of material and $\rho_j=0$ indicates absence of material in element $j$. The stiffness of each element becomes a function of $\rho_j$, e.g. 
 \begin{equation}
     \mathbb{C}(\rho_j)=
     \begin{cases}
@@ -110,27 +109,14 @@ Then, the problem statement reads
     \label{eq:topology_optimization}
 \end{equation}
 
-where the only change compared to Equation \eqref{eq:sheet_optimization} is the discrete nature of the design variables $\pmb{\rho}$ and the name of the design variables. Hence, we formulate the Lagrangian analogously to Equation \eqref{eq:lagrangian_sheet_optimization} as 
-\begin{equation}
-    \mathcal{L}(\pmb{\rho}, \mu) = C(\pmb{\rho}) + \mu \left( \pmb{\rho} \cdot \mathbf{A} - V_0 \right).
-    \label{eq:lagrangian_topology_optimization}
-\end{equation}
+where the only change compared to Equation \eqref{eq:sheet_optimization} is the discrete nature of the design variables $\pmb{\rho}$ and the name of the design variables. 
 
-Unfortunately, the binary problem is notoriously hard to solve, because we cannot compute gradients on the solution and testing all solutions is computationally inaccessible. Hence we try to formulate a continuous relation between stiffness and normalized density that still results in a binary result. One such formulation is called \emph{Solid Isotropic Material with Penalization} (SIMP) and denoted as 
+
+As mentioned during truss optimization, the binary problem is notoriously hard to solve. Hence we use \emph{Solid Isotropic Material with Penalization} (SIMP) again, which is denoted as 
 \begin{equation}
     \mathbb{C}(\rho_j)= \rho_j^p \mathbb{C}
 \end{equation}
-with a penalization parameter $p \ge 1$. 
-The effect of penalization is shown in Figure \ref{fig:simp} for typical values of $p$. We may observe for $p>1$ that the stiffness per invested material is unattractive for intermediate density values. For example, choosing $\rho_j=0.5$ adds half an element volume to the total volume, but contributes only a quarter of the stiffness compared to a fully filled element. An optimization that tries to minimize compliance for a given volume will therefore rather favor elements that provide the full stiffness benefit ($\rho=1$) or do not count towards the constraint ($\rho=\rho^l$). 
-
-\begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=0.9\textwidth]{figures/simp.pdf}
-    \caption{Penalization factors in SIMP.}
-    \label{fig:simp}
-\end{figure}
-
-Incorporating the SIMP method to the optimization is straight-forward. We just need to adjust the sensitivity (see Equation \ref{eq:sensitivity_sheet}) slightly to
+for the generalized FEM problem. Incorporating the SIMP method to the optimization is straight-forward. We just need to adjust the sensitivity (see Equation \ref{eq:sensitivity_sheet}) slightly towards
 \begin{equation}
     \frac{\partial C}{\partial \rho_j} = -2 p \rho_j^{p-1} w_j(\pmb{\rho}^k) = - p \rho_j^{p-1} \mathbf{u}_j(\pmb{\rho})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\pmb{\rho}).
     \label{eq:sensitivity_topology}
@@ -148,7 +134,7 @@ Incorporating the SIMP method to the optimization is straight-forward. We just n
     \end{center}
 \end{example}
 
-\section{Filters}
+\section{Filters in topology optimization}
 Obviously, the SIMP approach helps us to find a binary solution of the discretized problem stated in Equation \eqref{eq:topology_optimization}. However, we may ask ourselves if there is a unique solution to this problem independent of discretization. And it turns out, the answer is no: You can improve any given design by replacing it with finer structures in a process that goes on indefinitely \cite{Christensen2008}. 
 In addition to the theoretical non-existence of a solution, this also means that our solution is \emph{mesh-dependent}: If we want to refine the solution, we may end up with a totally different solution. 
 
@@ -219,11 +205,15 @@ which is a purely heuristic concept, i.e. there is no mathematical proof for thi
 
 There is one more challenge in the SIMP formulation of the standard topology optimization problem: For $p>1$, the problem is not convex anymore and different starting points may result in different local minima \cite{Christensen2008}. A strategy to cure termination at non-global minima is a gradual increase of $p$ starting from $p=1$ and using multiple starting points $\pmb{\rho}^0$.
 
-\section{Optimality criteria}
-The solution via MMA is in line with the previous chapters of this manuscript and is able to solve arbitrary problems beyond the compliance minimization stated in problem \eqref{eq:topology_optimization}. Historically, this specific problem was first solved with the \emph{optimality criteria method} instead of convex approximations. The idea here is that we can use the gradient of the Lagrangian given in Equation \eqref{eq:lagrangian_topology_optimization}
+\section{Topology optimization with optimality criteria}
+The solution via MMA is in line with the previous chapters of this manuscript and is able to solve arbitrary problems beyond the compliance minimization stated in problem \eqref{eq:topology_optimization}. Historically, this specific problem was first solved with the \emph{optimality criteria method} instead of convex approximations. The idea here is that we can use the gradient of the Lagrangian
+\begin{equation}
+    \mathcal{L}(\pmb{\rho}, \mu) = C(\pmb{\rho}) + \mu \left( \pmb{\rho} \cdot \mathbf{A} - V_0 \right),
+\end{equation}
+which is
 \begin{equation}
     \frac{\partial \mathcal{L} (\pmb{\rho}, \mu)}{\partial\rho_j} 
-    = \frac{\partial C(\pmb{\rho})}{\partial \rho_j} + \mu A_j = 0
+    = \frac{\partial C(\pmb{\rho})}{\partial \rho_j} + \mu A_j = 0,
 \end{equation}
 to formulate an optimality condition
 \begin{equation}
@@ -271,20 +261,19 @@ To compute $G_j$, we need to determine the value of the Lagrange multiplier $\mu
     \end{enumerate}
 \end{example}
 
+
 In addition to the density-based method shown so far, topology optimization may also be performed with \emph{Level-Set methods} and empirical growth rules like \emph{Soft Kill Option}. These methods are not addressed in this lecture.
 
-\section{Interpretation}
-Finally, it is important to note that topology optimizations provide only design suggestions and not a design than can be readily manufactured. With the current state of research, we always need to interpret the result in the context of a manufacturing method.
-
-\begin{example}{Cantilever beam  interpretation}{cantileverinterpretationexample}
+\begin{example}{Cantilever beam  interpretation}{cantileverinterpretationexample}   
+    It is important to note that topology optimizations provide only design suggestions and not a design than can be readily manufactured. With the current state of research, we always need to interpret the result in the context of a manufacturing method.
     We may project the solution of a topology optimization problem to a canvas in a CAD software and use it as a guide to sketch an actual component:
     \begin{center}
-        \includegraphics[width=\linewidth]{figures/cantilever_template.png}
+        \includegraphics[width=0.7\linewidth]{figures/cantilever_template.png}
     \end{center}
     
     This is an interpretation of the cantilever beam as a sheet metal design:
     \begin{center}
-        \includegraphics[width=\linewidth]{figures/cantilever_design.png}
+        \includegraphics[width=0.7\linewidth]{figures/cantilever_design.png}
     \end{center}
 \end{example}
 
