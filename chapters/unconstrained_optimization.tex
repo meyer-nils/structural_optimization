@@ -191,7 +191,10 @@ The algorithm of a conjugated gradient method according to Fletchers and Reeves 
 \begin{enumerate}
     \item Pick a starting point $\mathbf{x}^0$.
     \item Calculate the gradient $\nabla f(\mathbf{x}^k)$.
-    \item Compute a conjugate direction $\mathbf{p}^k = -\nabla f(\mathbf{x}^k) + \beta \mathbf{p}^{k-1}$ with $\beta = \frac{\nabla f(\mathbf{x}^k) \cdot \nabla f(\mathbf{x}^k)}{\nabla f(\mathbf{x}^{k-1}) \cdot \nabla f(\mathbf{x}^{k-1})}$.
+    \item Compute a conjugate direction $\mathbf{p}^k = -\nabla f(\mathbf{x}^k) + \beta \mathbf{p}^{k-1}$ with  
+    \begin{equation}
+        \beta = \frac{\nabla f(\mathbf{x}^k) \cdot \nabla f(\mathbf{x}^k)}{\nabla f(\mathbf{x}^{k-1}) \cdot \nabla f(\mathbf{x}^{k-1})}.
+    \end{equation}
     \item Solve the sub-problem $\min_{\eta} f(\mathbf{x}^k + \eta \mathbf{p}^k)$ to find the optimal step size $\eta$ for a fixed search direction $\mathbf{p}^k$.
     \item Make a step $\mathbf{x}^{k+1} = \mathbf{x}^k + \eta \mathbf{p}^k$.
     \item Repeat steps 2, 3, 4 and 5 until you reached a maximum number of iterations $k \le N$ or there is no improvement any more ($ \nabla f(\mathbf{x}^k) < \epsilon$). 
@@ -204,7 +207,7 @@ The algorithm of a conjugated gradient method according to Fletchers and Reeves 
     \end{center}   
 \end{example}
 
-\subsection{Quasi Newton method}
+\subsection{Quasi Newton methods}
 Newton's method is a well known method to find roots of a function. 
 
 \begin{example}{Newton's method}{newtonexample}

@@ -1,10 +1,11 @@
 \chapter{Optimization of continuum structures}
-In the previous chapter, we learned how to transform a continuous elastic problem on a two-dimensional domain into a discrete problem using finite elements. Now we want to optimize such problems.
+In the previous chapter, we learned how to transform a continuous elastic problem defined on a two-dimensional domain into a discrete problem using finite elements. Now we want to optimize such problems.
 
-\begin{objectives}{}{objectives_topology}
+\begin{objectives}{}{objectives_continuum}
 After studying this chapter and finishing the exercise, you should be able to 
 \begin{itemize}[label=$\dots$]
-    \item transfer solution methods from sizing problems to FEM-discretized problems
+    \item transfer solution methods from intrinsically discrete truss structures to FEM-discretized problems
+    \item explain the solution process for variable thickness sheets (size optimization) 
     \item solve for binary topologies using the SIMP approach
     \item discuss numerical problems in topology optimization
     \item apply filters to deal with numerical problems and manufacturing constraints
@@ -13,7 +14,7 @@ After studying this chapter and finishing the exercise, you should be able to
 
 \section{Size optimization}
 \label{sec:variable_thickness_sheet}
-Let's consider a two-dimensional domain discretized with finite elements, in which we can adjust the thickness of each element. We may seek the best distribution of thicknesses $\mathbf{d}$ to minimize compliance $C$ with a constrained amount of material volume $V_0$. This problem can be formulated in analogy to the standard problem of sizing optimization stated in Equation \eqref{eq:size_optimization}: 
+Let's consider a two-dimensional domain discretized with finite elements, in which we can adjust the thickness of each element. We may seek the best distribution of thicknesses $\mathbf{d}$ to minimize compliance $C$ with a constrained amount of material volume $V_0$. This problem can be formulated in analogy to the standard problem of sizing optimization stated in Equation \eqref{eq:size_optimization}
 
 \begin{equation}
     \begin{aligned}
@@ -23,8 +24,7 @@ Let's consider a two-dimensional domain discretized with finite elements, in whi
     \end{aligned}
     \label{eq:sheet_optimization}
 \end{equation}
-
-Mathematically, this problem is equivalent to the truss problem and can be solved in the same way: We formulate the Lagrangian
+where $\mathbf{A}$ denotes the area of an element. Mathematically, this problem is equivalent to the truss problem and can be solved in the same way: We formulate the Lagrangian
 \begin{equation}
     \mathcal{L}(\mathbf{d}, \mu) = C(\mathbf{d}) + \mu \left( \mathbf{d} \cdot \mathbf{A} - V_0 \right) 
     \label{eq:lagrangian_sheet_optimization}
@@ -36,21 +36,21 @@ and determine its derivative
 \end{equation}
 with 
 \begin{equation}
-    \frac{\partial C}{\partial d_j} = -2w_j(\mathbf{d}) = - \mathbf{u}_j(\mathbf{d})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\mathbf{d}).
+    \frac{\partial C}{\partial d_j} = - \mathbf{u}_j(\mathbf{d})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\mathbf{d}) = -2w_j(\mathbf{d}).
     \label{eq:sensitivity_sheet}
 \end{equation}
 In comparison to Equation \eqref{eq:compliance_sensitivity} for trusses with four degrees of freedom, the element displacement vector contains eight degrees of freedom for these 2D problems with linear quad elements ($\mathbf{u}_j \in \mathcal{R}^8, \mathbf{k}^0_j \in \mathcal{R}^{8\times 8}$). 
 
 Just like the truss problem, the variable thickness sheet problem can be approximated using MMA with lower asymptotes only. Subsequently, it is solved with the dual method and a line search to find the Lagrange parameter $\mu$. The entire procedure is identical to Section \ref{sec:truss_topology}, if we replace the truss cross sections $\mathbf{a}$ with element thicknesses $\mathbf{d}$ and the truss lengths $\mathbf{l}$ with element areas $\mathbf{A}$.
 
-\begin{example}{Cantilever beam with MMA}{cantileveroptimizationexample}
+\begin{example}{Size optimization with MMA}{cantileveroptimizationexample}
     Consider a FEM cantilever beam from the previous example. Instead of just computing the displacements, we are now interested in finding the optimal thickness of each element given a volume constraint.
 
     We formulate the following algorithm to solve that problem: 
     \begin{enumerate}
         \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, design limits $\mathbf{d}^l, \mathbf{d}^u$ and the initial design choice $\mathbf{d}^0$.
         \item Compute the displacements $\mathbf{u}^k = \mathbf{u}(\mathbf{d}^k)$ by solving the FEM system for the current design $\mathbf{d}^k$.
-        \item Compute the strain energies per area for all elements using the previously computed displacements   
+        \item Compute the strain energies densities for all elements using the previously computed displacements   
         \begin{equation}
             w^k_j(\mathbf{d}^k) = \frac{1}{2}\mathbf{u}^k_j  \cdot \mathbf{k}^0_j \cdot \mathbf{u}^k_j
         \end{equation}
@@ -90,7 +90,19 @@ Just like the truss problem, the variable thickness sheet problem can be approxi
 \end{example}
 
 \section{Topology optimization with MMA}
-In a topology optimization, we seek a material distribution, where each element is either completely filled or completely unfilled with material. We can formulate such a problem by reinterpreting the thickness variable as a normalized material density $\pmb{\rho}$, where $\rho_j=1$ indicates presence of material and $\rho_j=0$ indicates absence of material in element $j$. The stiffness of each element becomes a function of $\rho_j$, e.g. 
+In a topology optimization of continuum structures, we want to optimize the neighborhood relations of a structure. While the size or shape of an object could be changed by some deformation, we cannot change a topology to another by a "rubber-like" deformation. Essentially this means, in topoplogy optimization we are seeking the fundamental structure of a component: Which parts are connected? How many holes are in it? 
+
+\begin{example}{Topology of steering wheels}{steeringwheelexample}
+    Out of the following schematic steering wheels, the top left wheel may be transformed to the bottom center wheel by an appropriate deformation. They have the same topology, but different shapes. However, they cannot be transformed to any other steering wheel, as this would require formation of new holes and break the neighborhood relations. 
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{figures/steeringwheels.png}
+    \end{center}
+\end{example}
+
+There are two main approaches to optimize the topology \cite{Eschenauer2001}: In a \emph{geometry-based} formulation, we describe the domain in a dynamic fashion ( e.g. by a Level-Set method) and modify this geometry towards the optimum (e.g. by empirical growth rules like SKO or CAIO).
+In a \emph{material-based} formulation, we describe the entire domain with finite elements and then seek a material distribution where each element is either completely filled or completely unfilled with material. In this lecture, we focus entirely on the latter approach.
+
+We can formulate such a problem by reinterpreting the thickness variable as a normalized material density $\pmb{\rho}$, where $\rho_j=1$ indicates presence of material and $\rho_j=0$ indicates absence of material in element $j$. The stiffness of each element becomes a function of $\rho_j$, e.g. 
 \begin{equation}
     \mathbb{C}(\rho_j)=
     \begin{cases}
@@ -118,45 +130,68 @@ As mentioned during truss optimization, the binary problem is notoriously hard t
 \end{equation}
 for the generalized FEM problem. Incorporating the SIMP method to the optimization is straight-forward. We just need to adjust the sensitivity (see Equation \ref{eq:sensitivity_sheet}) slightly towards
 \begin{equation}
-    \frac{\partial C}{\partial \rho_j} = -2 p \rho_j^{p-1} w_j(\pmb{\rho}^k) = - p \rho_j^{p-1} \mathbf{u}_j(\pmb{\rho})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\pmb{\rho}).
+    \frac{\partial C}{\partial \rho_j} (\pmb{\rho}) = - p \rho_j^{p-1} \mathbf{u}_j(\pmb{\rho})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\pmb{\rho}) = -2 p \rho_j^{p-1} w_j(\pmb{\rho}).
     \label{eq:sensitivity_topology}
 \end{equation}
 
-\begin{example}{Cantilever beam with MMA and SIMP}{cantileversimpoptimizationexample}
-    Consider a FEM cantilever beam from the previous example. We only adjust the solution in Step 6 towards 
-    \begin{equation}
-        \hat{\rho}_j(\mu) = L_j^k + \sqrt{\frac{-2p \rho_j^{p-1} w_j(\pmb{\rho}^k)
-        (L^k_j-d^k_j)^2}{\mu A_j}}
-    \end{equation}
-    and we end up with the following solution:
+\begin{example}{Topology optimization with MMA and SIMP}{cantileversimpoptimizationexample}
+    Consider the FEM cantilever beam from the previous example. We slightly change the algorithm towards the following:  
+    \begin{enumerate}
+        \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, a lower design limit $\pmb{\rho}^l$ and the initial design choice $\pmb{\rho}^0$.
+        \item Compute the displacements $\mathbf{u}^k = \mathbf{u}(\pmb{\rho}^k)$ by solving the FEM system for the current design $\pmb{\rho}^k$.
+        \item Compute the strain energies densities for all elements using the previously computed displacements   
+        \begin{equation}
+            w^k_j(\pmb{\rho}^k) = \frac{1}{2}\mathbf{u}^k_j \cdot \mathbf{k}^0_j \cdot \mathbf{u}^k_j
+        \end{equation}
+        \item Compute the lower asymptotes as $\mathbf{L}^k =\pmb{\rho}^k - s (\mathbf{1} - \pmb{\rho}^l)$ with $s \in (0,1)$ during the first two iterations and according to 
+        \begin{equation}
+            L^k_j = 
+            \begin{cases}
+                \rho^k_j - s  (\rho^{k-1}_j-L^{k-1}_j) & (\rho_j^k-\rho_j^{k-1})(\rho_j^{k-1}-\rho_j^{k-2}) < 0\\
+                \rho^k_j - \frac{1}{\sqrt{s}}  (\rho^{k-1}_j-L^{k-1}_j) & \text{else}
+            \end{cases}
+        \end{equation}
+        in the following iterations.
+        \item Compute the lower move limit as 
+        \begin{equation}
+            \tilde{\pmb{\rho}}^{l,k} = \max(\pmb{\rho}_l,  0.9 \mathbf{L}^k + 0.1 \pmb{\rho}^k)
+        \end{equation}
+        \item Evaluate the analytical solution
+            \begin{align}
+                \hat{\rho}_j(\mu) &= L_j^k + \sqrt{\frac{2 p \rho_j^{p-1} w_j (\pmb{\rho}^k)
+                (L^k_j-d^k_j)^2}{\mu V_j}} \\
+                \pmb{\rho}^* (\mu) &= \max\left(\tilde{\pmb{\rho}}^{l,k}, \min \left(\hat{\pmb{\rho}}(\mu), \mathbf{1} \right)\right)
+            \end{align}
+        \item Perform a line search to find the root $\mu^*>0$ in 
+        \begin{equation}
+            \frac{\partial \underline{\mathcal{L}}}{\partial \mu}(\mu) = \mathbf{V} \cdot \pmb{\rho}^* (\mu) - V_0  = 0
+        \end{equation}
+        with Newton's method or bisection method. 
+        \item Repeat with steps 2-7 until convergence or a maximum number of iterations is reached.
+    \end{enumerate}
+
+    This procedure results in the following solution:
     \begin{center}
-        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized_binary.pdf}
+        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary.pdf}
     \end{center}
 \end{example}
 
-\section{Filters in topology optimization}
 Obviously, the SIMP approach helps us to find a binary solution of the discretized problem stated in Equation \eqref{eq:topology_optimization}. However, we may ask ourselves if there is a unique solution to this problem independent of discretization. And it turns out, the answer is no: You can improve any given design by replacing it with finer structures in a process that goes on indefinitely \cite{Christensen2008}. 
 In addition to the theoretical non-existence of a solution, this also means that our solution is \emph{mesh-dependent}: If we want to refine the solution, we may end up with a totally different solution. 
 
-\begin{example}{Cantilever beam mesh dependency}{cantileverdiscoptimizationexample}
-    We can increase the resolution of the previous examples to achieve better compliance results. However, this demonstrates the mesh-dependence of the solution and we observe structures which might be difficult to manufacture.
-    
-    Finer resolution:
+Even if we were to accept mesh dependence and the theoretical problem of ill-posedness, we are still left with challenges in the resulting designs. First of all, fine structures may be hard to manufacture. Even additive manufacturing methods are limited to some minimal structure size. Secondly, we may observe checkerboard-like patterns on the structure. These are numerical artifacts from the fact that we use linear shape functions which lead to an overestimation of the stiffness for that configuration.
+
+\begin{example}{Mesh dependency}{cantileverdiscoptimizationexample}
+    We can increase the resolution of the previous examples to achieve better compliance results. However, this demonstrates the mesh-dependence of the solution as we observe different structures in both cases. Additionally, the resulting fine structures might be difficult to manufacture.
     \begin{center}
-        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized_binary_fine.pdf}
-    \end{center}
-    
-    Even finer resolution:
-    \begin{center}
-        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine.pdf}
+        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_fine.pdf}
+        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine.pdf}
     \end{center}
 \end{example}
 
-Even if we were to accept mesh dependence and the theoretical problems, we are still left with challenges in the resulting designs. First of all, fine structures may be hard to manufacture. Even additive manufacturing methods are limited to some minimal structure size. Secondly, we may observe checkerboard-like patterns on the structure. These are numerical artifacts from the fact that we use linear shape functions which lead to an overestimation of the stiffness for that configuration.
-
 We can address all these problems with the introduction of filters as a regularization \cite{Harzheim2014, Lazarov2011}. There are two traditional approaches for mesh-independent filtering: \emph{density filtering} and \emph{sensitivity filtering}. In density filtering, we replace the density $\pmb{\rho}$ with a weighted sum of neighboring densities, and use this filtered density $\tilde{\pmb{\rho}}$ in the stiffness evaluation
 \begin{equation}
-    \mathbb{C}(\rho_j)= \tilde{\rho}_j^p(\pmb{\rho}) \mathbb{C}.
+    \mathbb{C}(\rho_j)= \tilde{\rho}_j^p \mathbb{C}.
 \end{equation}
 The filtered density is computed according to 
 \begin{equation}
@@ -184,26 +219,16 @@ An alternative to filtering densities is filtering of sensitivities. We may comp
 \end{equation}
 which is a purely heuristic concept, i.e. there is no mathematical proof for this filter to work \cite{Sigmund1998}. However, we can implement this formulation simply by replacing the sensitivities in \eqref{eq:sensitivity_topology} with filtered sensitivities. This is very efficient, simple to implement and experience shows that this filter works quite well.
 
-\begin{example}{Cantilever beam  with sensitivity filtering}{cantileverfilterexample}
-    The following images show the optimized cantilever beams from previous examples with enabled sensitivity filtering. Filtering prevents small structures and regularizes the problem such that we achieve similar optimal designs for different mesh sizes.
-
-    Previous example:
+\begin{example}{Sensitivity filtering}{cantileverfilterexample}
+    The following images show the optimized cantilever beams from previous examples with enabled sensitivity filtering. Filtering prevents small structures and regularizes the problem such that we achieve the same optimal designs for different mesh sizes.
     \begin{center}
-        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized_binary_filtered.pdf}
-    \end{center}
-    
-    Finer resolution:
-    \begin{center}
-        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized_binary_fine_filtered.pdf}
-    \end{center}
-    
-    Even finer resolution:
-    \begin{center}
-        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine_filtered.pdf}
+        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_filtered.pdf}
+        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_fine_filtered.pdf}
+        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine_filtered.pdf}
     \end{center}
 \end{example}
 
-There is one more challenge in the SIMP formulation of the standard topology optimization problem: For $p>1$, the problem is not convex anymore and different starting points may result in different local minima \cite{Christensen2008}. A strategy to cure termination at non-global minima is a gradual increase of $p$ starting from $p=1$ and using multiple starting points $\pmb{\rho}^0$.
+There is one more challenge in the SIMP formulation of the standard topology optimization problem: For $p>1$, the problem is not convex anymore and different starting points may result in different local minima \cite{Christensen2008}. A strategy to cure termination at non-global minima is a gradual increase of $p$ starting from $p=1$ or using multiple starting points.
 
 \section{Topology optimization with optimality criteria}
 The solution via MMA is in line with the previous chapters of this manuscript and is able to solve arbitrary problems beyond the compliance minimization stated in problem \eqref{eq:topology_optimization}. Historically, this specific problem was first solved with the \emph{optimality criteria method} instead of convex approximations. The idea here is that we can use the gradient of the Lagrangian
@@ -220,7 +245,7 @@ to formulate an optimality condition
     G_j = \frac{-\frac{\partial C(\pmb{\rho})}{\partial \rho_j}}{\mu A_j} = \frac{p \rho_j^{p-1} \mathbf{u}_j(\pmb{\rho})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\pmb{\rho})}{\mu A_j} = 1
 \end{equation}
 that must be fulfilled at the optimum whenever a variable does not reach its bounds.
-A heuristic algorithm can now compute $G_j$ and adjust $\rho_j$ such that $G_j$ approaches 1. We may realize that increasing $\rho_j^k$ increases the stiffness and hence decreases the displacement for a given load. Consequently, increasing $\rho_j$ decreases $G_j$ and vice versa. Hence, an update rule 
+A heuristic algorithm can now compute $G_j$ and adjust $\rho_j$ such that $G_j$ approaches 1. We may realize that increasing $\rho_j$ increases the stiffness and hence decreases the displacement for a given load. Consequently, increasing $\rho_j$ decreases $G_j$ and vice versa. Hence, an update rule 
 \begin{equation}
     \hat{\rho}_j^{k+1} = \left(G_j^k\right)^\xi \rho_j^k 
 \end{equation}
@@ -237,45 +262,44 @@ to compute the next value as
 \end{equation}
 The move limits reduce the maximum step width and account for bounds on the design variables. 
 
-To compute $G_j$, we need to determine the value of the Lagrange multiplier $\mu$. For the compliance problem, we can intuitively assume that the stiffest structure will use all material and consequently, that the volume constraint will be active. the Lagrange multiplier may be found with the bisection method on the feasibility condition
+To compute $G_j$, we need to determine the value of the Lagrange multiplier $\mu$. For the compliance problem, we can intuitively assume that the stiffest structure will use all material and consequently, that the volume constraint will be active. The Lagrange multiplier may be found with the bisection method on the feasibility condition
 \begin{equation}
     \frac{\partial \mathcal{L}}{\partial \mu} = \pmb{\rho}(\mu) \cdot \mathbf{A} - V_0 = 0.
 \end{equation}
 
-\begin{example}{Algorithm with optimality criteria and SIMP}{ocexample}
+\begin{example}{Algorithm with optimality criteria}{ocexample}
     Consider a FEM cantilever beam from the previous example. 
 
     We formulate the following algorithm to solve that problem: 
     \begin{enumerate}
-        \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, design limits $\mathbf{d}^l, \mathbf{d}^u$ and the initial design choice $\mathbf{d}^0$.
-        \item Compute the displacements $\mathbf{u}^k = \mathbf{u}(\mathbf{d}^k)$ by solving the FEM system for the current design $\mathbf{d}^k$.
+        \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, lower design limit $\pmb{\rho}^l$ and the initial design choice $\pmb{\rho}^0$.
+        \item Compute the displacements $\mathbf{u}^k = \mathbf{u}(\pmb{\rho}^k)$ by solving the FEM system for the current design $\pmb{\rho}^k$.
         \item Apply the bisection method to find the root of 
             \begin{equation}
-                g(\mu) = \pmb{\rho}^{k+1}(\mu) \cdot \mathbf{A} - V_0
+                g(\mu) = \pmb{\rho}^{k+1}(\mu) \cdot \mathbf{V} - V_0
             \end{equation}
         with 
         \begin{equation}
-            \pmb{\rho}^{k+1}(\mu) = \max \left( \min \left(\left(G_j^k(\mu)\right)^\xi \rho_j^k , \rho_j^{u,k} \right), \rho_j^{l,k} \right).
+            \rho^{k+1}_j(\mu) = \max \left( \min \left(\left(G_j^k(\mu)\right)^\xi \rho_j^k , \rho_j^{u,k} \right), \rho_j^{l,k} \right).
         \end{equation}
         \item Repeat with steps 2-3 until convergence or a maximum number of iterations is reached.
     \end{enumerate}
 \end{example}
 
-
-In addition to the density-based method shown so far, topology optimization may also be performed with \emph{Level-Set methods} and empirical growth rules like \emph{Soft Kill Option}. These methods are not addressed in this lecture.
-
-\begin{example}{Cantilever beam  interpretation}{cantileverinterpretationexample}   
-    It is important to note that topology optimizations provide only design suggestions and not a design than can be readily manufactured. With the current state of research, we always need to interpret the result in the context of a manufacturing method.
-    We may project the solution of a topology optimization problem to a canvas in a CAD software and use it as a guide to sketch an actual component:
-    \begin{center}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_template.png}
-    \end{center}
+% \begin{example}{Cantilever beam  interpretation}{cantileverinterpretationexample}   
+%     It is important to note that topology optimizations provide only design suggestions and not a design than can be readily manufactured. With the current state of research, we always need to interpret the result in the context of a manufacturing method.
+%     We may project the solution of a topology optimization problem to a canvas in a CAD software and use it as a guide to sketch an actual component:
+%     \begin{center}
+%         \includegraphics[width=0.7\linewidth]{figures/cantilever_template.png}
+%     \end{center}
     
-    This is an interpretation of the cantilever beam as a sheet metal design:
-    \begin{center}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_design.png}
-    \end{center}
-\end{example}
+%     This is an interpretation of the cantilever beam as a sheet metal design:
+%     \begin{center}
+%         \includegraphics[width=0.7\linewidth]{figures/cantilever_design.png}
+%     \end{center}
+% \end{example}
+
+\section{Shape optimization}
 
 
 \bibliographystyle{unsrtnat}

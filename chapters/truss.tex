@@ -137,7 +137,7 @@ As a post-processing step, we may compute the stress in each element via
 \begin{equation}
     S_j = \frac{E}{l_j} 
     \begin{pmatrix}
-        \cos{\phi} & \sin{\phi} & -\cos{\phi} & \sin{\phi}
+        \cos{\phi} & \sin{\phi} & -\cos{\phi} & -\sin{\phi}
     \end{pmatrix}
     \cdot 
     \mathbf{u}_j.
@@ -159,9 +159,9 @@ An exemplary solution for the example shown in Figure \ref{fig:truss_example} is
         \includegraphics[width=0.5\textwidth]{figures/three_bar_truss.pdf}
     \end{center}
 
-    The element stiffness matrices in global coordinates are 
+    The element stiffness matrices in local coordinates are 
     \begin{equation}
-        \mathbf{K}_0 = E a_0
+        \mathbf{k}_0 = E a_0
         \begin{pmatrix}
              1 & 0 & -1 & 0 \\
              0 & 0 &  0 & 0 \\
@@ -170,7 +170,7 @@ An exemplary solution for the example shown in Figure \ref{fig:truss_example} is
         \end{pmatrix},
     \end{equation}
     \begin{equation}
-        \mathbf{K}_1 = \frac{E a_1}{2\sqrt{2}}
+        \mathbf{k}_1 = \frac{E a_1}{2\sqrt{2}}
         \begin{pmatrix}
              1 & -1 & -1 &  1 \\
             -1 &  1 &  1 & -1 \\
@@ -180,7 +180,7 @@ An exemplary solution for the example shown in Figure \ref{fig:truss_example} is
     \end{equation}
     and 
     \begin{equation}
-        \mathbf{K}_2 = E a_2
+        \mathbf{k}_2 = E a_2
         \begin{pmatrix}
             0 &  0 & 0 &  0 \\
             0 &  1 & 0 & -1 \\
