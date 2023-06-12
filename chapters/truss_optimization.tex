@@ -86,12 +86,12 @@ with
     -\cos{\phi}\sin{\phi} & -\sin{\phi}^2 & \cos{\phi}\sin{\phi} & \sin{\phi}^2 \\
     \end{pmatrix}
 \end{equation}
-and the strain energy per area in each element 
+and the strain energy density in each element 
 \begin{equation}
     w_j = \frac{1}{2} \mathbf{u}_j (\mathbf{a}) \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j (\mathbf{a}).
     \label{eq:element_strain_energy}
 \end{equation}
-The strain energy is always greater or equal to zero due to the positive semi-definiteness of $\mathbf{k}^0_j$.
+The strain energy density is always greater or equal to zero due to the positive semi-definiteness of $\mathbf{k}^0_j$.
 What we have just done is called a \emph{sensitivity analysis} - we obtained an expression of how much a change of variable $a_j$ contributes to the change of the objective function $\frac{\partial C (\mathbf{a})}{\partial a_j}$. It is very valuable to have an analytical expression of the sensitivity, as solving it numerically via finite differences causes a high computational cost and loss in precision.
 Finally, the gradient of the Lagrangian becomes 
 \begin{equation}
@@ -265,7 +265,7 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
 \label{sec:truss_topology}
 In topology optimization of trusses, we want to identify those bars which should stay in our design and those trusses which may be removed. As seen in the last examples of the previous chapter, this is closely related to size optimization - the difference is that we seek a binary design (bar or no bar) instead of continuous cross section variables. Hence, we change the box constraint to a discrete constraint with a bar being either at maximum cross sectional area or minimum cross sectional area, but nothing in between.
 
-The topology optimization problem of minimizing compliance for a given volume constraint has similar structure as the size optimization problem. The only change is that $\mathbf{a}$ is now either the maximum or minimum cross section. Thus, we have 
+The topology optimization problem of minimizing compliance for a given volume constraint has similar structure as the size optimization problem. The only change is that $\mathbf{a}$ is now either the maximum or minimum cross section. Thus, we formally have 
 \begin{equation}
     \begin{aligned}
         \min_{\mathbf{a}} \quad & C(\mathbf{a}) = \mathbf{f} \cdot \mathbf{u}(\mathbf{a})\\
@@ -274,12 +274,12 @@ The topology optimization problem of minimizing compliance for a given volume co
     \end{aligned}
 \end{equation}
 
-Unfortunately, the binary problem is notoriously hard to solve, because we cannot compute gradients on the solution and testing all solutions is computationally inaccessible. Hence we try to formulate a continuous relation between stiffness and normalized density that still results in a binary result. One such formulation is called \emph{Solid Isotropic Material with Penalization} (SIMP) and we denote it here as 
+Unfortunately, the binary problem is notoriously hard to solve, because we cannot compute gradients on the solution and testing all solutions is computationally inaccessible. Hence we try to formulate a continuous relation between stiffness and a normalized variable $\rho_j = a_j/a_j^u$ that still results in a binary result. One such formulation is called \emph{Solid Isotropic Material with Penalization} (SIMP) and we denote it here as 
 \begin{equation}
-    E(a_j)= \left(\frac{a_j}{a_j^u}\right)^p E = \rho_j^p E
+    E(\rho_j)= \rho_j^p E
 \end{equation}
 with a penalization parameter $p \ge 1$. 
-The effect of penalization is shown in Figure \ref{fig:simp_truss} for typical values of $p$. We may observe for $p>1$ that the stiffness per invested material is unattractive for intermediate density values. For example, choosing $a_j/a_j^u=0.5$ adds half an element volume to the total volume, but contributes only a quarter of the stiffness compared to a fully filled element. An optimization that tries to minimize compliance for a given volume will therefore rather favor elements that provide the full stiffness benefit or add only a minimal contribution to the total volume.
+The effect of penalization is shown in Figure \ref{fig:simp_truss} for typical values of $p$. We may observe for $p>1$ that the stiffness per invested material is unattractive for intermediate density values. For example, choosing $\rho_j^u=0.5$ with $p=2$ adds half an element volume to the total volume, but contributes only a quarter of the stiffness compared to a fully filled element. An optimization that tries to minimize compliance for a given volume will therefore rather favor elements that provide the full stiffness benefit or add only a minimal contribution to the total volume.
 
 \begin{figure}[!htpb]
     \centering
@@ -288,12 +288,20 @@ The effect of penalization is shown in Figure \ref{fig:simp_truss} for typical v
     \label{fig:simp_truss}
 \end{figure}
 
-After introducing SIMP, the only change in comparison to size optimization is the computation of the sensitivity
+Hence, the topology optimization problem with SIMP becomes  
+\begin{equation}
+    \begin{aligned}
+        \min_{\pmb{\rho}} \quad & C(\pmb{\rho}) = \mathbf{f} \cdot \mathbf{u}(\pmb{\rho})\\
+        \textrm{s.t.} \quad & \pmb{\rho} \cdot \mathbf{V} - V_0 \le 0  \\
+                            & \rho_j \in (0, 1]
+    \end{aligned}
+\end{equation}
+where $V_j=a_j l_j$ describes the element volumes and $\rho_j >0$ prevents singularities. After introducing SIMP, the overall problem structure is (besides the different variable names) equivalent to the size optimization problem. The only change in comparison to size optimization  is the computation of the sensitivity
 \begin{align}
-    \frac{\partial C (\mathbf{a})}{\partial a_j} 
-    &= - \mathbf{u}_j (\mathbf{a}) \cdot \frac{\partial \mathbf{k}_j(a_j)}{\partial a_j} \cdot \mathbf{u}_j (\pmb{\rho})  \\
-    &= - p \left(\frac{a_j}{a_j^u}\right)^{p-1} \mathbf{u}_j (\mathbf{a}) \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j (\mathbf{a})  \\
-    &= - 2 p \left(\frac{a_j}{a_j^u}\right)^{p-1} w_j (\mathbf{a}),
+    \frac{\partial C (\pmb{\rho})}{\partial \rho_j} 
+    &= - \mathbf{u}_j (\pmb{\rho}) \cdot \frac{\partial \mathbf{k}_j(\rho_j)}{\partial \rho_j} \cdot \mathbf{u}_j (\pmb{\rho})  \\
+    &= - p \rho_j^{p-1} \mathbf{u}_j (\pmb{\rho}) \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j (\pmb{\rho})  \\
+    &= - 2 p \rho_j^{p-1} w_j (\pmb{\rho}),
 \end{align}
 which now accounts for the penalty factor. Note that for $p=1$, this is identical to Equation \eqref{eq:compliance_sensitivity}. 
 The entire remaining approximation procedure and solution procedure is identical to the size optimization discussed in the previous section.
@@ -487,9 +495,9 @@ for $\mu^*>0$.
                 \begin{cases}
                     x^l_i 
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i} > 0, \frac{\partial g}{\partial x_i} > 0 \\
-                    \frac{U_j^k\omega + L_j^k}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(x_j^k-L_j^k)^2\frac{\partial g}{\partial x_i}}{(U_j^k-x_j^k)^2\frac{\partial C}{\partial x_i}}}
+                    \frac{U_j^k\omega + L_j^k}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(x_j^k-L_j^k)^2\frac{\partial g}{\partial x_i}}{(U_j^k-x_j^k)^2\frac{\partial C}{\partial x_i}}}
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i}  > 0, \frac{\partial g}{\partial x_i} <0\\
-                    \frac{U_j^k-L_j^k\omega}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(U_j^k-x_j^k)^2\frac{\partial g}{\partial x_i}}{(x_j^k-L_j^k)^2\frac{\partial C}{\partial x_i}}} 
+                    \frac{U_j^k-L_j^k\omega}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(U_j^k-x_j^k)^2\frac{\partial g}{\partial x_i}}{(x_j^k-L_j^k)^2\frac{\partial C}{\partial x_i}}} 
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i} < 0, \frac{\partial g}{\partial x_i}  > 0\\
                     x^u_i 
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i}< 0, \frac{\partial g}{\partial x_i} < 0.
