@@ -138,7 +138,7 @@ The approximated optimization problem becomes
     \begin{aligned}
         \min_{\mathbf{a}} \quad & \tilde{C} (\mathbf{a})\\
         \textrm{s.t.} \quad & \mathbf{a} \cdot \mathbf{l} - V_0 \le 0  \\
-                            & \tilde{\mathbf{a}}^k_l \le \mathbf{a} \le \mathbf{a}^u\\
+                            & \tilde{\mathbf{a}}^{l,k} \le \mathbf{a} \le \mathbf{a}^u\\
     \end{aligned}
 \end{equation}
 with lower move limits $\tilde{\mathbf{a}}^{l,k} = \max(\mathbf{a}^l,  0.9 \mathbf{L}^k + 0.1 \mathbf{a}^k)$ preventing division by zero. The constraint is already linear and thus we do not approximate it.
@@ -205,11 +205,11 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
         \end{equation}
         \item Compute the gradient of the objective function (strain energies per area) for all elements using the previously computed displacements
         \begin{equation}
-            w^k_j(\mathbf{a}^k) = \frac{1}{2}\mathbf{u}^k_j  \cdot \mathbf{k}^0_j \cdot \mathbf{u}^k_j
+            w^k_j = \frac{1}{2}\mathbf{u}^k_j  \cdot \mathbf{k}^0_j \cdot \mathbf{u}^k_j
         \end{equation}
         \item Evaluate the analytical solution for
             \begin{align}
-                \hat{a}_j(\mu) &= L_j^k + \sqrt{\frac{2 w_j (\mathbf{a}^k)
+                \hat{a}_j(\mu) &= L_j^k + \sqrt{\frac{2 w^k_j
                 (L^k_j-a^k_j)^2}{\mu l_j}} \\
                 \mathbf{a}^* (\mu) &= \max\left(\tilde{\mathbf{a}}^{l,k}, \min \left(\hat{\mathbf{a}}(\mu), \mathbf{a}_u \right)\right)
             \end{align}
@@ -383,13 +383,13 @@ which is a separable function and we can use it to solve the problem with the du
 \begin{equation}
     \frac{\partial \mathcal{L}_i (\mathbf{x}, \mu)}{\partial x_i} = 
     \begin{cases}
-        \left(\frac{U_j^k-x_j^k}{U_j^k-x_j}\right)^2 \left(\frac{\partial C}{\partial x_i} + \mu \frac{\partial g}{\partial x_i} \right) 
+        \left(\frac{U_i^k-x_i^k}{U_i^k-x_i}\right)^2 \left(\frac{\partial C}{\partial x_i} + \mu \frac{\partial g}{\partial x_i} \right) 
             &\textrm{if} \quad \frac{\partial C}{\partial x_i} > 0, \frac{\partial g}{\partial x_i} > 0 \\
-        \left(\frac{U_j^k-x_j^k}{U_j^k-x_j}\right)^2 \frac{\partial C}{\partial x_i}  + \mu \left(\frac{x_j^k-L_j^k}{x_j-L_j^k}\right)^2 \frac{\partial g}{\partial x_i} 
+        \left(\frac{U_i^k-x_i^k}{U_i^k-x_i}\right)^2 \frac{\partial C}{\partial x_i}  + \mu \left(\frac{x_i^k-L_i^k}{x_i-L_i^k}\right)^2 \frac{\partial g}{\partial x_i} 
             &\textrm{if} \quad \frac{\partial C}{\partial x_i}  > 0, \frac{\partial g}{\partial x_i} <0\\
-        \left(\frac{x_j^k-L_j^k}{x_j-L_j^k}\right)^2 \frac{\partial C}{\partial x_i}  + \mu \left(\frac{U_j^k-x_j^k}{U_j^k-x_j}\right)^2\frac{\partial g}{\partial x_i} 
+        \left(\frac{x_i^k-L_i^k}{x_i-L_i^k}\right)^2 \frac{\partial C}{\partial x_i}  + \mu \left(\frac{U_i^k-x_i^k}{U_i^k-x_i}\right)^2\frac{\partial g}{\partial x_i} 
             &\textrm{if} \quad \frac{\partial C}{\partial x_i} < 0, \frac{\partial g}{\partial x_i}  > 0\\
-        \left(\frac{x_j^k-L_j^k}{x_j-L_j^k}\right)^2 \left(\frac{\partial C}{\partial x_i}  + \mu \frac{\partial g}{\partial x_i} \right) 
+        \left(\frac{x_i^k-L_i^k}{x_i-L_i^k}\right)^2 \left(\frac{\partial C}{\partial x_i}  + \mu \frac{\partial g}{\partial x_i} \right) 
             &\textrm{if} \quad \frac{\partial C}{\partial x_i}< 0, \frac{\partial g}{\partial x_i}< 0
     \end{cases}
 \end{equation}
@@ -400,9 +400,9 @@ To find the potential minimum $\hat{x}_i(\mu)$, we investigate for each case ind
     \begin{cases}
         x^l_i 
             &\textrm{if} \quad \frac{\partial C}{\partial x_i} > 0, \frac{\partial g}{\partial x_i} > 0 \\
-        \frac{U_j^k\omega + L_j^k}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(x_j^k-L_j^k)^2\frac{\partial g}{\partial x_i}}{(U_j^k-x_j^k)^2\frac{\partial C}{\partial x_i}}}
+        \frac{U_i^k\omega + L_i^k}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(x_i^k-L_i^k)^2\frac{\partial g}{\partial x_i}}{(U_i^k-x_i^k)^2\frac{\partial C}{\partial x_i}}}
             &\textrm{if} \quad \frac{\partial C}{\partial x_i}  > 0, \frac{\partial g}{\partial x_i} <0\\
-        \frac{U_j^k-L_j^k\omega}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(U_j^k-x_j^k)^2\frac{\partial g}{\partial x_i}}{(x_j^k-L_j^k)^2\frac{\partial C}{\partial x_i}}} 
+        \frac{U_i^k-L_i^k\omega}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(U_i^k-x_i^k)^2\frac{\partial g}{\partial x_i}}{(x_i^k-L_i^k)^2\frac{\partial C}{\partial x_i}}} 
             &\textrm{if} \quad \frac{\partial C}{\partial x_i} < 0, \frac{\partial g}{\partial x_i}  > 0\\
         x^u_i 
             &\textrm{if} \quad \frac{\partial C}{\partial x_i}< 0, \frac{\partial g}{\partial x_i} < 0.
@@ -466,18 +466,18 @@ for $\mu^*>0$.
         \item Compute the displacements $\mathbf{u}^k$ by solving the truss system for the current design $\mathbf{x}^k$.
         \item Compute the asymptotes as $\mathbf{L}^k =\mathbf{x}^k - s (\mathbf{x}^u - \mathbf{x}^l)$ and $\mathbf{U}^k =\mathbf{x}^k + s (\mathbf{x}^u - \mathbf{x}^l)$ with $s \in (0,1)$ during the first two iterations. In the following iterations, compute the lower asymptotes according to 
         \begin{equation}
-            L^k_j = 
+            L^k_i = 
             \begin{cases}
-                x^k_j - s  (x^{k-1}_j-L^{k-1}_j) & (x_j^k-a_j^{k-1})(x_j^{k-1}-x_j^{k-2}) < 0\\
-                x^k_j - \frac{1}{\sqrt{s}}  (a^{k-1}_j-L^{k-1}_j) & \text{else}
+                x^k_i - s  (x^{k-1}_i-L^{k-1}_i) & (x_i^k-a_i^{k-1})(x_i^{k-1}-x_i^{k-2}) < 0\\
+                x^k_i - \frac{1}{\sqrt{s}}  (a^{k-1}_i-L^{k-1}_i) & \text{else}
             \end{cases}
         \end{equation}
         and the upper asymptotes according to 
         \begin{equation}
-            U^k_j = 
+            U^k_i = 
             \begin{cases}
-                x^k_j - s  (U^{k-1}_j-x^{k-1}_j) & (x_j^k-a_j^{k-1})(x_j^{k-1}-x_j^{k-2}) < 0\\
-                x^k_j - \frac{1}{\sqrt{s}}  (U^{k-1}_j-a^{k-1}_j) & \text{else}
+                x^k_i - s  (U^{k-1}_i-x^{k-1}_i) & (x_i^k-a_i^{k-1})(x_i^{k-1}-x_i^{k-2}) < 0\\
+                x^k_i - \frac{1}{\sqrt{s}}  (U^{k-1}_i-a^{k-1}_i) & \text{else}
             \end{cases}
         \end{equation}
 
@@ -495,9 +495,9 @@ for $\mu^*>0$.
                 \begin{cases}
                     x^l_i 
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i} > 0, \frac{\partial g}{\partial x_i} > 0 \\
-                    \frac{U_j^k\omega + L_j^k}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(x_j^k-L_j^k)^2\frac{\partial g}{\partial x_i}}{(U_j^k-x_j^k)^2\frac{\partial C}{\partial x_i}}}
+                    \frac{U_i^k\omega + L_i^k}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(x_i^k-L_i^k)^2\frac{\partial g}{\partial x_i}}{(U_i^k-x_i^k)^2\frac{\partial C}{\partial x_i}}}
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i}  > 0, \frac{\partial g}{\partial x_i} <0\\
-                    \frac{U_j^k-L_j^k\omega}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(U_j^k-x_j^k)^2\frac{\partial g}{\partial x_i}}{(x_j^k-L_j^k)^2\frac{\partial C}{\partial x_i}}} 
+                    \frac{U_i^k-L_i^k\omega}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(U_i^k-x_i^k)^2\frac{\partial g}{\partial x_i}}{(x_i^k-L_i^k)^2\frac{\partial C}{\partial x_i}}} 
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i} < 0, \frac{\partial g}{\partial x_i}  > 0\\
                     x^u_i 
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i}< 0, \frac{\partial g}{\partial x_i} < 0.
