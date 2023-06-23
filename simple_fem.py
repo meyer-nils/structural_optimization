@@ -58,14 +58,17 @@ class Quad:
 
 
 class FEM:
-    def __init__(self, nodes, elements, forces, constraints, E, nu, etype=Quad()):
+    def __init__(self, nodes, elements, forces, constraints, E, nu):
         self.nodes = nodes
         self.n_dofs = torch.numel(self.nodes)
         self.elements = elements
         self.n_elem = len(self.elements)
         self.forces = forces
         self.constraints = constraints
-        self.etype = etype
+        if len(elements[0]) == 4:
+            self.etype = Quad()
+        else:
+            self.etype = Tria()
 
         # Plain stress state
         self.C = (E / ((1.0 + nu) * (1.0 - 2.0 * nu))) * torch.tensor(
@@ -76,7 +79,7 @@ class FEM:
         ecenters = torch.stack([torch.mean(nodes[e], dim=0) for e in elements])
         self.dist = torch.cdist(ecenters, ecenters)
         self.areas = torch.zeros((self.n_elem))
-        self.k0 = torch.zeros((self.n_elem, 2 * etype.nodes, 2 * etype.nodes))
+        self.k0 = torch.zeros((self.n_elem, 2 * self.etype.nodes, 2 * self.etype.nodes))
         self.global_indices = []
 
         for j, element in enumerate(self.elements):
@@ -87,20 +90,20 @@ class FEM:
             # Perform integrations
             nodes = self.nodes[element, :]
             area = 0.0
-            B = torch.zeros((3, 2 * etype.nodes))
-            for w, q in zip(etype.iweights(), etype.ipoints()):
+            D = torch.zeros((3, 2 * self.etype.nodes))
+            for w, q in zip(self.etype.iweights(), self.etype.ipoints()):
                 # Jacobian
-                J = etype.B(q) @ nodes
+                J = self.etype.B(q) @ nodes
                 detJ = torch.linalg.det(J)
                 # Area integration
                 area += w * detJ
                 # Element stiffness
-                JB = torch.linalg.inv(J) @ self.etype.B(q)
-                B[0, 0::2] = JB[0, :]
-                B[1, 1::2] = JB[1, :]
-                B[2, 0::2] = JB[1, :]
-                B[2, 1::2] = JB[0, :]
-                self.k0[j, :, :] += w * B.T @ self.C @ B * detJ
+                B = torch.linalg.inv(J) @ self.etype.B(q)
+                D[0, 0::2] = B[0, :]
+                D[1, 1::2] = B[1, :]
+                D[2, 0::2] = B[1, :]
+                D[2, 1::2] = B[0, :]
+                self.k0[j, :, :] += w * D.T @ self.C @ D * detJ
             self.areas[j] = area
 
     def element_strain_energies(self, u):
@@ -142,19 +145,36 @@ class FEM:
         return u, f
 
     @torch.no_grad()
-    def plot(self, u=0.0, node_property=None, element_property=None, node_labels=False):
+    def plot(
+        self,
+        u=0.0,
+        node_property=None,
+        element_property=None,
+        node_labels=False,
+        cmap="gray_r",
+    ):
         # Compute deformed positions
         pos = self.nodes + u
 
+        # Bounding box
+        size = torch.linalg.norm(pos.max() - pos.min())
+
         # Color surface with interpolated nodal properties (if provided)
         if node_property is not None:
-            plt.tricontourf(pos[:, 0], pos[:, 1], node_property)
+            if type(self.etype) == Quad:
+                triangles = []
+                for e in self.elements:
+                    triangles.append([e[0], e[1], e[2]])
+                    triangles.append([e[2], e[3], e[0]])
+            else:
+                triangles = self.elements
+            plt.tricontourf(pos[:, 0], pos[:, 1], triangles, node_property)
 
         # Color surface with element properties (if provided)
         if element_property is not None:
             ax = plt.gca()
             verts = pos[self.elements]
-            pc = PolyCollection(verts, cmap="gray_r")
+            pc = PolyCollection(verts, cmap=cmap)
             pc.set_array(element_property)
             ax.add_collection(pc)
 
@@ -177,7 +197,13 @@ class FEM:
                 x = pos[i][0]
                 y = pos[i][1]
                 plt.arrow(
-                    x, y, force[0], force[1], width=0.3, facecolor="gray", zorder=10
+                    x,
+                    y,
+                    size * 0.05 * force[0] / torch.norm(force),
+                    size * 0.05 * force[1] / torch.norm(force),
+                    width=0.01 * size,
+                    facecolor="gray",
+                    zorder=10,
                 )
 
         # Contraints
@@ -185,9 +211,9 @@ class FEM:
             x = pos[i][0]
             y = pos[i][1]
             if constraint[0]:
-                plt.plot(x - 0.1, y, ">", color="gray")
+                plt.plot(x - 0.01 * size, y, ">", color="gray")
             if constraint[1]:
-                plt.plot(x, y - 0.1, "^", color="gray")
+                plt.plot(x, y - 0.01 * size, "^", color="gray")
 
         plt.gca().set_aspect("equal", adjustable="box")
         plt.axis("off")
@@ -228,7 +254,7 @@ def get_cantilever(size, Lx, Ly, E=100, nu=0.3, etype=Quad()):
     for i in range(Ny + 1):
         constraints[i * (Nx + 1), :] = True
 
-    return FEM(nodes, elements, forces, constraints, E, nu, etype=etype)
+    return FEM(nodes, elements, forces, constraints, E, nu)
 
 
 def export_mesh(fem, filename, nodal_data=[], elem_data=[]):
