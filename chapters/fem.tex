@@ -292,7 +292,9 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
 \begin{example}{Linear quadrilateral elements}{quadshapeexample} 
     First of all, we describe the reference element in its own local coordinate system with coordinates $\xi_1$ and $\xi_2$. Later, we can transfer it to any other shape and position by scaling and shifting the element to global coordinates. 
 
-    
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{figures/reference_element.pdf}
+    \end{center}
 
     In this local coordinate system, we can interpolate any variable defined on nodes $\mathbf{a}_j$ by an approximation
     \begin{equation}
@@ -457,7 +459,13 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
     \begin{equation}
         \xi^1 = -\frac{1}{\sqrt{3}}, \quad \xi^2 = \frac{1}{\sqrt{3}}
     \end{equation}
-    and weights $w^1=1$ and $w^2=1$ enables exact integration of polynomials up to order 3, which is sufficient for our integrals as we approximate the integral functions with linear shape functions. This one-dimensional example can be extended canonically to higher dimensions by replacing $\frac{\text{d}x}{\text{d}\xi}$ with the determinant of the Jacobian and by using positions 
+    and weights $w^1=1$ and $w^2=1$ enables exact integration of polynomials up to order 3, which is sufficient for our integrals as we approximate the integral functions with linear shape functions. 
+
+    \begin{center}
+        \includegraphics[width=\textwidth]{figures/gauss_legendre.pdf}
+    \end{center}
+    
+    This one-dimensional example can be extended canonically to higher dimensions by replacing $\frac{\text{d}x}{\text{d}\xi}$ with the determinant of the Jacobian and by using positions 
     \begin{equation}
         \pmb{\xi}^1 = \begin{pmatrix}-\frac{1}{\sqrt{3}} \\ -\frac{1}{\sqrt{3}}\end{pmatrix} 
         \quad
