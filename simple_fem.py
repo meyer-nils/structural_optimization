@@ -183,7 +183,9 @@ class FEM:
             plt.scatter(pos[:, 0], pos[:, 1], color="black", marker="o")
             if node_labels:
                 for i, node in enumerate(pos):
-                    plt.annotate(i, (node[0] + 0.01, node[1] + 0.1), color="black")
+                    plt.annotate(
+                        i, (node[0] + 0.01 * size, node[1] + 0.01 * size), color="black"
+                    )
 
         # Elements
         for element in self.elements:
