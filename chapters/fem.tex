@@ -235,67 +235,35 @@ We can relax that requirement by computing the \emph{weak form} of the equation.
 Contracting with the test function and integrating Equation \eqref{eq:linear_momentum_balance} gives
 \begin{equation}
     \int_\Omega (\nabla \cdot \mathbf{S}) \cdot \mathbf{v} \text{d}V
-    + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega),
+    + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v},
     \label{eq:weak_form_raw}
 \end{equation}
 which is a scalar equation. We can use the identity provided in Equation \eqref{eq:divergence_identity} to expand the first term yielding
 \begin{equation}
     \int_\Omega \nabla \cdot (\mathbf{S} \cdot \mathbf{v}) \text{d}V
     - \int_\Omega \mathbf{S} : \nabla \mathbf{v} \text{d}V
-    + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega).
+    + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v}.
 \end{equation}
 We can now use the divergence theorem in Equation \eqref{eq:divergence_theorem} to compute 
 \begin{equation}
     \int_{\partial \Omega} (\mathbf{S} \cdot \mathbf{v}) \cdot \mathbf{n} \text{d}A
     - \int_\Omega \mathbf{S} : \nabla \mathbf{v} \text{d}V
-    + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = \mathbf{0} \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega).
+    + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = \mathbf{0} \quad \forall \mathbf{v}.
 \end{equation}
 Using the fact that $\mathbf{v}$ is zero on the essential boundary, that $\mathbf{S}$ is symmetric and that $\mathbf{S}\cdot \mathbf{n} = \mathbf{t}$ at the natural boundary, we arrive at the simplified weak form of linear elasticity 
 \begin{equation}
     \int_{\partial \Omega_N} \mathbf{t} \cdot \mathbf{v} \text{d}A
     - \int_\Omega \mathbf{S} : \nabla \mathbf{v} \text{d}V
-    + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega).
+    + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v}.
 \end{equation}
 Using the symmetry of $\mathbf{S}$ and replacing the material model, we may denote this in the commonly found form
 \begin{equation}
     \int_{\partial \Omega_N} \mathbf{t} \cdot \mathbf{v} \text{d}A
     - \int_\Omega \mathbf{E}(\mathbf{u}) : \mathbb{C} :  \mathbf{E}(\mathbf{v}) \text{d}V
-    + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega).
+    + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v}.
 \end{equation}
 It can be proven that this is equivalent to the strong form as long as we require the equation to hold for arbitrary $\mathbf{v}$. We may interpret this formulation as being similar to the principal of virtual work with the test function taking the role of a virtual displacement.
 The benefit of this formulation is that the solution $\mathbf{u}$ has to be only differentiable once, because we got rid of the divergence operator in front of $\mathbf{S}$.
-
-% To simplify the first term, we compute the identity
-% \begin{equation}
-%     \nabla \cdot (\nabla \mathbf{u} \cdot \mathbf{v}) 
-%     =  \left(\nabla \cdot \left(\nabla \mathbf{u}
-% \right) \right) \cdot \mathbf{v} + \nabla \mathbf{u} : \nabla \mathbf{v}
-% \end{equation}
-% and substitute it to the first integral
-% \begin{align}
-%     \int_\Omega \left(\nabla \cdot \left(\nabla \mathbf{u} \right) \right) \cdot \mathbf{v} \text{d}V
-%     &=  \int_\Omega \nabla \cdot (\nabla \mathbf{u} \cdot \mathbf{v}) \text{d}V - \int_\Omega \nabla \mathbf{u} : \nabla \mathbf{v} \text{d}V\\
-%     &=   \underbrace{\int_{\partial\Omega} \nabla \mathbf{u} \cdot \mathbf{v} \text{d}A}_{=0} - \int_\Omega \nabla \mathbf{u} : \nabla \mathbf{v} \text{d}V \\
-%     &=  - \int_\Omega \nabla \mathbf{u} : \nabla \mathbf{v} \text{d}V
-% \end{align}
-% where we used the fact that $\mathbf{v}$ is zero at the boundary. To simplify the second term, we compute the identity
-% \begin{equation}
-%     \nabla \cdot (\mathbf{v} \cdot \nabla \mathbf{u}) 
-%     =  \nabla \mathbf{v} : \nabla \mathbf{u} + \mathbf{v} \cdot  \left(\nabla^2 \mathbf{u}\right)
-%     =  \nabla \mathbf{u} : \nabla \mathbf{v} +  \left(\nabla^2 \mathbf{u}\right) \cdot \mathbf{v} 
-% \end{equation}
-% and substitute it to the second integral
-% \begin{align}
-%     \int_\Omega \left(\nabla^2 \mathbf{u}\right) \cdot \mathbf{v} \text{d}V 
-%     &=  \int_\Omega \nabla \cdot (\mathbf{v} \cdot \nabla \mathbf{u}) \text{d}V - \int_\Omega \nabla \mathbf{u} : \nabla \mathbf{v} \text{d}V\\
-%     &=   \underbrace{\int_{\partial\Omega} \mathbf{v} \cdot \nabla \mathbf{u} \text{d}A}_{=0} - \int_\Omega \nabla \mathbf{u} : \nabla \mathbf{v} \text{d}V \\
-%     &=  - \int_\Omega \nabla \mathbf{u} : \nabla \mathbf{v} \text{d}V.
-% \end{align}
-% Finally, we can substitute these two integrals back to the original weak form in Equation \eqref{eq:weak_form_raw} and arrive at 
-% \begin{equation}
-%     -(\Lambda + 2G) \int_\Omega \nabla \mathbf{u} : \nabla \mathbf{v} \text{d}V 
-%     + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = \mathbf{0} \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega).
-% \end{equation}
 
 \section{Spatial discretization in 2D}
 We can only solve the linear elastic problem analytically on simple geometries and with some assumptions. In general, on real world complex domains $\Omega$, we cannot solve it analytically. However, we can divide the problem in many small sub-problems on simple geometries and try to find a combined solution of these.
@@ -304,7 +272,7 @@ The core idea of finite elements is the discretization of a continuous domain $\
 \begin{equation}
     \sum_{j=0}^{M-1} \int_{\partial \Omega_{N,j}} \mathbf{t} \cdot \mathbf{v} \text{d}A
     - \sum_{j=0}^{M-1} \int_{\Omega_j} \mathbf{E}(\mathbf{u}) : \mathbb{C} :  \mathbf{E}(\mathbf{v}) \text{d}V
-    + \sum_{j=0}^{M-1} \int_{\Omega_j} \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega).
+    + \sum_{j=0}^{M-1} \int_{\Omega_j} \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v}).
     \label{eq:discretized_weak_form_3d}
 \end{equation}
 
@@ -314,7 +282,7 @@ If we reduce the problem to a two dimensional domain, i.e. $\Omega \subset \math
     \underbrace{\int_{\partial \Omega_{N,j}} \mathbf{t} \cdot \mathbf{v} \text{d}s}_\textrm{Boundary traction}
     - \sum_{j=0}^{M-1} d_j  
     \underbrace{\int_{\Omega_j} \mathbf{E}(\mathbf{u}) : \mathbb{C} :  \mathbf{E}(\mathbf{v}) \text{d}A}_\textrm{Strain energy}
-    + \sum_{j=0}^{M-1} \underbrace{\int_{\Omega_j} \mathbf{b} \cdot \mathbf{v} \text{d}A}_\textrm{Body forces} = 0 \quad \forall \mathbf{v} \in \mathcal{H}^1_0 (\Omega).
+    + \sum_{j=0}^{M-1} \underbrace{\int_{\Omega_j} \mathbf{b} \cdot \mathbf{v} \text{d}A}_\textrm{Body forces} = 0 \quad \forall \mathbf{v}.
     \label{eq:discretized_weak_form}
 \end{equation}
 with the constant thickness of each element $d_j$, a traction $\mathbf{t}$ describing force per length and a body force $\mathbf{b}$ describing force per unit area.
@@ -323,6 +291,8 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
 
 \begin{example}{Linear quadrilateral elements}{quadshapeexample} 
     First of all, we describe the reference element in its own local coordinate system with coordinates $\xi_1$ and $\xi_2$. Later, we can transfer it to any other shape and position by scaling and shifting the element to global coordinates. 
+
+    
 
     In this local coordinate system, we can interpolate any variable defined on nodes $\mathbf{a}_j$ by an approximation
     \begin{equation}
@@ -360,19 +330,20 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
         \nabla_\xi a = \mathbf{B}_\textrm{ref}(\pmb{\xi}) \cdot  \mathbf{a}_j
     \end{equation}
     with 
-    \begin{align}
+    \begin{equation}
         \mathbf{B}^\textrm{ref}(\pmb{\xi})
-        & =  \nabla_\xi \mathbf{N}(\pmb{\xi}) = 
+        =  \nabla_\xi \mathbf{N}(\pmb{\xi}) 
+        = 
         \begin{pmatrix}
             \frac{\partial \mathbf{N}(\pmb{\xi})}{\partial \xi_1} \\ 
             \frac{\partial \mathbf{N}(\pmb{\xi})}{\partial \xi_2} 
-        \end{pmatrix} \\
-        & = \frac{1}{4}
+        \end{pmatrix} 
+        = \frac{1}{4}
         \begin{pmatrix}
-            -1.0 + \xi_2 & 1.0 - \xi_2 & 1.0 + \xi_2 & -1.0 - \xi_2 \\
-            -1.0 + \xi_1 & -1.0 - \xi_1 & 1.0 + \xi_1 & 1.0 - \xi_1
+            -1 + \xi_2 & 1 - \xi_2 & 1 + \xi_2 & -1 - \xi_2 \\
+            -1 + \xi_1 & -1 - \xi_1 & 1 + \xi_1 & 1 - \xi_1
         \end{pmatrix}
-    \end{align}
+    \end{equation}
 
     These gradients are formulated w.r.t. the reference system $\xi_1, \xi_2$. Employing the chain rule, we may formulate gradients w.r.t. to the global coordinates as 
     \begin{equation}
@@ -387,40 +358,70 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
         \mathbf{B}^\textrm{ref}(\pmb{\xi}) \cdot  \mathbf{a}_j
     \end{equation}
 
-    We may use the shape functions $\mathbf{N}(\pmb{\xi})$ to interpolate the nodal positions of an element $j$, e.g. 
+    We may use the shape functions $\mathbf{N}(\pmb{\xi})$ to interpolate the nodal positions of an element $j$ by 
     \begin{equation}
-        \begin{pmatrix}
-            x_1(\pmb{\xi}) &  x_2(\pmb{\xi})
-        \end{pmatrix}
+        x_1(\pmb{\xi})
         = 
         \mathbf{N}(\pmb{\xi})
         \cdot 
         \begin{pmatrix}
-            {(x_1)}_j^0 &  {(x_2)}_j^0 \\
-            {(x_1)}_j^1 &  {(x_2)}_j^1 \\
-            {(x_1)}_j^2 &  {(x_2)}_j^2 \\
-            {(x_1)}_j^3 &  {(x_2)}_j^3 \\
+            {(x_1)}_j^0 \\
+            {(x_1)}_j^1 \\
+            {(x_1)}_j^2 \\
+            {(x_1)}_j^3 \\
+        \end{pmatrix}
+        , \quad
+        x_2(\pmb{\xi})
+        = 
+        \mathbf{N}(\pmb{\xi})
+        \cdot 
+        \begin{pmatrix}
+            {(x_2)}_j^0 \\
+            {(x_2)}_j^1 \\
+            {(x_2)}_j^2 \\
+            {(x_2)}_j^3 \\
         \end{pmatrix}
     \end{equation}
-    or use the gradients of shape functions $\mathbf{B}^\textrm{ref}(\pmb{\xi})$ to compute the \emph{Jacobian} 
+    or use $\mathbf{B}^\textrm{ref}(\pmb{\xi})$ to compute the gradients
     \begin{equation}
-        \mathbf{J}_j(\pmb{\xi})
-        = 
         \begin{pmatrix}
-            \frac{\partial x_1}{\partial \xi_1} & \frac{\partial x_2}{\partial \xi_1} \\
-            \frac{\partial x_1}{\partial \xi_2} & \frac{\partial x_2}{\partial \xi_2} \\
+            \frac{\partial x_1}{\partial \xi_1} \\
+            \frac{\partial x_1}{\partial \xi_2}\\
         \end{pmatrix}
         = 
         \mathbf{B}^\textrm{ref}(\pmb{\xi})
         \cdot 
         \begin{pmatrix}
-            {(x_1)}_j^0 &  {(x_2)}_j^0 \\
-            {(x_1)}_j^1 &  {(x_2)}_j^1 \\
-            {(x_1)}_j^2 &  {(x_2)}_j^2 \\
-            {(x_1)}_j^3 &  {(x_2)}_j^3 \\
+            {(x_1)}_j^0 \\
+            {(x_1)}_j^1 \\
+            {(x_1)}_j^2 \\
+            {(x_1)}_j^3 \\
         \end{pmatrix}
+        , \quad
+        \begin{pmatrix}
+            \frac{\partial x_2}{\partial \xi_1} \\
+            \frac{\partial x_2}{\partial \xi_2}\\
+        \end{pmatrix}
+        = 
+        \mathbf{B}^\textrm{ref}(\pmb{\xi})
+        \cdot 
+        \begin{pmatrix}
+            {(x_2)}_j^0 \\
+            {(x_2)}_j^1 \\
+            {(x_2)}_j^2 \\
+            {(x_2)}_j^3 \\
+        \end{pmatrix}.
     \end{equation}
-    The inverse Jacobian is just the missing term of the chain rule, hence we can determine the interpolated gradient of $a$ as 
+    The latter gradients can be used to compute the \emph{Jacobian} 
+    \begin{equation}
+        \mathbf{J}_j(\pmb{\xi})
+        = 
+        \begin{pmatrix}
+            \frac{\partial x_1}{\partial \xi_1} & \frac{\partial x_2}{\partial \xi_1} \\
+            \frac{\partial x_1}{\partial \xi_2} & \frac{\partial x_2}{\partial \xi_2}
+        \end{pmatrix},
+    \end{equation}
+    which is just the inverse of the missing term of the chain rule. Hence we can determine the interpolated gradient of $a$ w.r.t. the global coordinate system as 
     \begin{equation}
         \nabla a = 
         \underbrace{
@@ -708,7 +709,7 @@ where the 64 entries of the element stiffness are placed at corresponding positi
 just like previously with the truss system in Chapter 5. Now it comes down to solving this linear system of equations in order to compute the solution $\mathbf{u}_\textrm{red}$.
 
 \begin{example}{Finite element solution of a cantilever beam}{femexample} 
-    The following example shows a simple 2D cantilever beam discretized with 450 nodes and 406 linear quad elements. This results in 900 degrees of freedom in total. The cantilever beam is subjected to a point load at the tip and clamped at one side. There is no body force acting on it ($\mathbf{b} = \mathbf{0}$).
+    The following example shows a simple 2D cantilever beam discretized with 722 nodes and 666 linear quad elements. This results in 1444 degrees of freedom in total. The cantilever beam is subjected to a point load at the tip and clamped at one side. There is no body force acting on it ($\mathbf{b} = \mathbf{0}$).
     \begin{center}
         \includegraphics[width=0.8\textwidth]{figures/cantilever_fem.pdf}
     \end{center}
@@ -716,11 +717,11 @@ just like previously with the truss system in Chapter 5. Now it comes down to so
     \begin{equation}
         \mathbf{f} = \mathbf{K} \mathbf{u}
     \end{equation}
-    with $\mathbf{f}, \mathbf{u} \in \mathcal{R}^{900}$ and $\mathbf{K} \in \mathcal{R}^{900x900}$. Elimination of the 30 constrained degrees of freedom results in 
+    with $\mathbf{f}, \mathbf{u} \in \mathcal{R}^{1444}$ and $\mathbf{K} \in \mathcal{R}^{1444x1444}$. Elimination of the 38 constrained degrees of freedom results in 
     \begin{equation}
         \mathbf{f}_\textrm{red} = \mathbf{K}_\textrm{red} \mathbf{u}_\textrm{red}
     \end{equation}
-    with $\mathbf{f}_\textrm{red}, \mathbf{u}_\textrm{red} \in \mathcal{R}^{870}$ and $\mathbf{K}_\textrm{red} \in \mathcal{R}^{870x870}$. This can be solved for $\mathbf{u}_\textrm{red}$ representing the displacements at each node. The subsequent figure shows the norm of the displacement interpolated with linear shape functions.
+    with $\mathbf{f}_\textrm{red}, \mathbf{u}_\textrm{red} \in \mathcal{R}^{1406}$ and $\mathbf{K}_\textrm{red} \in \mathcal{R}^{1406x1406}$. This can be solved for $\mathbf{u}_\textrm{red}$ representing the displacements at each node. The subsequent figure shows the norm of the displacement interpolated with linear shape functions.
     \begin{center}
         \includegraphics[width=0.8\textwidth]{figures/cantilever_fem_solved.pdf}
     \end{center}
