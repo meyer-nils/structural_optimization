@@ -58,13 +58,14 @@ class Quad:
 
 
 class FEM:
-    def __init__(self, nodes, elements, forces, constraints, E, nu):
+    def __init__(self, nodes, elements, forces, constraints, thickness, E, nu):
         self.nodes = nodes
         self.n_dofs = torch.numel(self.nodes)
         self.elements = elements
         self.n_elem = len(self.elements)
         self.forces = forces
         self.constraints = constraints
+        self.thickness = thickness
         if len(elements[0]) == 4:
             self.etype = Quad()
         else:
@@ -75,10 +76,9 @@ class FEM:
             [[1.0 - nu, nu, 0.0], [nu, 1.0 - nu, 0.0], [0.0, 0.0, 0.5 - nu]]
         )
 
-        # Precompute properties which do not change during runtime
+        # Precompute properties which do not change during (topology) optimization
         ecenters = torch.stack([torch.mean(nodes[e], dim=0) for e in elements])
         self.dist = torch.cdist(ecenters, ecenters)
-        self.areas = torch.zeros((self.n_elem))
         self.k0 = torch.zeros((self.n_elem, 2 * self.etype.nodes, 2 * self.etype.nodes))
         self.global_indices = []
 
@@ -86,25 +86,42 @@ class FEM:
             # Compute efficient mapping from local to global indices
             indices = torch.tensor([2 * n + i for n in element for i in range(2)])
             self.global_indices.append(torch.meshgrid(indices, indices, indexing="xy"))
+            self.k0[j] = self.k(j) / thickness[j]
 
+    def k(self, j):
+        element = self.elements[j]
+        nodes = self.nodes[element, :]
+        D = torch.zeros((3, 2 * self.etype.nodes))
+        kj = torch.zeros((2 * self.etype.nodes, 2 * self.etype.nodes))
+        for w, q in zip(self.etype.iweights(), self.etype.ipoints()):
+            # Jacobian
+            J = self.etype.B(q) @ nodes
+            detJ = torch.linalg.det(J)
+            # Element stiffness
+            B = torch.linalg.inv(J) @ self.etype.B(q)
+            zeros = torch.zeros(self.etype.nodes)
+            # Build D
+            D0 = torch.stack([B[0, :], zeros], dim=-1).ravel()
+            D1 = torch.stack([zeros, B[1, :]], dim=-1).ravel()
+            D2 = torch.stack([B[1, :], B[0, :]], dim=-1).ravel()
+            D = torch.stack([D0, D1, D2])
+            kj += self.thickness[j] * w * D.T @ self.C @ D * detJ
+        return kj
+
+    def areas(self):
+        areas = torch.zeros((self.n_elem))
+        for j, element in enumerate(self.elements):
             # Perform integrations
             nodes = self.nodes[element, :]
             area = 0.0
-            D = torch.zeros((3, 2 * self.etype.nodes))
             for w, q in zip(self.etype.iweights(), self.etype.ipoints()):
                 # Jacobian
                 J = self.etype.B(q) @ nodes
                 detJ = torch.linalg.det(J)
                 # Area integration
                 area += w * detJ
-                # Element stiffness
-                B = torch.linalg.inv(J) @ self.etype.B(q)
-                D[0, 0::2] = B[0, :]
-                D[1, 1::2] = B[1, :]
-                D[2, 0::2] = B[1, :]
-                D[2, 1::2] = B[0, :]
-                self.k0[j, :, :] += w * D.T @ self.C @ D * detJ
-            self.areas[j] = area
+            areas[j] = area
+        return areas
 
     def element_strain_energies(self, u):
         # Compute strain energies of all elements
@@ -114,17 +131,23 @@ class FEM:
             w[j] = 0.5 * u_j @ self.k0[j] @ u_j
         return w
 
-    def stiffness(self, d):
+    def stiffness(self):
         # Assemble global stiffness matrix
         K = torch.zeros((self.n_dofs, self.n_dofs))
         for j in range(len(self.elements)):
-            k = d[j] * self.k0[j]
-            K[self.global_indices[j]] += k
+            K[self.global_indices[j]] += self.k(j)
         return K
 
-    def solve(self, d):
+    def morph(self, nodes, displacements, epsilon):
+        # Morph the mesh at `nodes` with radial basis functions
+        for node, disp in zip(nodes, displacements):
+            r = torch.linalg.norm(self.nodes[node] - self.nodes, dim=1)
+            weight = torch.exp(-((epsilon * r) ** 2))
+            self.nodes += torch.outer(weight, disp)
+
+    def solve(self):
         # Compute global stiffness matrix
-        K = self.stiffness(d)
+        K = self.stiffness()
 
         # Get reduced stiffness matrix
         uncon = torch.nonzero(~self.constraints.ravel(), as_tuple=False).ravel()
@@ -221,7 +244,7 @@ class FEM:
         plt.axis("off")
 
 
-def get_cantilever(size, Lx, Ly, E=100, nu=0.3, etype=Quad()):
+def get_cantilever(size, Lx, Ly, d=1.0, E=100, nu=0.3, etype=Quad()):
     # Dimensions
     Nx = int(Lx / size)
     Ny = int(Ly / size)
@@ -256,7 +279,10 @@ def get_cantilever(size, Lx, Ly, E=100, nu=0.3, etype=Quad()):
     for i in range(Ny + 1):
         constraints[i * (Nx + 1), :] = True
 
-    return FEM(nodes, elements, forces, constraints, E, nu)
+    # Default
+    thickness = d * torch.ones(len(elements))
+
+    return FEM(nodes, elements, forces, constraints, thickness, E, nu)
 
 
 def export_mesh(fem, filename, nodal_data=[], elem_data=[]):
