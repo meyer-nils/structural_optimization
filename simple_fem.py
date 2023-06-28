@@ -84,8 +84,6 @@ class FEM:
         # Precompute distance between element centers (for filtering)
         ecenters = torch.stack([torch.mean(nodes[e], dim=0) for e in elements])
         self.dist = torch.cdist(ecenters, ecenters)
-        # Precompute distance between nodes (for morphing)
-        self.r = torch.cdist(self.nodes, self.nodes)
         # Precompute global indices and element stiffness matrices
         self.k0 = torch.zeros((self.n_elem, 2 * self.etype.nodes, 2 * self.etype.nodes))
         self.global_indices = []
@@ -144,15 +142,6 @@ class FEM:
         for j in range(len(self.elements)):
             K[self.global_indices[j]] += self.k(j)
         return K
-
-    def morph(self, mask, x, epsilon):
-        # Morph the mesh at masked positions with radial basis function
-        for dof, pos in zip(torch.argwhere(mask), x):
-            node = dof[0]
-            dir = dof[1]
-            weights = torch.exp(-((epsilon * self.r[node, :]) ** 2))
-            disp = pos - self.nodes[node, dir]
-            self.nodes[:, dir] += weights * disp
 
     def solve(self):
         # Compute global stiffness matrix
