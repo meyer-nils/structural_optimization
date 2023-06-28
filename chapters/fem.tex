@@ -476,6 +476,7 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
         \pmb{\xi}^4 = \begin{pmatrix}\frac{1}{\sqrt{3}} \\ \frac{1}{\sqrt{3}}\end{pmatrix} 
         \label{eq:gaussian_weights}
     \end{equation}
+    which are indicated as gray points in the sketch of the reference element in the previous example.
 \end{example}
 
 In conclusion, the definition of shape functions on an element allows us to interpolate nodal properties (like position, displacements or temperatures) and to compute gradients of these properties within the element. In addition, Gauss-Legendre quadrature allows us to integrate these properties over the element domain and thus to evaluate the integrals in Equation \eqref{eq:discretized_weak_form}. The following subsection addresses this procedure for each of the terms in Equation \eqref{eq:discretized_weak_form}.

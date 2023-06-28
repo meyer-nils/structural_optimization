@@ -299,7 +299,65 @@ To compute $G_j$, we need to determine the value of the Lagrange multiplier $\mu
 %     \end{center}
 % \end{example}
 
-% \section{Shape optimization}
+\section{Shape optimization}
+Shape optimization of continua seeks the optimal shape of the outer perimeter of a structure without adjusting the topology, i.e. without adding new perimeters like holes. The shape optimization problem can be formulated analogously to trusses (see Equation \eqref{eq:shape_optimization}) as 
+
+\begin{equation}
+    \begin{aligned}
+        \min_{\mathbf{x}} \quad & C(\mathbf{x}) = \mathbf{f} \cdot \mathbf{u}(\mathbf{x})\\
+        \textrm{s.t.} \quad & g(\mathbf{x}) = \mathbf{d} \cdot \mathbf{A}(\mathbf{x}) - V_0 \le 0  \\
+                            & \mathbf{x} \in \mathcal{X}
+    \end{aligned}
+    \label{eq:shape_optimization_continuum}
+\end{equation}
+
+An obvious choice for design variables are the coordinates of nodes bounding the meshed domain, just as it has been done for trusses. However, this leads to jagged meshes with inaccurate stress calculations and limited deformation capabilities, as illustrated in the following example.
+
+\begin{example}{Direct shape optimization}{directshapeexample}   
+    Consider the cantilever beam from previous examples. If we choose nodal coordinates of the lower edge as design variables and try to minimize compliance with a volume constraint, the stiffness improves slightly. However, the mesh is very irregular and leads to inaccurate stress calculations. Furthermore, the deformation is limited as it should neither result in collapsed elements nor highly stretched elements. 
+    % \begin{center}
+    %     \includegraphics[width=0.7\linewidth]{figures/cantilever_template.png}
+    % \end{center}
+\end{example}
+
+We may prevent the disadvantages of the direct optimization of node positions by describing the deformation of the domain by a linear combination of basic shape modifications. This could be achieved by describing the perimeter with a spline representation \cite{Christensen2008} or by morphing operations on the mesh. Here, we decide to morph the mesh using radial basis functions \cite{Biancolini20}. 
+
+A radial basis function $\varphi \in \mathcal{R}$ is a function, that depends on the Euclidean distance $r = \lVert \mathbf{x}-\hat{\mathbf{x}} \rVert$ to some fixed point $\hat{\mathbf{x}}$.
+We can use radial basis functions to interpolate the deformation of the mesh for a set of given control points $\hat{\mathbf{x}}_i$ as 
+\begin{equation}
+    \delta(\mathbf{x}) = \sum_{l=1}^P \gamma_i \varphi(\lVert \mathbf{x}-\hat{\mathbf{x}}_i \rVert).
+\end{equation}
+
+\begin{example}{Radial basis functions}{radialbasisexample}   
+    Examples for radial basis functions are 
+    \begin{itemize}[label=$\dots$]
+        \item a Gaussian function 
+        \begin{equation}
+            \varphi(r) = e^{-(\epsilon r)^2}
+        \end{equation}
+        \item a linear spline 
+        \begin{equation}
+            \varphi(r) = r
+        \end{equation}
+        \item Wendland C2 with compact support radius $r_s$.
+        \begin{equation}
+            \varphi(r) = (1-\frac{r}{r_s})^4(4\frac{r}{r_s}+1),\quad  r \le r_s
+        \end{equation}
+    \end{itemize}
+\end{example}
+
+The interpolation should coincide with prescribed deformations at the control points $\delta_i$, i.e. 
+\begin{equation}
+    \delta(\mathbf{x}_i) = \delta_i \forall i \in [1, P]
+\end{equation}
+must hold. To find weights fulfilling this condition, we can solve the linear system of equations 
+\begin{equation}
+    \mathbf{M} \mathbf{\gamma} = \mathbf{\delta} 
+\end{equation}
+with the interpolation matrix 
+\begin{equation}
+    M_{ij} = \varphi(\lVert \mathbf{x}-\hat{\mathbf{x}}_i \rVert). 
+\end{equation}
 
 
 \bibliographystyle{unsrtnat}
