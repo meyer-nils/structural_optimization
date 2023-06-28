@@ -59,13 +59,18 @@ class Quad:
 
 class FEM:
     def __init__(self, nodes, elements, forces, constraints, thickness, E, nu):
+        # Nodes
         self.nodes = nodes
         self.n_dofs = torch.numel(self.nodes)
+        # Elements
         self.elements = elements
         self.n_elem = len(self.elements)
+        # Forces and constraints
         self.forces = forces
         self.constraints = constraints
+        # Element thicknesses
         self.thickness = thickness
+        # Element type
         if len(elements[0]) == 4:
             self.etype = Quad()
         else:
@@ -76,12 +81,14 @@ class FEM:
             [[1.0 - nu, nu, 0.0], [nu, 1.0 - nu, 0.0], [0.0, 0.0, 0.5 - nu]]
         )
 
-        # Precompute properties which do not change during (topology) optimization
+        # Precompute distance between element centers (for filtering)
         ecenters = torch.stack([torch.mean(nodes[e], dim=0) for e in elements])
         self.dist = torch.cdist(ecenters, ecenters)
+        # Precompute distance between nodes (for morphing)
+        self.r = torch.cdist(self.nodes, self.nodes)
+        # Precompute global indices and element stiffness matrices
         self.k0 = torch.zeros((self.n_elem, 2 * self.etype.nodes, 2 * self.etype.nodes))
         self.global_indices = []
-
         for j, element in enumerate(self.elements):
             # Compute efficient mapping from local to global indices
             indices = torch.tensor([2 * n + i for n in element for i in range(2)])
@@ -138,12 +145,14 @@ class FEM:
             K[self.global_indices[j]] += self.k(j)
         return K
 
-    def morph(self, nodes, displacements, epsilon):
-        # Morph the mesh at `nodes` with radial basis functions
-        for node, disp in zip(nodes, displacements):
-            r = torch.linalg.norm(self.nodes[node] - self.nodes, dim=1)
-            weight = torch.exp(-((epsilon * r) ** 2))
-            self.nodes += torch.outer(weight, disp)
+    def morph(self, mask, x, epsilon):
+        # Morph the mesh at masked positions with radial basis function
+        for dof, pos in zip(torch.argwhere(mask), x):
+            node = dof[0]
+            dir = dof[1]
+            weights = torch.exp(-((epsilon * self.r[node, :]) ** 2))
+            disp = pos - self.nodes[node, dir]
+            self.nodes[:, dir] += weights * disp
 
     def solve(self):
         # Compute global stiffness matrix
