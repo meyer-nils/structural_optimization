@@ -378,6 +378,7 @@ Both, the target function $C(\mathbf{x})$ and the constraint $g(\mathbf{x})$, ar
 We can denote the Lagrangian of the approximated functions as 
 \begin{align}
     \mathcal{L}(\mathbf{x}, \mu) &= \tilde{C}(\mathbf{x}) + \mu \tilde{g}(\mathbf{x})
+    \label{eq:shape_lagrangian}
 \end{align}
 which is a separable function and we can use it to solve the problem with the dual method. We need to distinguish cases for each separable term $\mathcal{L}_i(x_i, \mu)$ as the MMA approximations are different depending on the signs of $\frac{\partial C}{\partial x_i} (\mathbf{x}^k)$ and $\frac{\partial g}{\partial x_i} (\mathbf{x}^k)$. Hence, we distinguish four cases for the gradient computation:
 \begin{equation}
@@ -419,6 +420,7 @@ Finally we can plug this result in the Lagrangian to get the dual fucntion
 and solve 
 \begin{equation}
     \max_{\mu} \underline{\mathcal{L}}(\mu)
+    \label{eq:shape_dual_solution}
 \end{equation}
 for $\mu^*>0$. 
 

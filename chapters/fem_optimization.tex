@@ -313,7 +313,7 @@ Shape optimization of continua seeks the optimal shape of the outer perimeter of
 
 An obvious choice for design variables are the coordinates of nodes bounding the meshed domain, just as it has been done for trusses. However, this leads to jagged meshes with inaccurate stress calculations and limited deformation capabilities, as illustrated in the following example.
 
-\begin{example}{Direct shape optimization}{directshapeexample}   
+\begin{example}{Direct shape optimization of a cantilever beam}{directshapeexample}   
     Consider the cantilever beam from previous examples. If we choose nodal coordinates of the lower edge as design variables (highlighted with black dots) and try to minimize the compliance with a volume constraint, the stiffness improves slightly. However, the mesh is very irregular and leads to inaccurate stress calculations. Furthermore, the deformation is limited as it should neither result in collapsed elements nor highly stretched elements. 
     \begin{center}
         \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_naive_shape.pdf}
@@ -354,6 +354,7 @@ Using the control points as design variables, we can modify the shape smoothly w
 
 \begin{example}{Shape modification with RBFs}{rbfshapeexample}   
     Consider the cantilever beam from previous examples. We can define a set of shape modifications with control points and Gaussian RBFs. Each shape modification is defined by its own design variable. 
+    
     \begin{minipage}{.5\textwidth}
         \centering
         \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_0.pdf}
@@ -374,24 +375,110 @@ Using the control points as design variables, we can modify the shape smoothly w
     
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_0.pdf}
+        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_0_linear.pdf}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_1.pdf}
+        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_1_linear.pdf}
     \end{minipage}
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_2.pdf}
+        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_2_linear.pdf}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_3.pdf}
+        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_3_linear.pdf}
     \end{minipage}
 \end{example}
 
 We may reformulate the optimization problem now in terms of the design variables $\delta_i$ as 
-...
+\begin{equation}
+    \begin{aligned}
+        \min_{\pmb{\delta}} \quad & C(\pmb{\delta}) = \mathbf{f} \cdot \mathbf{u}(\pmb{\delta})\\
+        \textrm{s.t.} \quad & g(\pmb{\delta}) = \mathbf{d} \cdot \mathbf{A}(\pmb{\delta}) - V_0 \le 0  \\
+                            & \pmb{\delta} \in \mathcal{D}
+    \end{aligned}
+    \label{eq:shape_optimization_morph}
+\end{equation}
+
+Just like in shape optimization of trusses, target function and constraint function are generally non-linear and non-separable. Hence, we use MMA to approximate the problem and solve it equivalent to Equations \eqref{eq:shape_lagrangian} to \eqref{eq:shape_dual_solution}. We do not elaborate the analytical derivation of the gradients (this can be found e.g. in Chapter 6.3.2.2 in \cite{Christensen2008}), but simply rely on automatic differentiation to compute $\frac{\partial C}{\partial \delta_i}$ and $\frac{\partial g}{\partial \delta_i}$.
+
+
+\begin{example}{Shape optimization of a cantilever beam}{cantilevershapeoptimizationexample}
+    Consider the truss with Gaussian shape modifications from the previous example. We select the vertical degree of freedom of the five control points at the lower edge as design variables $\pmb{\delta} \in \mathcal{R}^5$.
+
+    We want to solve for the optimal shape $\pmb{\delta}^*$ that minimizes the compliance of the structure without exceeding the initial volume of the truss. Hence, we formulate the following algorithm to solve the approximated problem: 
+    \begin{enumerate}
+        \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material properties $(E, \nu)$ , volume constraint $V_0$, design limits $\pmb{\delta}^l, \pmb{\delta}^u$ and the initial design choice $\pmb{\delta}^0$.
+        \item Compute the mesh morphing weights given the current design $\pmb{\delta}^k$ according to
+        \begin{equation}
+             \pmb{\gamma}^k = \mathbf{M}^{-1}\pmb{\delta}^k 
+        \end{equation}
+        and morph the mesh with 
+        \begin{equation}
+            \delta(\mathbf{x}) = \sum_{l=1}^P \gamma_i^k \varphi(\lVert \mathbf{x}-\hat{\mathbf{x}}_i \rVert).
+        \end{equation}
+        \item Compute the displacements $\mathbf{u}^k$ by solving the FEM system for the morphed mesh.
+        \item Compute the asymptotes as $\mathbf{L}^k = \pmb{\delta}^k - s (\pmb{\delta}^u - \pmb{\delta}^l)$ and $\mathbf{U}^k =\pmb{\delta}^k + s (\pmb{\delta}^u - \pmb{\delta}^l)$ with $s \in (0,1)$ during the first two iterations. In the following iterations, compute the lower asymptotes according to 
+        \begin{equation}
+            L^k_i = 
+            \begin{cases}
+                \delta^k_i - s  (\delta^{k-1}_i-L^{k-1}_i) & (\delta_i^k-\delta_i^{k-1})(\delta_i^{k-1}-\delta_i^{k-2}) < 0\\
+                \delta^k_i - \frac{1}{\sqrt{s}}  (\delta^{k-1}_i-L^{k-1}_i) & \text{else}
+            \end{cases}
+        \end{equation}
+        and the upper asymptotes according to 
+        \begin{equation}
+            U^k_i = 
+            \begin{cases}
+                \delta^k_i - s  (U^{k-1}_i-\delta^{k-1}_i) & (\delta_i^k-\delta_i^{k-1})(\delta_i^{k-1}-\delta_i^{k-2}) < 0\\
+                \delta^k_i - \frac{1}{\sqrt{s}}  (U^{k-1}_i-\delta^{k-1}_i) & \text{else}
+            \end{cases}
+        \end{equation}
+        \item Compute the move limits as 
+        \begin{align}
+            \tilde{\pmb{\delta}}^{l,k} &= \max(\pmb{\delta}^l,  0.9 \mathbf{L}^k + 0.1 \pmb{\delta}^k) \\
+            \tilde{\pmb{\delta}}^{u,k} &= \min(\pmb{\delta}^u,  0.9 \mathbf{U}^k + 0.1 \pmb{\delta}^k)
+        \end{align}
+
+        \item Evaluate the gradients of the objective function $\frac{\partial C}{\partial \delta_i}$ and the constraint $\frac{\partial g}{\partial \delta_i}$ at $\pmb{\delta}^k$ using automatic differentiation. 
+
+        \item Evaluate the analytical solution
+            \begin{align}
+                \hat{\delta}_i(\mu) &= 
+                \begin{cases}
+                    \delta^l_i 
+                        &\textrm{if} \quad \frac{\partial C}{\partial \delta_i} > 0, \frac{\partial g}{\partial \delta_i} > 0 \\
+                    \frac{U_i^k\omega + L_i^k}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(\delta_i^k-L_i^k)^2\frac{\partial g}{\partial \delta_i}}{(U_i^k-\delta_i^k)^2\frac{\partial C}{\partial \delta_i}}}
+                        &\textrm{if} \quad \frac{\partial C}{\partial \delta_i}  > 0, \frac{\partial g}{\partial \delta_i} <0\\
+                    \frac{U_i^k-L_i^k\omega}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(U_i^k-\delta_i^k)^2\frac{\partial g}{\partial \delta_i}}{(\delta_i^k-L_i^k)^2\frac{\partial C}{\partial \delta_i}}} 
+                        &\textrm{if} \quad \frac{\partial C}{\partial \delta_i} < 0, \frac{\partial g}{\partial \delta_i}  > 0\\
+                    \delta^u_i 
+                        &\textrm{if} \quad \frac{\partial C}{\partial \delta_i}< 0, \frac{\partial g}{\partial \delta_i} < 0.
+                \end{cases} \\
+                \pmb{\delta}^* (\mu) &= \max\left(\tilde{\pmb{\delta}}^{l,k}, \min \left(\hat{\pmb{\delta}}(\mu), \tilde{\pmb{\delta}}^{u,k} \right)\right)
+            \end{align}
+        \item Perform a line search to find the maximum in 
+            \begin{equation}
+                \max_{\mu>0} \underline{\mathcal{L}}(\mu)
+            \end{equation}
+            with a gradient decent method. Once again, we may use automatic differentiation to compute the gradient for the optimization.
+        \item Repeat with steps 2-8 until convergence or a maximum number of iterations is reached.
+    \end{enumerate}
+    
+    The following figures show the evolution of the design variables during the optimization (left) and the final optimized strucutre (right) following this procedure. 
+
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_variables.pdf}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape.pdf}
+    \end{minipage}
+       
+\end{example}
+
 
 \bibliographystyle{unsrtnat}
 \bibliography{literature} 
