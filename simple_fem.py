@@ -283,7 +283,8 @@ def get_cantilever(size, Lx, Ly, d=1.0, E=100, nu=0.3, etype=Quad()):
     return FEM(nodes, elements, forces, constraints, thickness, E, nu)
 
 
-def export_mesh(fem, filename, nodal_data=[], elem_data=[]):
+@torch.no_grad()
+def export_mesh(fem, filename, nodal_data={}, elem_data={}):
     from meshio import Mesh
 
     if type(fem.etype) == Quad:
@@ -294,7 +295,23 @@ def export_mesh(fem, filename, nodal_data=[], elem_data=[]):
     mesh = Mesh(
         points=fem.nodes,
         cells={etype: fem.elements},
-        # point_data=nodal_data,
-        # cell_data={etype: elem_data},
+        point_data=nodal_data,
+        cell_data=elem_data,
     )
     mesh.write(filename)
+
+
+def import_mesh(filename, E, nu):
+    import meshio
+    import numpy as np
+
+    mesh = meshio.read(filename)
+    nodes = torch.from_numpy(mesh.points[:, 0:2].astype(np.float64))
+    elements = []
+    for cell_block in mesh.cells:
+        elements += cell_block.data.tolist()
+    forces = torch.zeros_like(nodes)
+    constraints = torch.zeros_like(nodes, dtype=bool)
+    thickness = torch.ones((len(elements)))
+
+    return FEM(nodes, elements, forces, constraints, thickness, E, nu)
