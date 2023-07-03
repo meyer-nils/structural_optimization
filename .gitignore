@@ -21,5 +21,7 @@ main.pdf
 *.fdb_latexmk
 *.toc 
 
-# VTK 
+# VTK and visualization
 *.vtk
+*.stl
+*.pvsm
