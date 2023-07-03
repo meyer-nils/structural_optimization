@@ -448,7 +448,7 @@ for $\mu^*>0$.
     \end{equation}
     The range of motion is illustrated in the following Figure:
     \begin{center}
-        \includegraphics[width=0.5\linewidth]{figures/three_bar_truss_shapes.pdf}
+        \includegraphics[width=0.4\linewidth]{figures/three_bar_truss_shapes.pdf}
     \end{center}
 
     We want to solve for the optimal shape $\mathbf{x}^*$ that minimizes the compliance of the structure without exceeding the initial volume of the truss. The original optimization problem and the MMA approximation are illustrated in the following two plots on the left and right, respectively.
@@ -470,16 +470,16 @@ for $\mu^*>0$.
         \begin{equation}
             L^k_i = 
             \begin{cases}
-                x^k_i - s  (x^{k-1}_i-L^{k-1}_i) & (x_i^k-a_i^{k-1})(x_i^{k-1}-x_i^{k-2}) < 0\\
-                x^k_i - \frac{1}{\sqrt{s}}  (a^{k-1}_i-L^{k-1}_i) & \text{else}
+                x^k_i - s  (x^{k-1}_i-L^{k-1}_i) & (x_i^k-x_i^{k-1})(x_i^{k-1}-x_i^{k-2}) < 0\\
+                x^k_i - \frac{1}{\sqrt{s}}  (x^{k-1}_i-L^{k-1}_i) & \text{else}
             \end{cases}
         \end{equation}
         and the upper asymptotes according to 
         \begin{equation}
             U^k_i = 
             \begin{cases}
-                x^k_i - s  (U^{k-1}_i-x^{k-1}_i) & (x_i^k-a_i^{k-1})(x_i^{k-1}-x_i^{k-2}) < 0\\
-                x^k_i - \frac{1}{\sqrt{s}}  (U^{k-1}_i-a^{k-1}_i) & \text{else}
+                x^k_i - s  (U^{k-1}_i-x^{k-1}_i) & (x_i^k-x_i^{k-1})(x_i^{k-1}-x_i^{k-2}) < 0\\
+                x^k_i - \frac{1}{\sqrt{s}}  (U^{k-1}_i-x^{k-1}_i) & \text{else}
             \end{cases}
         \end{equation}
 
