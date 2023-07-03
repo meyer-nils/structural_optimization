@@ -8,7 +8,8 @@ After studying this chapter and finishing the exercise, you should be able to
     \item explain the solution process for variable thickness sheets (size optimization) 
     \item solve for binary topologies using the SIMP approach
     \item discuss numerical problems in topology optimization
-    \item apply filters to deal with numerical problems and manufacturing constraints
+    \item apply filters to deal with numerical problems and manufacturing constraints in topology optimzation
+    \item explain the need for mesh morphing in shape optimization
 \end{itemize}
 \end{objectives}
 
@@ -300,7 +301,7 @@ To compute $G_j$, we need to determine the value of the Lagrange multiplier $\mu
 % \end{example}
 
 \section{Shape optimization}
-Shape optimization of continua seeks the optimal shape of the outer perimeter of a structure without adjusting the topology, i.e. without adding new perimeters like holes. The shape optimization problem can be formulated analogously to trusses (see Equation \eqref{eq:shape_optimization}) as 
+Shape optimization of continua seeks the optimal shape of the outer perimeter of a structure without adjusting the topology, i.e. without adding new perimeters like holes. The shape optimization problem for minimum compliance for a given volume constraint can be formulated analogously to trusses (see Equation \eqref{eq:shape_optimization}) as 
 
 \begin{equation}
     \begin{aligned}
@@ -311,7 +312,7 @@ Shape optimization of continua seeks the optimal shape of the outer perimeter of
     \label{eq:shape_optimization_continuum}
 \end{equation}
 
-An obvious choice for design variables are the coordinates of nodes bounding the meshed domain, just as it has been done for trusses. However, this leads to jagged meshes with inaccurate stress calculations and limited deformation capabilities, as illustrated in the following example.
+A natural choice for design variables are the coordinates of nodes bounding the meshed domain, just as it has been done for trusses. However, this leads to jagged meshes with inaccurate stress calculations and limited deformation capabilities, as illustrated in the following example.
 
 \begin{example}{Direct shape optimization of a cantilever beam}{directshapeexample}   
     Consider the cantilever beam from previous examples. If we choose nodal coordinates of the lower edge as design variables (highlighted with black dots) and try to minimize the compliance with a volume constraint, the stiffness improves slightly. However, the mesh is very irregular and leads to inaccurate stress calculations. Furthermore, the deformation is limited as it should neither result in collapsed elements nor highly stretched elements. 
@@ -466,7 +467,7 @@ Just like in shape optimization of trusses, target function and constraint funct
         \item Repeat with steps 2-8 until convergence or a maximum number of iterations is reached.
     \end{enumerate}
     
-    The following figures show the evolution of the design variables during the optimization (left) and the final optimized strucutre (right) following this procedure. 
+    The following figures show the evolution of the design variables during the optimization (left) and the final optimized structure (right) following this procedure. 
 
     \begin{minipage}{.5\textwidth}
         \centering
