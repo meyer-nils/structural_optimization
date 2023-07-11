@@ -129,9 +129,19 @@ As mentioned during truss optimization, the binary problem is notoriously hard t
 \begin{equation}
     \mathbb{C}(\rho_j)= \rho_j^p \mathbb{C}
 \end{equation}
-for the generalized FEM problem. Incorporating the SIMP method to the optimization is straight-forward. We just need to adjust the sensitivity (see Equation \ref{eq:sensitivity_sheet}) slightly towards
+for the generalized FEM problem. 
+
+Incorporating the SIMP method to the optimization is straight-forward: The element stiffness for a 2D problem with element thicknesses $d_j$ is now 
 \begin{equation}
-    \frac{\partial C}{\partial \rho_j} (\pmb{\rho}) = - p \rho_j^{p-1} \mathbf{u}_j(\pmb{\rho})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\pmb{\rho}) = -2 p \rho_j^{p-1} w_j(\pmb{\rho}).
+    \mathbf{k}_j(\rho_j) =  \rho_j^p d_j \mathbf{k}^0_j
+\end{equation}
+and consequently, the gradient becomes 
+\begin{equation}
+    \frac{\partial\mathbf{k}_j(\rho_j)}{\partial \rho_j} =  p \rho_j^{p-1}  d_j\mathbf{k}^0_j.
+\end{equation}
+Then, we just need to adjust the sensitivity (see Equation \ref{eq:sensitivity_sheet}) slightly towards
+\begin{equation}
+    \frac{\partial C}{\partial \rho_j} (\pmb{\rho}) = - p \rho_j^{p-1} d_j\mathbf{u}_j(\pmb{\rho})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\pmb{\rho}) = -2 p \rho_j^{p-1} d_j w_j(\pmb{\rho}).
     \label{eq:sensitivity_topology}
 \end{equation}
 
@@ -159,7 +169,7 @@ for the generalized FEM problem. Incorporating the SIMP method to the optimizati
         \end{equation}
         \item Evaluate the analytical solution
             \begin{align}
-                \hat{\rho}_j(\mu) &= L_j^k + \sqrt{\frac{2 p \rho_j^{p-1} w_j (\pmb{\rho}^k)
+                \hat{\rho}_j(\mu) &= L_j^k + \sqrt{\frac{2 p \rho_j^{p-1} d_j w_j (\pmb{\rho}^k)
                 (L^k_j-d^k_j)^2}{\mu V_j}} \\
                 \pmb{\rho}^* (\mu) &= \max\left(\tilde{\pmb{\rho}}^{l,k}, \min \left(\hat{\pmb{\rho}}(\mu), \mathbf{1} \right)\right)
             \end{align}
@@ -202,11 +212,11 @@ with a distance weighting matrix
 \begin{equation}
     H_{ji} = 
     \begin{cases}
-        R-\lVert \mathbf{x}_i - \mathbf{x}_j\rVert & \text{if} \quad \lVert \mathbf{x}_i - \mathbf{x}_j\rVert \le R \\
+        R-\textrm{dist}(i,j) & \text{if} \quad \textrm{dist}(i,j) \le R \\
         0 & \text{else},
     \end{cases}
 \end{equation}
-where $R$ describes the filter radius. This filter results in a structural weakening of structures finer than $R$, as they get smeared with neighboring empty elements. Hence, the filter solves the mesh-dependency problem, prevents structures that cannot be manufactured and prevents checkerboard patterns. However, we need to account for the filter during sensitivity computation by 
+where $R$ describes the filter radius and $\textrm{dist}(i,j)$ the distance between element centers of elements $i$ and $j$. This filter results in a structural weakening of structures finer than $R$, as they get smeared with neighboring empty elements. Hence, the filter solves the mesh-dependency problem, prevents structures that cannot be manufactured and prevents checkerboard patterns. However, we need to account for the filter during sensitivity computation by 
 \begin{equation}
     \frac{\partial C}{\partial \rho_j} 
     = \frac{\partial C}{\partial \tilde{\rho}_m} \frac{\partial \tilde{\rho}_m}{\partial \rho_j}
@@ -234,16 +244,16 @@ There is one more challenge in the SIMP formulation of the standard topology opt
 \section{Topology optimization with optimality criteria}
 The solution via MMA is in line with the previous chapters of this manuscript and is able to solve arbitrary problems beyond the compliance minimization stated in problem \eqref{eq:topology_optimization}. Historically, this specific problem was first solved with the \emph{optimality criteria method} instead of convex approximations. The idea here is that we can use the gradient of the Lagrangian
 \begin{equation}
-    \mathcal{L}(\pmb{\rho}, \mu) = C(\pmb{\rho}) + \mu \left( \pmb{\rho} \cdot \mathbf{A} - V_0 \right),
+    \mathcal{L}(\pmb{\rho}, \mu) = C(\pmb{\rho}) + \mu \left( \pmb{\rho} \cdot \mathbf{V} - V_0 \right),
 \end{equation}
 which is
 \begin{equation}
     \frac{\partial \mathcal{L} (\pmb{\rho}, \mu)}{\partial\rho_j} 
-    = \frac{\partial C(\pmb{\rho})}{\partial \rho_j} + \mu A_j = 0,
+    = \frac{\partial C(\pmb{\rho})}{\partial \rho_j} + \mu V_j = 0,
 \end{equation}
 to formulate an optimality condition
 \begin{equation}
-    G_j = \frac{-\frac{\partial C(\pmb{\rho})}{\partial \rho_j}}{\mu A_j} = \frac{p \rho_j^{p-1} \mathbf{u}_j(\pmb{\rho})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\pmb{\rho})}{\mu A_j} = 1
+    G_j = \frac{-\frac{\partial C(\pmb{\rho})}{\partial \rho_j}}{\mu V_j} = \frac{p \rho_j^{p-1} d_j \mathbf{u}_j(\pmb{\rho})  \cdot \mathbf{k}^0_j \cdot \mathbf{u}_j(\pmb{\rho})}{\mu V_j} = 1
 \end{equation}
 that must be fulfilled at the optimum whenever a variable does not reach its bounds.
 A heuristic algorithm can now compute $G_j$ and adjust $\rho_j$ such that $G_j$ approaches 1. We may realize that increasing $\rho_j$ increases the stiffness and hence decreases the displacement for a given load. Consequently, increasing $\rho_j$ decreases $G_j$ and vice versa. Hence, an update rule 
@@ -265,7 +275,7 @@ The move limits reduce the maximum step width and account for bounds on the desi
 
 To compute $G_j$, we need to determine the value of the Lagrange multiplier $\mu$. For the compliance problem, we can intuitively assume that the stiffest structure will use all material and consequently, that the volume constraint will be active. The Lagrange multiplier may be found with the bisection method on the feasibility condition
 \begin{equation}
-    \frac{\partial \mathcal{L}}{\partial \mu} = \pmb{\rho}(\mu) \cdot \mathbf{A} - V_0 = 0.
+    \frac{\partial \mathcal{L}}{\partial \mu} = \pmb{\rho}(\mu) \cdot \mathbf{V} - V_0 = 0.
 \end{equation}
 
 \begin{example}{Algorithm with optimality criteria}{ocexample}
@@ -275,15 +285,27 @@ To compute $G_j$, we need to determine the value of the Lagrange multiplier $\mu
     \begin{enumerate}
         \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, lower design limit $\pmb{\rho}^l$ and the initial design choice $\pmb{\rho}^0$.
         \item Compute the displacements $\mathbf{u}^k = \mathbf{u}(\pmb{\rho}^k)$ by solving the FEM system for the current design $\pmb{\rho}^k$.
+        \item Compute the sensitivity 
+        \begin{equation}
+            \frac{\partial C}{\partial \rho_j} = -2 p \rho_j^{p-1} d_j w_j(\pmb{\rho})
+        \end{equation}
+        and filter it according to
+        \begin{equation}
+            \widetilde{\frac{\partial C}{\partial \rho_j}} = \frac{1}{\rho_j} \frac{\sum_i H_{ji} A_i \rho_i \frac{\partial C}{\partial \rho_i} }{\sum_i H_{ji} A_i}.
+        \end{equation}
         \item Apply the bisection method to find the root of 
             \begin{equation}
                 g(\mu) = \pmb{\rho}^{k+1}(\mu) \cdot \mathbf{V} - V_0
             \end{equation}
         with 
         \begin{equation}
-            \rho^{k+1}_j(\mu) = \max \left( \min \left(\left(G_j^k(\mu)\right)^\xi \rho_j^k , \rho_j^{u,k} \right), \rho_j^{l,k} \right).
+            \rho^{k+1}_j(\mu) = \max \left( \min \left( \hat{\rho}_j^{k+1} , \rho_j^{u,k} \right), \rho_j^{l,k} \right)
         \end{equation}
-        \item Repeat with steps 2-3 until convergence or a maximum number of iterations is reached.
+        with
+        \begin{equation}
+            \hat{\rho}_j^{k+1} = \left(\frac{ - \widetilde{\frac{\partial C}{\partial \rho_j}}}{\mu V_j}\right)^\xi \rho_j^k.
+        \end{equation}
+        \item Repeat with steps 2-4 until convergence or a maximum number of iterations is reached.
     \end{enumerate}
 \end{example}
 

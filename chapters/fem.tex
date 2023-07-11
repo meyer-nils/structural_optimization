@@ -628,7 +628,7 @@ Finally, the boundary traction term in Equation \eqref{eq:discretized_weak_form}
 
 Using Equation \eqref{eq:shape_interpolation}, we may denote this as 
 \begin{equation}
-    \underbrace{\sum_k \frac{\partial x}{\partial \xi} \mathbf{t} \cdot \begingroup 
+    \underbrace{\sum_k \frac{\partial x}{\partial \xi} \mathbf{t}(\pmb{\xi}^k) \cdot \begingroup 
     \setlength\arraycolsep{-5pt}
     \begin{pmatrix}
             N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi}^k) & 0\\
