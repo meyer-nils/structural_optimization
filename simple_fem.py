@@ -85,47 +85,50 @@ class FEM:
         ecenters = torch.stack([torch.mean(nodes[e], dim=0) for e in elements])
         self.dist = torch.cdist(ecenters, ecenters)
         # Precompute global indices and element stiffness matrices
-        self.k0 = torch.zeros((self.n_elem, 2 * self.etype.nodes, 2 * self.etype.nodes))
-        self.global_indices = []
+        gidx_1 = []
+        gidx_2 = []
         for j, element in enumerate(self.elements):
             # Compute efficient mapping from local to global indices
             indices = torch.tensor([2 * n + i for n in element for i in range(2)])
-            self.global_indices.append(torch.meshgrid(indices, indices, indexing="xy"))
-            self.k0[j] = self.k(j) / thickness[j]
+            idx_1, idx_2 = torch.meshgrid(indices, indices, indexing="xy")
+            gidx_1.append(idx_1)
+            gidx_2.append(idx_2)
+        self.gidx_1 = torch.stack(gidx_1)
+        self.gidx_2 = torch.stack(gidx_2)
 
-    def k(self, j):
-        element = self.elements[j]
-        nodes = self.nodes[element, :]
-        D = torch.zeros((3, 2 * self.etype.nodes))
-        kj = torch.zeros((2 * self.etype.nodes, 2 * self.etype.nodes))
+        self.k0 = torch.einsum("i,ijk->ijk", 1.0 / self.thickness, self.k())
+
+    def k(self):
+        # Perform integrations
+        nodes = self.nodes[self.elements, :]
+        k = torch.zeros((self.n_elem, 2 * self.etype.nodes, 2 * self.etype.nodes))
         for w, q in zip(self.etype.iweights(), self.etype.ipoints()):
             # Jacobian
             J = self.etype.B(q) @ nodes
             detJ = torch.linalg.det(J)
+            if torch.any(detJ <= 0.0):
+                raise Exception("Negative Jacobian. Check element numbering.")
             # Element stiffness
             B = torch.linalg.inv(J) @ self.etype.B(q)
-            zeros = torch.zeros(self.etype.nodes)
-            # Build D
-            D0 = torch.stack([B[0, :], zeros], dim=-1).ravel()
-            D1 = torch.stack([zeros, B[1, :]], dim=-1).ravel()
-            D2 = torch.stack([B[1, :], B[0, :]], dim=-1).ravel()
-            D = torch.stack([D0, D1, D2])
-            kj += self.thickness[j] * w * D.T @ self.C @ D * detJ
-        return kj
+            zeros = torch.zeros(self.n_elem, self.etype.nodes)
+            D0 = torch.stack([B[:, 0, :], zeros], dim=-1).reshape(self.n_elem, -1)
+            D1 = torch.stack([zeros, B[:, 1, :]], dim=-1).reshape(self.n_elem, -1)
+            D2 = torch.stack([B[:, 1, :], B[:, 0, :]], dim=-1).reshape(self.n_elem, -1)
+            D = torch.stack([D0, D1, D2], dim=1)
+            DCD = torch.einsum("...ji,...jk,...kl->...il", D, self.C, D)
+            k[:, :, :] += torch.einsum("i,ijk->ijk", w * self.thickness * detJ, DCD)
+        return k
 
     def areas(self):
         areas = torch.zeros((self.n_elem))
-        for j, element in enumerate(self.elements):
-            # Perform integrations
-            nodes = self.nodes[element, :]
-            area = 0.0
-            for w, q in zip(self.etype.iweights(), self.etype.ipoints()):
-                # Jacobian
-                J = self.etype.B(q) @ nodes
-                detJ = torch.linalg.det(J)
-                # Area integration
-                area += w * detJ
-            areas[j] = area
+        # Perform integrations
+        nodes = self.nodes[self.elements, :]
+        for w, q in zip(self.etype.iweights(), self.etype.ipoints()):
+            # Jacobian
+            J = self.etype.B(q) @ nodes
+            detJ = torch.linalg.det(J)
+            # Area integration
+            areas[:] += w * detJ
         return areas
 
     def element_strain_energies(self, u):
@@ -139,8 +142,7 @@ class FEM:
     def stiffness(self):
         # Assemble global stiffness matrix
         K = torch.zeros((self.n_dofs, self.n_dofs))
-        for j in range(len(self.elements)):
-            K[self.global_indices[j]] += self.k(j)
+        K.index_put_((self.gidx_1, self.gidx_2), self.k(), accumulate=True)
         return K
 
     def solve(self):
