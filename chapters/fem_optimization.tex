@@ -231,7 +231,7 @@ An alternative to filtering densities is filtering of sensitivities. We may comp
 which is a purely heuristic concept, i.e. there is no mathematical proof for this filter to work \cite{Sigmund1998}. However, we can implement this formulation simply by replacing the sensitivities in \eqref{eq:sensitivity_topology} with filtered sensitivities. This is very efficient, simple to implement and experience shows that this filter works quite well.
 
 \begin{example}{Sensitivity filtering}{cantileverfilterexample}
-    The following images show the optimized cantilever beams from previous examples with enabled sensitivity filtering. Filtering prevents small structures and regularizes the problem such that we achieve the same optimal designs for different mesh sizes.
+    The following images show the optimized cantilever beams from previous examples with enabled sensitivity filtering employing the same filtering radius for each resolution. Filtering prevents small structures and regularizes the problem such that we achieve the same optimal designs for different mesh sizes.
     \begin{center}
         \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_filtered.pdf}
         \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_fine_filtered.pdf}
@@ -355,8 +355,8 @@ We can use radial basis functions to interpolate the deformation of the mesh for
     \begin{center}
         \begin{tabular}{ll}
             Gaussian: & $\varphi(r) = e^{-(\epsilon r)^2}$ \\
-            Linear spline: & $\varphi(r) = r$ \\
-            Wendland C2: & $\varphi(r) = (1-\frac{r}{r_s})^4(4\frac{r}{r_s}+1),\quad  r \le r_s$ 
+            Linear: & $\varphi(r) = r$ \\
+            % Wendland C2: & $\varphi(r) = (1-\frac{r}{r_s})^4(4\frac{r}{r_s}+1),\quad  r \le r_s$ 
         \end{tabular}
     \end{center}
 \end{example}
@@ -367,7 +367,7 @@ The interpolation should coincide with prescribed deformations at the control po
 \end{equation}
 must hold. To find weights fulfilling this condition, we can solve the linear system of equations 
 \begin{equation}
-    \mathbf{M} \pmb{\gamma} = \pmb{\delta} 
+    \mathbf{M} \cdot \pmb{\gamma} = \pmb{\delta} 
 \end{equation}
 with the interpolation matrix 
 \begin{equation}
@@ -435,7 +435,7 @@ Just like in shape optimization of trusses, target function and constraint funct
         \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material properties $(E, \nu)$ , volume constraint $V_0$, design limits $\pmb{\delta}^l, \pmb{\delta}^u$ and the initial design choice $\pmb{\delta}^0$.
         \item Compute the mesh morphing weights given the current design $\pmb{\delta}^k$ according to
         \begin{equation}
-             \pmb{\gamma}^k = \mathbf{M}^{-1}\pmb{\delta}^k 
+             \pmb{\gamma}^k = \mathbf{M}^{-1} \cdot \pmb{\delta}^k 
         \end{equation}
         and morph the mesh with 
         \begin{equation}
