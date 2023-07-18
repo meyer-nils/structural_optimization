@@ -10,7 +10,7 @@ This is accompanying code for my *Structural Optimization* lecture MRM-0156.
 ## Structure of the repository
 The repository is organized as follows: 
 
-- **chapters** contains the LaTeX source files of the manuscript chapters. The manuscript is build automatically for each commit with a GitHub action. 
+- **chapters** contains the LaTeX source files of the manuscript chapters. The manuscript is build automatically for each commit with a GitHub action. The current release version v1.0.0 is available [here](https://github.com/meyer-nils/structural_optimization/releases/download/v1.0.0/structural_optimization.pdf).
 - **figures** contains all the figures used in the manuscript. The majority of them is created via Jupyter notebooks, so you may reproduce them yourself. See manuscript for references of figures adapted from other sources. 
 - **notebooks** contains all the notebooks with accompanying code and a simple truss and FEM solver for the lecture. The images of the lecture are generated with notebooks having a prefix `lecture`, the solution to exercises are documented in notebooks having a prefix `exercise`, and the unsolved exercises have a suffix `_unsolved`. 
 
