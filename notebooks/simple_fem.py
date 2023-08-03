@@ -311,7 +311,8 @@ def import_mesh(filename, E, nu):
     nodes = torch.from_numpy(mesh.points[:, 0:2].astype(np.float64))
     elements = []
     for cell_block in mesh.cells:
-        elements += cell_block.data.tolist()
+        if cell_block.type in ["triangle", "quad"]:
+            elements += cell_block.data.tolist()
     forces = torch.zeros_like(nodes)
     constraints = torch.zeros_like(nodes, dtype=bool)
     thickness = torch.ones((len(elements)))
