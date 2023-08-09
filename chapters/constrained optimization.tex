@@ -26,7 +26,7 @@ After studying this chapter and finishing the exercise, you should be able to
 \end{objectives}
 
 \section{Box constraints} 
-First, we neglect the inequality constraints and inequality constraints in the problem \eqref{eq:constrained_optimization}, i.e. $m=0, n=0$, and focus on box constraints $\mathbf{x} \in \mathcal{X}$. \emph{Box constraint} means that the variables are limited to an upper and lower bound $\mathbf{x}^u$ and $\mathbf{x}^l$, respectively. For example, design variables in structural optimization could be diameters of beams, which cannot become negative or should not exceed a certain maximum producible size.
+First, we neglect the equality constraints and inequality constraints in the problem \eqref{eq:constrained_optimization}, i.e. $m=0, n=0$, and focus on box constraints $\mathbf{x} \in \mathcal{X}$. \emph{Box constraint} means that the variables are limited to an upper and lower bound $\mathbf{x}^u$ and $\mathbf{x}^l$, respectively. For example, design variables in structural optimization could be diameters of beams, which cannot become negative or should not exceed a certain maximum producible size.
 
 These constraints are probably the most friendly constraints in an optimization problem and in a one-dimensional optimization problem we can deal with them simply by clipping the variable as 
 \begin{equation}
@@ -147,7 +147,7 @@ fulfills the necessary condition to be an optimum of a constrained optimization 
 
 
 \section{Karush-Kuhn-Tucker conditions}
-The Lagrange multipliers where initially only defined for inequality constraints. However, the concept can be extended to inequality constraints with a Lagrangian function 
+The Lagrange multipliers where initially only defined for equality constraints. However, the concept can be extended to inequality constraints with a Lagrangian function 
 \begin{equation}
     \mathcal{\mathcal{L}} (\mathbf{x}, \pmb{\mu}, \pmb{\lambda}) = f(\mathbf{x}) + \sum_{i=1}^n \mu_i g_i(\mathbf{x}) + \sum_{j=1}^m \lambda_j h_j(\mathbf{x}) 
 \end{equation}
