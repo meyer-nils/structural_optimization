@@ -183,7 +183,7 @@ class FEM:
 
         # Color surface with interpolated nodal properties (if provided)
         if node_property is not None:
-            if type(self.etype) == Quad:
+            if isinstance(self.etype, Quad):
                 triangles = []
                 for e in self.elements:
                     triangles.append([e[0], e[1], e[2]])
@@ -258,7 +258,7 @@ def get_cantilever(size, Lx, Ly, d=1.0, E=100, nu=0.3, etype=Quad()):
     elements = []
     for j in range(Ny):
         for i in range(Nx):
-            if type(etype) == Quad:
+            if isinstance(etype, Quad):
                 # Quad elements
                 n0 = i + j * (Nx + 1)
                 elements.append([n0, n0 + 1, n0 + Nx + 2, n0 + Nx + 1])
@@ -288,9 +288,9 @@ def get_cantilever(size, Lx, Ly, d=1.0, E=100, nu=0.3, etype=Quad()):
 def export_mesh(fem, filename, nodal_data={}, elem_data={}):
     from meshio import Mesh
 
-    if type(fem.etype) == Quad:
+    if isinstance(fem.etype, Quad):
         etype = "quad"
-    elif type(fem.etype) == Tria:
+    elif isinstance(fem.etype, Tria):
         etype = "triangle"
 
     mesh = Mesh(
