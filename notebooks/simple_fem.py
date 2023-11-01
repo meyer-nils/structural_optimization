@@ -87,7 +87,7 @@ class FEM:
         # Precompute global indices and element stiffness matrices
         gidx_1 = []
         gidx_2 = []
-        for j, element in enumerate(self.elements):
+        for element in self.elements:
             # Compute efficient mapping from local to global indices
             indices = torch.tensor([2 * n + i for n in element for i in range(2)])
             idx_1, idx_2 = torch.meshgrid(indices, indices, indexing="xy")
