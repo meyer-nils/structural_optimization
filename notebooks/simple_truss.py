@@ -17,39 +17,41 @@ class Truss:
         self.E = E
 
         # Precompute mapping from local to global indices
-        self.global_indices = []
+        gidx_1 = []
+        gidx_2 = []
         for element in self.elements:
             indices = torch.tensor([2 * n + i for n in element for i in range(2)])
-            self.global_indices.append(torch.meshgrid(indices, indices, indexing="xy"))
+            idx_1, idx_2 = torch.meshgrid(indices, indices, indexing="xy")
+            gidx_1.append(idx_1)
+            gidx_2.append(idx_2)
+        self.gidx_1 = torch.stack(gidx_1)
+        self.gidx_2 = torch.stack(gidx_2)
 
-    def k(self, j):
-        element = self.elements[j]
-        n1 = element[0]
-        n2 = element[1]
-        dx = self.nodes[n1][0] - self.nodes[n2][0]
-        dy = self.nodes[n1][1] - self.nodes[n2][1]
-        l0 = torch.sqrt(dx**2 + dy**2)
+    def k(self):
+        nodes = self.nodes[self.elements, :]
+        dx = nodes[:, 0, 0] - nodes[:, 1, 0]
+        dy = nodes[:, 0, 1] - nodes[:, 1, 1]
+        l0 = self.element_lengths()
         c = dx / l0
         s = dy / l0
+        c2 = c * c
+        s2 = s * s
+        cs = c * s
         m = torch.stack(
             [
-                torch.stack([c**2, s * c, -(c**2), -s * c]),
-                torch.stack([s * c, s**2, -s * c, -(s**2)]),
-                torch.stack([-(c**2), -s * c, (c**2), s * c]),
-                torch.stack([-s * c, -(s**2), s * c, s**2]),
-            ]
+                torch.stack([c2, cs, -c2, -cs], dim=-1),
+                torch.stack([cs, s2, -cs, -s2], dim=-1),
+                torch.stack([-c2, -cs, c2, cs], dim=-1),
+                torch.stack([-cs, -s2, cs, s2], dim=-1),
+            ],
+            dim=-1,
         )
-        return self.areas[j] * self.E / l0 * m
+        return self.areas[:, None, None] * self.E / l0[:, None, None] * m
 
     def element_lengths(self):
-        l0 = torch.zeros((self.n_elem))
-        for j, element in enumerate(self.elements):
-            n1 = element[0]
-            n2 = element[1]
-            dx = self.nodes[n1][0] - self.nodes[n2][0]
-            dy = self.nodes[n1][1] - self.nodes[n2][1]
-            l0[j] = torch.sqrt(dx**2 + dy**2)
-        return l0
+        nodes = self.nodes[self.elements, :]
+        dx = nodes[:, 0, :] - nodes[:, 1, :]
+        return torch.linalg.norm(dx, dim=-1)
 
     def element_strain_energies(self, u):
         w = torch.zeros((self.n_elem))
@@ -57,15 +59,13 @@ class Truss:
             n1 = element[0]
             n2 = element[1]
             u_j = torch.stack([u[n1, 0], u[n1, 1], u[n2, 0], u[n2, 1]])
-            k0 = self.k(j) / self.areas[j]
+            k0 = self.k()[j] / self.areas[j]
             w[j] = 0.5 * u_j @ k0 @ u_j
         return w
 
     def stiffness(self):
-        n_dofs = torch.numel(self.nodes)
-        K = torch.zeros((n_dofs, n_dofs))
-        for j in range(len(self.elements)):
-            K[self.global_indices[j]] += self.k(j)
+        K = torch.zeros((self.n_dofs, self.n_dofs))
+        K.index_put_((self.gidx_1, self.gidx_2), self.k(), accumulate=True)
         return K
 
     def solve(self):
