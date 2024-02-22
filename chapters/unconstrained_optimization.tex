@@ -75,7 +75,8 @@ We can asses the convexity of a function $f: \mathcal{S} \rightarrow \mathcal{R}
     \end{equation} 
     is positive definite. Visually this means, we can draw a line between any two points of the function and it will never intersect the function.
 
-    \includegraphics[width=\textwidth]{figures/convex_function_0.pdf}
+    \includesvg[width =\textwidth]{figures/convex_function_0.svg}
+    % \includegraphics[width=\textwidth]{figures/convex_function_0.pdf}
 \end{example}
 
 
@@ -90,7 +91,8 @@ We can asses the convexity of a function $f: \mathcal{S} \rightarrow \mathcal{R}
     \end{equation} 
     is not positive definite. Visually this means, we can find two points, for which drawing a line between them would cross the function. 
     
-    \includegraphics[width=\textwidth]{figures/convex_function_1.pdf}
+    \includesvg[width=\textwidth]{figures/convex_function_1.svg}
+    % \includegraphics[width=\textwidth]{figures/convex_function_1.pdf}
 \end{example}
 
 An unconstrained optimization problem is termed \emph{convex}, if the objective function $f: \mathcal{S} \rightarrow \mathcal{R}$ is convex and the set $\mathcal{S}$ is convex. If in addition, the set $\mathcal{S}$ is compact (i.e. bounded and closed), there exists exactly one solution for the optimization problem. In conclusion this means, that finding the local minimum in a convex problem is equivalent to finding its global minimum. 
@@ -164,7 +166,8 @@ with $c \in (0,1)$. This condition ensures a sufficient decrease of the objectiv
 \begin{example}{Armijo condition}{armijoexample}
     Consider the function $f(x)$ displayed below. The Armijo condition is satisfied in all green ranges.  
     
-    \includegraphics[width=\textwidth]{figures/armijo_condition.pdf}
+    \includesvg[width=\textwidth]{figures/armijo_condition.svg}
+    % \includegraphics[width=\textwidth]{figures/armijo_condition.pdf}
 \end{example}
 
 The Armijo condition is always fulfilled for very small steps, thus we have to consider an additional curvature condition (in combination, these are called \emph{Wolfe conditions}) or implement the condition in a clever way to allow for a sufficiently large step size. Latter can be realized with the \emph{backtracking method}, which is usually used to perform the line search to find the step width: 
@@ -219,7 +222,8 @@ Newton's method is a well known method to find roots of a function.
         \item Repeat the steps 2 and 3 until converged.
     \end{enumerate}
     
-    \includegraphics[width=\textwidth]{figures/netwon_iteration.pdf}
+    \includesvg[width=\textwidth]{figures/netwon_iteration.svg}
+    % \includegraphics[width=\textwidth]{figures/netwon_iteration.pdf}
     \begin{center}    
         \begin{tabular}{cccc}
     
