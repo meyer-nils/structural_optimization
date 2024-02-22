@@ -6,6 +6,12 @@ jobs:
   convert_via_pandoc:
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          apt install pandoc-citeproc
+      
       - uses: docker://pandoc/core:2.9
         with:
           args: >-
@@ -16,7 +22,11 @@ jobs:
             --filter pandoc-crossref 
             --filter pandoc_filter.py
             --citeproc
-            -V lang=en
-            -o main.html 
-            -s 
-            main.tex   
+            --variable lang=en
+            --output main.html 
+            --standalone
+            main.tex  
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: main.html
