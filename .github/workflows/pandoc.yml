@@ -10,7 +10,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install pandoc-citeproc
+          sudo apt install pandoc-citeproc python-is-python3
       
       - uses: docker://pandoc/latex:latest
         with:
