@@ -12,7 +12,7 @@ jobs:
         run: |
           sudo apt install pandoc-citeproc
       
-      - uses: docker://pandoc/core:2.9
+      - uses: docker://pandoc/latex:latest
         with:
           args: >-
             --mathjax
