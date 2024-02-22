@@ -10,7 +10,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt install pandoc-citeproc
+          sudo apt install pandoc-citeproc
       
       - uses: docker://pandoc/core:2.9
         with:
