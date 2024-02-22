@@ -1,0 +1,22 @@
+name: Generate HTML via Pandoc
+
+on: push
+
+jobs:
+  convert_via_pandoc:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: docker://pandoc/core:2.9
+        with:
+          args: >-
+            --mathjax
+            --bibliography=literature.bib
+            --number-sections
+            --css main.css
+            --filter pandoc-crossref 
+            --filter pandoc_filter.py
+            --citeproc
+            -V lang=en
+            -o main.html 
+            -s 
+            main.tex   
