@@ -10,6 +10,8 @@ jobs:
         uses: xu-cheng/latex-action@v2
         with:
           root_file: main.tex
+          extra_system_packages: inkscape
+          latexmk_shell_escape: true
       - name: Upload PDF file
         uses: actions/upload-artifact@v3
         with:
