@@ -8,26 +8,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install dependencies
+      - name: Run pandoc
         run: |
-          sudo apt install pandoc-citeproc
-          which python
+          sudo apt install pandoc pandoc-citeproc
           sudo chmod +x pandoc_filter.py
-      
-      - uses: docker://pandoc/latex:latest
-        with:
-          args: >-
-            --mathjax
-            --bibliography=literature.bib
-            --number-sections
-            --css main.css
-            --filter pandoc-crossref 
-            --filter pandoc_filter.py
-            --citeproc
-            --variable lang=en
-            --output main.html 
-            --standalone
-            main.tex  
+          pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --variable lang=en --output main.html --standalone main.tex  
 
       - uses: actions/upload-artifact@v3
         with:
