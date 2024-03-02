@@ -12,7 +12,7 @@ jobs:
         run: |
           sudo apt install pandoc-citeproc
           which python
-          sudo chmod+x pandoc_filter.py
+          sudo chmod +x pandoc_filter.py
       
       - uses: docker://pandoc/latex:latest
         with:
