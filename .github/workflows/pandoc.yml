@@ -2,6 +2,9 @@ name: Generate HTML via Pandoc
 
 on: push
 
+permissions:
+  id-token: write
+
 jobs:
   convert_via_pandoc:
     runs-on: ubuntu-22.04
@@ -23,7 +26,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: meyer-nils.github.io/structural_optimization
+      url: https://meyer-nils.github.io/structural_optimization
     runs-on: ubuntu-latest
     needs: convert_via_pandoc
     steps:
