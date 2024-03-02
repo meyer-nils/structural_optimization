@@ -16,6 +16,7 @@ jobs:
           tar -xvf pandoc-crossref-Linux.tar.xz
           sudo mv pandoc-crossref /usr/local/bin/pandoc-crossref
           sudo apt install pandoc-citeproc 
+          pip install pandocfilters
           sudo chmod +x pandoc_filter.py
           pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --variable lang=en --output main.html --standalone main.tex  
 
