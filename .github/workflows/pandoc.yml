@@ -4,6 +4,7 @@ on: push
 
 permissions:
   id-token: write
+  pages: write
 
 jobs:
   convert_via_pandoc:
