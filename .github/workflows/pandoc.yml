@@ -10,8 +10,8 @@ jobs:
 
       - name: Run pandoc
         run: |
-          wget -q https://github.com/jgm/pandoc/releases/download/3.1.12.2/pandoc-3.1.12.2-1-amd64.deb
-          sudo dpkg -i pandoc-3.1.12.2-1-amd64.deb
+          wget -q https://github.com/jgm/pandoc/releases/download/3.1.11.1/pandoc-3.1.11.1-1-amd64.deb
+          sudo dpkg -i pandoc-3.1.11.1-1-amd64.deb
           wget -q https://github.com/lierdakil/pandoc-crossref/releases/download/v0.3.17.0c/pandoc-crossref-Linux.tar.xz
           tar -xvf pandoc-crossref-Linux.tar.xz
           sudo mv pandoc-crossref /usr/local/bin/pandoc-crossref
