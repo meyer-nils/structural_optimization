@@ -10,7 +10,9 @@ jobs:
 
       - name: Run pandoc
         run: |
-          sudo apt install pandoc pandoc-citeproc
+          wget https://github.com/jgm/pandoc/releases/download/3.1.12.2/pandoc-3.1.12.2-1-amd64.deb
+          sudo dpkg -i pandoc-3.1.12.2-1-amd64.deb
+          sudo apt install pandoc-citeproc
           sudo chmod +x pandoc_filter.py
           pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --variable lang=en --output main.html --standalone main.tex  
 
