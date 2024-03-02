@@ -22,7 +22,12 @@ jobs:
           sudo apt install pandoc-citeproc 
           pip install pandocfilters
           sudo chmod +x pandoc_filter.py
-          pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --variable lang=en --output index.html --standalone main.tex  
+          pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --variable lang=en --output index.html --standalone main.tex
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
 
   deploy:
     environment:
@@ -35,10 +40,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
