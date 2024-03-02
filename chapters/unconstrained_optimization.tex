@@ -140,7 +140,7 @@ The step itself is scaled with a factor $-\eta \in \mathcal{R}$. The sign stems 
     The optimization path of a simple steepest decent method with a starting point $\mathbf{x}^0= (4, -1)^\top$ and $\eta=0.1$ is shown in the plot below with a blue line. However, the solution requires quite a lot of iterations.
 
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/simple_decent.svg}
+        \includesvg[width=0.5\textwidth]{figures/simple_decent.svg}
     \end{center}   
 \end{example}
 
@@ -180,7 +180,7 @@ The proposed steepest decent method is a useful strategy for unconstrained optim
 \begin{example}{Steepest decent with incomplete line search}{steepestdecentexample}
     We consider the optimization of Equation \eqref{eq:simpledecent_example} using a steepest decent method with incomplete line search. The optimization path for a starting point $\mathbf{x}^0= (4, -1)^\top$, $\eta^0=5.0$, $c=0.5$, and $\rho=0.8$ is shown in the plot below with a blue line. The solution converges much faster than the simple steepest decent.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/steepest_decent.svg}
+        \includesvg[width=0.5\textwidth]{figures/steepest_decent.svg}
     \end{center}   
 \end{example}
 
@@ -203,7 +203,7 @@ The algorithm of a conjugated gradient method according to Fletchers and Reeves 
 \begin{example}{Conjugated gradients}{cgexample}
     We consider the optimization of Equation \eqref{eq:simpledecent_example} using the CG method with incomplete line search for the sub-problem. The optimization path for a starting point $\mathbf{x}^0= (4, -1)^\top$, $\eta^0=5.0$, $c=0.5$, and $\rho=0.8$ is shown in the plot below with a blue line. The solution converges in just two iterations for this 2D problem, as the problem is quadratic.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/cg.svg}
+        \includesvg[width=0.5\textwidth]{figures/cg.svg}
     \end{center}   
 \end{example}
 
@@ -270,7 +270,7 @@ We can build up $\mathbf{H}^{-1}$ iteratively in the Broyden–Fletcher–Goldfa
 \begin{example}{BFGS}{bfgsexample}
     We consider the optimization of Equation \eqref{eq:simpledecent_example} using the BFGS method with incomplete line search for the sub-problem. The optimization path for a starting point $\mathbf{x}^0= (4, -1)^\top$, $\eta^0=5.0$, $c=0.5$, and $\rho=0.8$ is shown in the plot below with a blue line. The solution converges in just two iterations for this 2D quadratic problem.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/bfgs.svg}
+        \includesvg[width=0.5\textwidth]{figures/bfgs.svg}
     \end{center}   
 \end{example}
 

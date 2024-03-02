@@ -163,8 +163,6 @@ table {
     overflow-x: auto;
     display: block;
     font-variant-numeric: lining-nums tabular-nums;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 table caption {
