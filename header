@@ -1,0 +1,7 @@
+<script>
+    MathJax = {
+        tex: {
+            tags: 'all'
+        }
+    };
+</script>
