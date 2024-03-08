@@ -85,7 +85,7 @@ Just like the truss problem, the variable thickness sheet problem can be approxi
     The following image shows a result of the algorithm for the cantilever problem stated above. Black areas use the full maximum thickness $\mathbf{d}^u$ and white areas use the minimum thickness $\mathbf{d}^l$. The intermediate values are represented by different shades of gray.
 
     \begin{center}
-        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized.pdf}
+        \includesvg[width=\linewidth]{figures/cantilever_fem_optimized.svg}
     \end{center}
     
 \end{example}
@@ -183,7 +183,7 @@ Then, we just need to adjust the sensitivity (see Equation \ref{eq:sensitivity_s
 
     This procedure results in the following solution:
     \begin{center}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary.pdf}
+        \includesvg[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary.svg}
     \end{center}
 \end{example}
 
@@ -195,8 +195,8 @@ Even if we were to accept mesh dependence and the theoretical problem of ill-pos
 \begin{example}{Mesh dependency}{cantileverdiscoptimizationexample}
     We can increase the resolution of the previous examples to achieve better compliance results. However, this demonstrates the mesh-dependence of the solution as we observe different structures in both cases. Additionally, the resulting fine structures might be difficult to manufacture.
     \begin{center}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_fine.pdf}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine.pdf}
+        \includesvg[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_fine.svg}
+        \includesvg[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine.svg}
     \end{center}
 \end{example}
 
@@ -233,9 +233,9 @@ which is a purely heuristic concept, i.e. there is no mathematical proof for thi
 \begin{example}{Sensitivity filtering}{cantileverfilterexample}
     The following images show the optimized cantilever beams from previous examples with enabled sensitivity filtering employing the same filtering radius for each resolution. Filtering prevents small structures and regularizes the problem such that we achieve the same optimal designs for different mesh sizes.
     \begin{center}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_filtered.pdf}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_fine_filtered.pdf}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine_filtered.pdf}
+        \includesvg[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_filtered.svg}
+        \includesvg[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_fine_filtered.svg}
+        \includesvg[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine_filtered.svg}
     \end{center}
 \end{example}
 
@@ -339,7 +339,7 @@ A natural choice for design variables are the coordinates of nodes bounding the 
 \begin{example}{Direct shape optimization of a cantilever beam}{directshapeexample}   
     Consider the cantilever beam from previous examples. If we choose nodal coordinates of the lower edge as design variables (highlighted with black dots) and try to minimize the compliance with a volume constraint, the stiffness improves slightly. However, the mesh is very irregular and leads to inaccurate stress calculations. Furthermore, the deformation is limited as it should neither result in collapsed elements nor highly stretched elements. 
     \begin{center}
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_naive_shape.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_naive_shape.svg}
     \end{center}
 \end{example}
 
@@ -380,37 +380,37 @@ Using the control points as design variables, we can modify the shape smoothly w
     
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_0.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_0.svg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_1.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_1.svg}
     \end{minipage}
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_2.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_2.svg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_3.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_3.svg}
     \end{minipage}
     We may also use linear RBFs to define shape modifications:
     
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_0_linear.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_0_linear.svg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_1_linear.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_1_linear.svg}
     \end{minipage}
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_2_linear.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_2_linear.svg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_3_linear.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_3_linear.svg}
     \end{minipage}
 \end{example}
 
@@ -493,11 +493,11 @@ Just like in shape optimization of trusses, target function and constraint funct
 
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_variables.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_variables.svg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape.svg}
     \end{minipage}
        
 \end{example}

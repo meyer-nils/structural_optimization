@@ -293,7 +293,7 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
     First of all, we describe the reference element in its own local coordinate system with coordinates $\xi_1$ and $\xi_2$. Later, we can transfer it to any other shape and position by scaling and shifting the element to global coordinates. 
 
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/reference_element.pdf}
+        \includesvg[width=0.5\textwidth]{figures/reference_element.svg}
     \end{center}
 
     In this local coordinate system, we can interpolate any variable defined on nodes $\mathbf{a}_j$ by an approximation
@@ -462,7 +462,7 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
     and weights $w^1=1$ and $w^2=1$ enables exact integration of polynomials up to order 3, which is sufficient for our integrals as we approximate the integral functions with linear shape functions. 
 
     \begin{center}
-        \includegraphics[width=\textwidth]{figures/gauss_legendre.pdf}
+        \includesvg[width=\textwidth]{figures/gauss_legendre.svg}
     \end{center}
     
     This one-dimensional example can be extended canonically to higher dimensions by replacing $\frac{\text{d}x}{\text{d}\xi}$ with the determinant of the Jacobian and by using positions 
@@ -720,7 +720,7 @@ just like previously with the truss system in Chapter 5. Now it comes down to so
 \begin{example}{Finite element solution of a cantilever beam}{femexample} 
     The following example shows a simple 2D cantilever beam discretized with 722 nodes and 666 linear quad elements. This results in 1444 degrees of freedom in total. The cantilever beam is subjected to a point load at the tip and clamped at one side. There is no body force acting on it ($\mathbf{b} = \mathbf{0}$).
     \begin{center}
-        \includegraphics[width=0.8\textwidth]{figures/cantilever_fem.pdf}
+        \includesvg[width=0.8\textwidth]{figures/cantilever_fem.svg}
     \end{center}
     Evaluation of the integrals and assembling it leads to a global system 
     \begin{equation}
@@ -732,7 +732,7 @@ just like previously with the truss system in Chapter 5. Now it comes down to so
     \end{equation}
     with $\mathbf{f}_\textrm{red}, \mathbf{u}_\textrm{red} \in \mathcal{R}^{1406}$ and $\mathbf{K}_\textrm{red} \in \mathcal{R}^{1406x1406}$. This can be solved for $\mathbf{u}_\textrm{red}$ representing the displacements at each node. The subsequent figure shows the norm of the displacement interpolated with linear shape functions.
     \begin{center}
-        \includegraphics[width=0.8\textwidth]{figures/cantilever_fem_solved.pdf}
+        \includesvg[width=0.8\textwidth]{figures/cantilever_fem_solved.svg}
     \end{center}
 \end{example}
 
