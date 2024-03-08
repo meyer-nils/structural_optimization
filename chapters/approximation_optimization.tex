@@ -125,12 +125,12 @@ This method is termed \emph{Convex Linearization} or CONLIN \cite{Fleury1989}. T
     \end{equation}
     This problem is not convex, because the constraint $g(\mathbf{a})$ (shown as solid black line in the following plot) is not a convex function. This leads to two local minima, one at $a_2=0.2$ and one at $a_2=2.5$.
     \begin{center}
-        \includegraphics[width=0.6\textwidth]{figures/four_bar_example_0.pdf}
+        \includesvg[width=0.6\textwidth]{figures/four_bar_example_0.svg}
     \end{center}
     
     The CONLIN approximation of the objective function is the objective function itself - it is already linear. A CONLIN approximation of the constraint function at $\mathbf{a}^0=(2,1)^\top$ is computed using automatic differentiation in PyTorch and results in the dashed black line. The resulting problem is convex and can be solved, e.g. using Lagrangian duality. The unique solution of this problem is the point $\mathbf{a}^1=(1.2,0.2)^\top$. We can apply the CONLIN method again at this point to obtain a new convex problem. Solving this problem gives $\mathbf{x}^2=(0.85,0.2)^\top$, which is close to the optimal solution $\mathbf{a}^*$, but could be improved with further iterations. Note that not every CONLIN approximation is conservative, i.e. it can happen that $\tilde{g}(\mathbf{a}) < g(\mathbf{a})$. In that case, the solution will tend to oscillate around the optimal point. 
     \begin{center}
-        \includegraphics[width=0.6\textwidth]{figures/four_bar_example_1.pdf}
+        \includesvg[width=0.6\textwidth]{figures/four_bar_example_1.svg}
     \end{center}
 \end{example}
 
@@ -207,12 +207,12 @@ Svanbergs original version uses the same asymptotes $L_j^k$ and $U_j^k$ for the 
 
     A MMA approximation at $\mathbf{a}^0=(2,1)^\top$ is illustrated in the following image with the dashed line for $s_0=0.2$. 
     \begin{center}
-        \includegraphics[width=0.6\textwidth]{figures/four_bar_example_mma_0.pdf}
+        \includesvg[width=0.6\textwidth]{figures/four_bar_example_mma_0.svg}
     \end{center}
 
     If we chose $s_0=0.5$, we get a less conservative approximation, as shown in the next image. This results in faster convergence, as an optimization of the convex problem gets closer to the optimum in a single step.
     \begin{center}
-        \includegraphics[width=0.6\textwidth]{figures/four_bar_example_mma_1.pdf}
+        \includesvg[width=0.6\textwidth]{figures/four_bar_example_mma_1.svg}
     \end{center}
 
     This example shows just the first iteration - the full method would require sequential approximation and optimization with the Lagrangian duality method until convergence. During each iteration, we would use the heuristic given in Equations \eqref{eq:mma_heuristic_first} to \eqref{eq:mma_heuristic_last} to update asymptotes.  
