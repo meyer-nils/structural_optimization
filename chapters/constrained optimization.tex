@@ -82,7 +82,7 @@ where the $\max()$ and $\min()$ operators perform a point-wise comparison.
     \end{equation}
 
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/box_example.pdf}
+        \includesvg[width=0.5\textwidth]{figures/box_example.svg}
     \end{center}
 
     This is visually equivalent to searching for that point $\mathbf{x}^*$ within the non-faded region in the displayed plot that has the smallest function value. In the unconstrained optimization problem, a simple steepest gradient decent follows the blue path and results in the blue point $(-1, 1)^\top$. In the constrained optimization problem, a simple steepest gradient decent follows the orange path and results in the orange point indicating the correct solution $(0, 0)^\top$ to problem \eqref{eq:boxexample}. Note that simply clipping the result $(-1, 1)^\top$ in each dimension would yield the position indicated by the green point, which is not the optimum.    
@@ -129,7 +129,7 @@ fulfills the necessary condition to be an optimum of a constrained optimization 
 
     This is visually equivalent to searching for the point on the black line in the following image that has the smallest function value.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/lagrange_example.pdf}
+        \includesvg[width=0.5\textwidth]{figures/lagrange_example.svg}
     \end{center}
 
     We can find the solution to this problem by finding a stationary point of the Lagrangian function
@@ -192,7 +192,7 @@ The first condition is the stationary condition, the next two conditions are the
 
     This is visually equivalent to searching for a point with the smallest function value on the black line that is within the non-faded area in the following image.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/kkt_example_1.pdf}
+        \includesvg[width=0.5\textwidth]{figures/kkt_example_1.svg}
     \end{center}
 
     The Lagrangian for this problem is 
@@ -242,7 +242,7 @@ The first condition is the stationary condition, the next two conditions are the
 
     This is visually equivalent to searching for a point with the smallest function value on the black line that is within the non-faded area in the following image.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/kkt_example_2.pdf}
+        \includesvg[width=0.5\textwidth]{figures/kkt_example_2.svg}
     \end{center}
 
     The Lagrangian for this problem is 
@@ -338,7 +338,7 @@ is helpful, because we are left with very simple box constraints in these optimi
 
     This is visually equivalent to searching for a point on the black line in the following image that has the smallest function value.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/dual_example.pdf}
+        \includesvg[width=0.5\textwidth]{figures/dual_example.svg}
     \end{center}
 
     We can formulate the Lagrangian function as
@@ -404,7 +404,7 @@ After finding the expression for $\underline{\mathcal{L}} (\pmb{\mu}, \pmb{\lamb
     Let's consider the previous example with the additional constraint $\mathbf{x} \in \mathcal{X} = [0, 2]\times[-2, 2]$.
     This is visually equivalent to searching within the gray box for a point on the black line that has the smallest function value in the following image.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/separable_example.pdf}
+        \includesvg[width=0.5\textwidth]{figures/separable_example.svg}
     \end{center}
 
     It would be tedious to solve the problem with additional inequality constraints like $g_1= x_1, g_2=x_1-2, g_3=x_2-2, g_4=2-x_2$. 
@@ -439,7 +439,7 @@ After finding the expression for $\underline{\mathcal{L}} (\pmb{\mu}, \pmb{\lamb
     \end{equation}
     This dual objective function is plotted here:
     \begin{center}
-        \includegraphics[width=\textwidth]{figures/dual_function.pdf}
+        \includesvg[width=\textwidth]{figures/dual_function.svg}
     \end{center}
     We can employ any gradient decent method or analytical method to find the optimum of the dual function. In this case, it is $\lambda^*=4$ and therefore the optimum is at $x_1^*=0$ and $x_2^*=-1$.    
 \end{example}
