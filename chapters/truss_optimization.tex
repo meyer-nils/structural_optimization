@@ -229,11 +229,11 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
 
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/three_bar_truss_variables.pdf}
+        \includesvg[width=0.9\linewidth]{figures/three_bar_truss_variables.svg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/three_bar_truss_optimized.pdf}
+        \includesvg[width=0.9\linewidth]{figures/three_bar_truss_size_optimized.svg}
     \end{minipage}
        
 \end{example}
@@ -242,7 +242,7 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
     The following figure plots the deformed configuration of a size optimization result for the truss shown in Figure \ref{fig:truss_example}. Line thicknesses correspond to the design variables and colors indicate stresses. Note that this is not a fully stressed design (the stress magnitudes are not all identical), because some design variables reach their upper limit. Essentially, the outcome is close to a topology optimization, because it indicates elimination of some elements. However, a complete elimination is not possible as this would result in a singular stiffness matrix, i.e. the displacement of node 9 would be undetermined. 
 
     \begin{center}
-        \includegraphics[width=0.9\textwidth]{figures/truss_sample_optimized.pdf} 
+        \includesvg[width=0.9\textwidth]{figures/truss_sample_size_optimized.svg} 
     \end{center}
 \end{example}
 
@@ -251,13 +251,13 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
     However, we cannot solve the optimization problem for large structures like the truss below analytically. 
 
     \begin{center}
-        \includegraphics[width=0.75\textwidth]{figures/large_truss.pdf} 
+        \includesvg[width=0.75\textwidth]{figures/large_truss.svg} 
     \end{center}
 
     In this case, the truss was optimized with large enough upper limits for the cross sections such that the resulting optimized structure is fully stressed. We may interpret the resulting structure effectively as a four bar truss with optimal cross sections. Note that we did not consider instability problems like buckling, so before building a truss structure like this we should check it for buckling instabilities.
 
     \begin{center}
-        \includegraphics[width=0.9\textwidth]{figures/large_truss_optimized.pdf} 
+        \includesvg[width=0.9\textwidth]{figures/large_truss_size_optimized.svg} 
     \end{center}
 \end{example}
 
@@ -283,7 +283,7 @@ The effect of penalization is shown in Figure \ref{fig:simp_truss} for typical v
 
 \begin{figure}[!htpb]
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/simp_truss.pdf}
+    \includesvg[width=0.9\textwidth]{figures/simp_truss.svg}
     \caption{Penalization factors in SIMP.}
     \label{fig:simp_truss}
 \end{figure}
@@ -448,18 +448,18 @@ for $\mu^*>0$.
     \end{equation}
     The range of motion is illustrated in the following Figure:
     \begin{center}
-        \includegraphics[width=0.4\linewidth]{figures/three_bar_truss_shapes.pdf}
+        \includesvg[width=0.4\linewidth]{figures/three_bar_truss_shapes.svg}
     \end{center}
 
     We want to solve for the optimal shape $\mathbf{x}^*$ that minimizes the compliance of the structure without exceeding the initial volume of the truss. The original optimization problem and the MMA approximation are illustrated in the following two plots on the left and right, respectively.
 
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/three_bar_truss_shape_original.pdf}
+        \includesvg[width=0.9\linewidth]{figures/three_bar_truss_shape_original.svg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/three_bar_truss_shape_mma.pdf}
+        \includesvg[width=0.9\linewidth]{figures/three_bar_truss_shape_mma.svg}
     \end{minipage}
 
     We formulate the following algorithm to solve the approximated problem: 
@@ -518,11 +518,11 @@ for $\mu^*>0$.
 
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/three_bar_truss_shape_optimization.pdf}
+        \includesvg[width=0.9\linewidth]{figures/three_bar_truss_shape_optimization.svg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/three_bar_truss_shape_optimized.pdf}
+        \includesvg[width=0.9\linewidth]{figures/three_bar_truss_shape_optimized.svg}
     \end{minipage}
        
 \end{example}
