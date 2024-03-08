@@ -499,15 +499,13 @@ We can then use Gauss–Legendre quadrature with two positions per dimension to 
 Essentially, this turns the integral into a weighted sum of function values at specific positions $\pmb{\xi}^k$. In this case, we chose $w^k=1$ and positions according to Equation \eqref{eq:gaussian_weights}.
 Using the shape functions, we may then express the last variable using the nodal values of the trial function $\mathbf{v}_j$ as  
 \begin{equation}
+    \setlength\arraycolsep{-2pt}
     \mathbf{v}(\pmb{\xi}^k) 
     =
-    \begingroup 
-    \setlength\arraycolsep{-5pt}
     \begin{pmatrix}
             N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi}^k) & 0\\
             0 & N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi})\\
-    \end{pmatrix} 
-    \endgroup
+    \end{pmatrix}
     \cdot 
     \begin{pmatrix}
             {(v_1)}_j^0 \\
@@ -527,13 +525,12 @@ In summary, we transformed the body force term of a single element from
 \end{equation}
 to a scalar vector product 
 \begin{equation}
-    \underbrace{\sum_k \text{det}\left(\mathbf{J}_j(\pmb{\xi}^k)\right) \mathbf{b} \cdot \begingroup 
     \setlength\arraycolsep{-5pt}
+    \underbrace{\sum_k \text{det}\left(\mathbf{J}_j(\pmb{\xi}^k)\right) \mathbf{b} \cdot
     \begin{pmatrix}
             N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi}^k) & 0\\
             0 & N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi})\\
-    \end{pmatrix} 
-    \endgroup}_{\mathbf{f}^\Omega_j}
+    \end{pmatrix}}_{\mathbf{f}^\Omega_j}
     \cdot 
     \mathbf{v}_j
 \end{equation}
@@ -587,17 +584,15 @@ and with two-dimensional strains
 \end{equation}
 We can express the strain terms with shape functions as 
 \begin{equation}
+    \setlength\arraycolsep{2pt}
     \pmb{\varepsilon}\left(\mathbf{v}\right)
     =
     \underbrace{
-    \begingroup 
-    \setlength\arraycolsep{2pt}
     \begin{pmatrix}
             B_{11}(\pmb{\xi}^k) & 0 & B_{12}(\pmb{\xi}^k) & 0 & B_{13}(\pmb{\xi}^k) & 0 & B_{14}(\pmb{\xi}^k) & 0\\
             0 & B_{21}(\pmb{\xi}^k) & 0 & B_{22}(\pmb{\xi}^k) & 0 & B_{23}(\pmb{\xi}^k) & 0 & B_{24}(\pmb{\xi}^k)\\
             B_{21}(\pmb{\xi}^k) & B_{11}(\pmb{\xi}^k) & B_{22}(\pmb{\xi}^k) & B_{12}(\pmb{\xi}^k) & B_{23}(\pmb{\xi}^k) & B_{13}(\pmb{\xi}^k) & B_{24}(\pmb{\xi}^k) & B_{14}(\pmb{\xi}^k)\\
     \end{pmatrix} 
-    \endgroup
     }_{\mathbf{D}}
     \cdot 
     \mathbf{v}_j
@@ -628,13 +623,12 @@ Finally, the boundary traction term in Equation \eqref{eq:discretized_weak_form}
 
 Using Equation \eqref{eq:shape_interpolation}, we may denote this as 
 \begin{equation}
-    \underbrace{\sum_k \frac{\partial x}{\partial \xi} \mathbf{t}(\pmb{\xi}^k) \cdot \begingroup 
     \setlength\arraycolsep{-5pt}
+    \underbrace{\sum_k \frac{\partial x}{\partial \xi} \mathbf{t}(\pmb{\xi}^k) \cdot
     \begin{pmatrix}
             N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi}^k) & 0\\
             0 & N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi})\\
-    \end{pmatrix} 
-    \endgroup}_{\mathbf{f}^\Gamma_j}
+    \end{pmatrix}}_{\mathbf{f}^\Gamma_j}
     \cdot 
     \mathbf{v}_j
 \end{equation}
