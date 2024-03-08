@@ -498,8 +498,8 @@ We can then use Gauss–Legendre quadrature with two positions per dimension to 
 \end{equation}
 Essentially, this turns the integral into a weighted sum of function values at specific positions $\pmb{\xi}^k$. In this case, we chose $w^k=1$ and positions according to Equation \eqref{eq:gaussian_weights}.
 Using the shape functions, we may then express the last variable using the nodal values of the trial function $\mathbf{v}_j$ as  
+\setlength\arraycolsep{-2pt}
 \begin{equation}
-    \setlength\arraycolsep{-2pt}
     \mathbf{v}(\pmb{\xi}^k) 
     =
     \begin{pmatrix}
@@ -519,13 +519,14 @@ Using the shape functions, we may then express the last variable using the nodal
     \end{pmatrix}.
     \label{eq:shape_interpolation}
 \end{equation}
+\setlength\arraycolsep{5pt}
 In summary, we transformed the body force term of a single element from 
 \begin{equation}
     \int_{\Omega_j} \mathbf{b} \cdot \mathbf{v} \text{d}A  
 \end{equation}
 to a scalar vector product 
+\setlength\arraycolsep{-5pt}
 \begin{equation}
-    \setlength\arraycolsep{-5pt}
     \underbrace{\sum_k \text{det}\left(\mathbf{J}_j(\pmb{\xi}^k)\right) \mathbf{b} \cdot
     \begin{pmatrix}
             N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi}^k) & 0\\
@@ -534,6 +535,7 @@ to a scalar vector product
     \cdot 
     \mathbf{v}_j
 \end{equation}
+\setlength\arraycolsep{5pt}
 where $\mathbf{f}^\Omega_j \in \mathcal{R}^8$ describes the nodal body forces on element $j$. 
 
 \subsection{Strain energy term}
@@ -583,8 +585,8 @@ and with two-dimensional strains
     \end{pmatrix}.
 \end{equation}
 We can express the strain terms with shape functions as 
+\setlength\arraycolsep{2pt}
 \begin{equation}
-    \setlength\arraycolsep{2pt}
     \pmb{\varepsilon}\left(\mathbf{v}\right)
     =
     \underbrace{
@@ -597,6 +599,7 @@ We can express the strain terms with shape functions as
     \cdot 
     \mathbf{v}_j
 \end{equation}
+\setlength\arraycolsep{5pt}
 for the derivatives of the trial function and analogous for the displacements. In conclusion, we can transform the integral 
 \begin{equation}
     d_j \int_{\Omega_j} \mathbf{E}(\mathbf{u}) : \mathbb{C} :  \mathbf{E}(\mathbf{v}) \text{d}A 
@@ -622,8 +625,8 @@ Finally, the boundary traction term in Equation \eqref{eq:discretized_weak_form}
 \end{equation}
 
 Using Equation \eqref{eq:shape_interpolation}, we may denote this as 
+\setlength\arraycolsep{-5pt}
 \begin{equation}
-    \setlength\arraycolsep{-5pt}
     \underbrace{\sum_k \frac{\partial x}{\partial \xi} \mathbf{t}(\pmb{\xi}^k) \cdot
     \begin{pmatrix}
             N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi}^k) & 0\\
@@ -632,6 +635,7 @@ Using Equation \eqref{eq:shape_interpolation}, we may denote this as
     \cdot 
     \mathbf{v}_j
 \end{equation}
+\setlength\arraycolsep{5pt}
 where $\mathbf{f}^\Gamma_j \in \mathcal{R}^8$ describes the nodal traction forces on element $j$. 
 
 \section{Assembly of linear systems of equations}
