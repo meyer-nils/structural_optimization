@@ -7,8 +7,9 @@
 # Structural Optimization
 This is accompanying code for my *Structural Optimization* lecture MRM-0156. 
 
-- [Latest manuscript as HTML](https://meyer-nils.github.io/structural_optimization/)
+
 - [Latest manuscript as PDF](https://github.com/meyer-nils/structural_optimization/releases/download/v1.0.0/structural_optimization.pdf)
+- [Latest manuscript as HTML (experimental)](https://meyer-nils.github.io/structural_optimization/)
 
 ## Structure of the repository
 The repository is organized as follows: 
