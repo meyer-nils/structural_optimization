@@ -26,14 +26,14 @@ One possible objective in truss optimization is the search for the cross section
 \end{equation} 
 of the truss instead. The minimal compliance results also in the stiffest truss, but this formulation is preferred over the pure displacement formulation, because $C(\mathbf{a})$ is convex \cite{Svanberg1984}. The convexity is proven by showing that the Hessian $\nabla^2 C(\mathbf{a})$ is positive semi-definite, a property that is inherited from the positive semi-definiteness of $\mathbf{K}(\mathbf{a})$ (see Chapter 5.2.1 in \cite{Christensen2008} for details).
 
-We employ box constraints $\mathcal{A}$ on the upper and lower limit of the design variables. The upper limit $\mathbf{a}^u$ could be a manufacturing constraint that prevents very thick elements. The lower limit $\mathbf{a}^l$ should be larger than $0$ to prevent deletion of truss elements. If the cross sectional area of all elements connected to a node would become $0$, i.e. all trusses are deleted, the displacement of that node would be undetermined and the stiffness matrix would become singular. In this chapter, we prevent this by demanding $a_j^l > 0$.
+We employ box constraints $\mathcal{A}$ on the upper and lower limit of the design variables. The upper limit $\mathbf{a}^+$ could be a manufacturing constraint that prevents very thick elements. The lower limit $\mathbf{a}^-$ should be larger than $0$ to prevent deletion of truss elements. If the cross sectional area of all elements connected to a node would become $0$, i.e. all trusses are deleted, the displacement of that node would be undetermined and the stiffness matrix would become singular. In this chapter, we prevent this by demanding $a_j- > 0$.
 
 A typical inequality constraint is a volume constraint for the total truss volume used in the assembly. If we would not have a volume constraint, the optimization would predict a trivial solution with all cross sections at their maximum area. However, we are interested in solutions that put a limited material resource to its best use and thus limit the total volume to be 
 \begin{equation}
     \mathbf{a} \cdot \mathbf{l} \le V_0
 \end{equation}
 where $V_0$ describes the maximum volume used in the design
-In order to find a solution at all, we must obviously choose $V_0 \ge \mathbf{a}^l \cdot \mathbf{l}$, otherwise it would be impossible to find any $\mathbf{a}$ fulfilling the constraint. 
+In order to find a solution at all, we must obviously choose $V_0 \ge \mathbf{a}^- \cdot \mathbf{l}$, otherwise it would be impossible to find any $\mathbf{a}$ fulfilling the constraint. 
 
 In conclusion, the size optimization problem for a stiff truss with limited volume may be noted as follows:
 
@@ -107,7 +107,7 @@ If we could solve this expression for $\mathbf{a}^*(\mu)$ at the stationary poin
     \begin{equation}
         \frac{\partial \mathcal{L} (\mathbf{a}, \mu)}{\partial a_j} = - \frac{S^2_j}{E} l_j + \mu l_j
     \end{equation}
-    and conclude that for an optimal point $\mathbf{a}^l < \mathbf{a}^* < \mathbf{a}^u$ with $\mu^*>0$, i.e. the maximum volume $V_0$ is used and box constraints are not reached, all stress magnitudes are identical with
+    and conclude that for an optimal point $\mathbf{a}^- < \mathbf{a}^* < \mathbf{a}^+$ with $\mu^*>0$, i.e. the maximum volume $V_0$ is used and box constraints are not reached, all stress magnitudes are identical with
     \begin{equation}
         S_j = \pm \sqrt{\frac{\mu^*}{E}}.
     \end{equation}
@@ -138,10 +138,10 @@ The approximated optimization problem becomes
     \begin{aligned}
         \min_{\mathbf{a}} \quad & \tilde{C} (\mathbf{a})\\
         \textrm{s.t.} \quad & \mathbf{a} \cdot \mathbf{l} - V_0 \le 0  \\
-                            & \tilde{\mathbf{a}}^{l,k} \le \mathbf{a} \le \mathbf{a}^u\\
+                            & \tilde{\mathbf{a}}^{-,k} \le \mathbf{a} \le \mathbf{a}^+\\
     \end{aligned}
 \end{equation}
-with lower move limits $\tilde{\mathbf{a}}^{l,k} = \max(\mathbf{a}^l,  0.9 \mathbf{L}^k + 0.1 \mathbf{a}^k)$ preventing division by zero. The constraint is already linear and thus we do not approximate it.
+with lower move limits $\tilde{\mathbf{a}}^{-,k} = \max(\mathbf{a}^-,  0.9 \mathbf{L}^k + 0.1 \mathbf{a}^k)$ preventing division by zero. The constraint is already linear and thus we do not approximate it.
 
 The Lagrangian of the approximated problem is
 \begin{equation}
@@ -165,9 +165,9 @@ and rearrange the equation to find
     \hat{a}_j(\mu) = L_j^k + \sqrt{\frac{2 w_j (\mathbf{a}^k)
     (L^k_j-a^k_j)^2}{\mu l_j}}. 
 \end{equation}
-We simply clip this result with box constraints to obtain the explicit relation 
+We simply clamp this result with box constraints to obtain the explicit relation 
 \begin{equation}
-    \mathbf{a}^* (\mu) = \max\left(\tilde{\mathbf{a}}^{l,k}, \min \left(\hat{\mathbf{a}}(\mu), \mathbf{a}_u \right)\right). 
+    \mathbf{a}^* (\mu) = \textrm{clamp}\left(\hat{\mathbf{a}}(\mu), \tilde{\mathbf{a}}^{-,k}, \mathbf{a}^+\right). 
 \end{equation}
 Finally we can plug this result in the Lagrangian to get the dual function
 \begin{equation}
@@ -188,9 +188,9 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
 
     We formulate the following algorithm to solve that problem: 
     \begin{enumerate}
-        \item Define the truss with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, design limits $\mathbf{a}^l, \mathbf{a}^u$ and the initial design choice $\mathbf{a}^0$.
+        \item Define the truss with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, design limits $\mathbf{a}^-, \mathbf{a}^+$ and the initial design choice $\mathbf{a}^0$.
         \item Compute the displacements $\mathbf{u}^k = \mathbf{u}(\mathbf{a}^k)$ by solving the truss system for the current design $\mathbf{a}^k$.
-        \item Compute the lower asymptotes as $\mathbf{L}^k =\mathbf{a}^k - s (\mathbf{a}^u - \mathbf{a}^l)$ with $s \in (0,1)$ during the first two iterations and according to 
+        \item Compute the lower asymptotes as $\mathbf{L}^k =\mathbf{a}^k - s (\mathbf{a}^+ - \mathbf{a}^-)$ with $s \in (0,1)$ during the first two iterations and according to 
         \begin{equation}
             L^k_j = 
             \begin{cases}
@@ -201,7 +201,7 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
         in the following iterations.
         \item Compute the lower move limit as 
         \begin{equation}
-            \tilde{\mathbf{a}}^{l,k} = \max(\mathbf{a}^l,  0.9 \mathbf{L}^k + 0.1 \mathbf{a}^k)
+            \tilde{\mathbf{a}}^{-,k} = \max(\mathbf{a}^-,  0.9 \mathbf{L}^k + 0.1 \mathbf{a}^k)
         \end{equation}
         \item Compute the gradient of the objective function (strain energies per area) for all elements using the previously computed displacements
         \begin{equation}
@@ -211,7 +211,7 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
             \begin{align}
                 \hat{a}_j(\mu) &= L_j^k + \sqrt{\frac{2 w^k_j
                 (L^k_j-a^k_j)^2}{\mu l_j}} \\
-                \mathbf{a}^* (\mu) &= \max\left(\tilde{\mathbf{a}}^{l,k}, \min \left(\hat{\mathbf{a}}(\mu), \mathbf{a}_u \right)\right)
+                \mathbf{a}^* (\mu) &= \textrm{clamp}\left(\hat{\mathbf{a}}(\mu), \tilde{\mathbf{a}}^{-,k}, \mathbf{a}^+ \right)
             \end{align}
             to define the dual function 
             \begin{equation}
@@ -225,7 +225,7 @@ for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends o
         \item Repeat with steps 2-7 until convergence or a maximum number of iterations is reached.
     \end{enumerate}
 
-    The following figure plots the three design variables $a_1, a_2, a_3$ for the three bar truss with $\mathbf{a}^0=(0.5,0.2,0.3)^\top$, $\mathbf{a}^l=(0.1,0.1,0.1)^\top$, $\mathbf{a}^u=(1.0,1.0,1.0)^\top$ and $V_0=0.5$. After a couple of iterations, the solution converges towards the analytical solution plotted in gray.
+    The following figure plots the three design variables $a_1, a_2, a_3$ for the three bar truss with $\mathbf{a}^0=(0.5,0.2,0.3)^\top$, $\mathbf{a}^-=(0.1,0.1,0.1)^\top$, $\mathbf{a}^+=(1.0,1.0,1.0)^\top$ and $V_0=0.5$. After a couple of iterations, the solution converges towards the analytical solution plotted in gray.
 
     \begin{minipage}{.5\textwidth}
         \centering
@@ -270,16 +270,16 @@ The topology optimization problem of minimizing compliance for a given volume co
     \begin{aligned}
         \min_{\mathbf{a}} \quad & C(\mathbf{a}) = \mathbf{f} \cdot \mathbf{u}(\mathbf{a})\\
         \textrm{s.t.} \quad & \mathbf{a} \cdot \mathbf{l} - V_0 \le 0  \\
-                            & a_j \in \{a_j^l, a_j^u\}\\
+                            & a_j \in \{a_j^-, a_j^+\}\\
     \end{aligned}
 \end{equation}
 
-Unfortunately, the binary problem is notoriously hard to solve, because we cannot compute gradients on the solution and testing all solutions is computationally inaccessible. Hence we try to formulate a continuous relation between stiffness and a normalized variable $\rho_j = a_j/a_j^u$ that still results in a binary result. One such formulation is called \emph{Solid Isotropic Material with Penalization} (SIMP) and we denote it here as 
+Unfortunately, the binary problem is notoriously hard to solve, because we cannot compute gradients on the solution and testing all solutions is computationally inaccessible. Hence we try to formulate a continuous relation between stiffness and a normalized variable $\rho_j = a_j/a_j^+$ that still results in a binary result. One such formulation is called \emph{Solid Isotropic Material with Penalization} (SIMP) and we denote it here as 
 \begin{equation}
     E(\rho_j)= \rho_j^p E
 \end{equation}
 with a penalization parameter $p \ge 1$. 
-The effect of penalization is shown in Figure \ref{fig:simp_truss} for typical values of $p$. We may observe for $p>1$ that the stiffness per invested material is unattractive for intermediate density values. For example, choosing $\rho_j^u=0.5$ with $p=2$ adds half an element volume to the total volume, but contributes only a quarter of the stiffness compared to a fully filled element. An optimization that tries to minimize compliance for a given volume will therefore rather favor elements that provide the full stiffness benefit or add only a minimal contribution to the total volume.
+The effect of penalization is shown in Figure \ref{fig:simp_truss} for typical values of $p$. We may observe for $p>1$ that the stiffness per invested material is unattractive for intermediate density values. For example, choosing $\rho_j^+=0.5$ with $p=2$ adds half an element volume to the total volume, but contributes only a quarter of the stiffness compared to a fully filled element. An optimization that tries to minimize compliance for a given volume will therefore rather favor elements that provide the full stiffness benefit or add only a minimal contribution to the total volume.
 
 \begin{figure}[!htpb]
     \centering
@@ -395,23 +395,23 @@ which is a separable function and we can use it to solve the problem with the du
     \end{cases}
 \end{equation}
 where all gradients are evaluated at $\mathbf{x}^k$.
-To find the potential minimum $\hat{x}_i(\mu)$, we investigate for each case individually, under which conditions it vanishes. For the first case, the second term is always positive considering the KKT condition $\mu>0$. Therefore we find that in this case $x\rightarrow -\infty$ would be a minimum. Using the box constraint this yields $\hat{x}_i(\mu) = x^l_i$. Analogously, the last case yields $\hat{x}_i(\mu) = x^u_i$. The other cases are solved simply by re-arranging the equations and finally we get 
+To find the potential minimum $\hat{x}_i(\mu)$, we investigate for each case individually, under which conditions it vanishes. For the first case, the second term is always positive considering the KKT condition $\mu>0$. Therefore we find that in this case $x\rightarrow -\infty$ would be a minimum. Using the box constraint this yields $\hat{x}_i(\mu) = x^-_i$. Analogously, the last case yields $\hat{x}_i(\mu) = x^+_i$. The other cases are solved simply by re-arranging the equations and finally we get 
 \begin{equation}
     \hat{x}_i (\mu) = 
     \begin{cases}
-        x^l_i 
+        x^-_i 
             &\textrm{if} \quad \frac{\partial C}{\partial x_i} > 0, \frac{\partial g}{\partial x_i} > 0 \\
         \frac{U_i^k\omega + L_i^k}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(x_i^k-L_i^k)^2\frac{\partial g}{\partial x_i}}{(U_i^k-x_i^k)^2\frac{\partial C}{\partial x_i}}}
             &\textrm{if} \quad \frac{\partial C}{\partial x_i}  > 0, \frac{\partial g}{\partial x_i} <0\\
         \frac{U_i^k-L_i^k\omega}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(U_i^k-x_i^k)^2\frac{\partial g}{\partial x_i}}{(x_i^k-L_i^k)^2\frac{\partial C}{\partial x_i}}} 
             &\textrm{if} \quad \frac{\partial C}{\partial x_i} < 0, \frac{\partial g}{\partial x_i}  > 0\\
-        x^u_i 
+        x^+_i 
             &\textrm{if} \quad \frac{\partial C}{\partial x_i}< 0, \frac{\partial g}{\partial x_i} < 0.
     \end{cases}
 \end{equation}
-With move limits $\tilde{\mathbf{x}}^{l,k}$ and $\tilde{\mathbf{x}}^{u,k}$ according to Equation \eqref{eq:mma_move_limits}, we can find the box-constrained minimum of the approximated Lagrangian w.r.t to $\mathbf{x}$ as
+With move limits $\tilde{\mathbf{x}}^{-,k}$ and $\tilde{\mathbf{x}}^{+,k}$ according to Equation \eqref{eq:mma_move_limits}, we can find the box-constrained minimum of the approximated Lagrangian w.r.t to $\mathbf{x}$ as
 \begin{equation}
-    \mathbf{x}^*(\mu) = \max\left(\tilde{\mathbf{x}}^{l,k}, \min \left(\hat{\mathbf{x}}(\mu), \tilde{\mathbf{x}}^{u,k} \right)\right).
+    \mathbf{x}^*(\mu) = \textrm{clamp}\left(\hat{\mathbf{x}}(\mu), \tilde{\mathbf{x}}^{-,k}, \tilde{\mathbf{x}}^{+,k} \right).
 \end{equation}
 Finally we can plug this result in the Lagrangian to get the dual fucntion 
 \begin{equation}
@@ -434,14 +434,14 @@ for $\mu^*>0$.
     \end{equation}
     and they are constrained by 
     \begin{equation}
-        \mathbf{x}^l = 
+        \mathbf{x}^- = 
         \begin{pmatrix}
              -0.5\\ 0.5
         \end{pmatrix} 
         \quad 
         \text{and}
         \quad
-        \mathbf{x}^u = 
+        \mathbf{x}^+ = 
         \begin{pmatrix}
              0.5\\ 1.5
         \end{pmatrix} 
@@ -464,9 +464,9 @@ for $\mu^*>0$.
 
     We formulate the following algorithm to solve the approximated problem: 
     \begin{enumerate}
-        \item Define the truss with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, design limits $\mathbf{x}^l, \mathbf{x}^u$ and the initial design choice $\mathbf{x}^0$.
+        \item Define the truss with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, design limits $\mathbf{x}^-, \mathbf{x}^+$ and the initial design choice $\mathbf{x}^0$.
         \item Compute the displacements $\mathbf{u}^k$ by solving the truss system for the current design $\mathbf{x}^k$.
-        \item Compute the asymptotes as $\mathbf{L}^k =\mathbf{x}^k - s (\mathbf{x}^u - \mathbf{x}^l)$ and $\mathbf{U}^k =\mathbf{x}^k + s (\mathbf{x}^u - \mathbf{x}^l)$ with $s \in (0,1)$ during the first two iterations. In the following iterations, compute the lower asymptotes according to 
+        \item Compute the asymptotes as $\mathbf{L}^k =\mathbf{x}^k - s (\mathbf{x}^+ - \mathbf{x}^-)$ and $\mathbf{U}^k =\mathbf{x}^k + s (\mathbf{x}^+ - \mathbf{x}^-)$ with $s \in (0,1)$ during the first two iterations. In the following iterations, compute the lower asymptotes according to 
         \begin{equation}
             L^k_i = 
             \begin{cases}
@@ -485,8 +485,8 @@ for $\mu^*>0$.
 
         \item Compute the move limits as 
         \begin{align}
-            \tilde{\mathbf{x}}^{l,k} &= \max(\mathbf{x}^l,  0.9 \mathbf{L}^k + 0.1 \mathbf{x}^k) \\
-            \tilde{\mathbf{x}}^{u,k} &= \min(\mathbf{x}^u,  0.9 \mathbf{U}^k + 0.1 \mathbf{x}^k)
+            \tilde{\mathbf{x}}^{-,k} &= \max(\mathbf{x}^-,  0.9 \mathbf{L}^k + 0.1 \mathbf{x}^k) \\
+            \tilde{\mathbf{x}}^{+,k} &= \min(\mathbf{x}^+,  0.9 \mathbf{U}^k + 0.1 \mathbf{x}^k)
         \end{align}
 
         \item Evaluate the gradients of the objective function $\frac{\partial C}{\partial x_i}$ and the constraint $\frac{\partial g}{\partial x_i}$ at $\mathbf{x}^k$ using automatic differentiation. 
@@ -495,16 +495,16 @@ for $\mu^*>0$.
             \begin{align}
                 \hat{x}_i(\mu) &= 
                 \begin{cases}
-                    x^l_i 
+                    x^-_i 
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i} > 0, \frac{\partial g}{\partial x_i} > 0 \\
                     \frac{U_i^k\omega + L_i^k}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(x_i^k-L_i^k)^2\frac{\partial g}{\partial x_i}}{(U_i^k-x_i^k)^2\frac{\partial C}{\partial x_i}}}
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i}  > 0, \frac{\partial g}{\partial x_i} <0\\
                     \frac{U_i^k-L_i^k\omega}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(U_i^k-x_i^k)^2\frac{\partial g}{\partial x_i}}{(x_i^k-L_i^k)^2\frac{\partial C}{\partial x_i}}} 
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i} < 0, \frac{\partial g}{\partial x_i}  > 0\\
-                    x^u_i 
+                    x^+_i 
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i}< 0, \frac{\partial g}{\partial x_i} < 0.
                 \end{cases} \\
-                \mathbf{x}^* (\mu) &= \max\left(\tilde{\mathbf{x}}^{l,k}, \min \left(\hat{\mathbf{x}}(\mu), \tilde{\mathbf{x}}^{u,k} \right)\right)
+                \mathbf{x}^* (\mu) &= \textrm{clamp}\left(\hat{\mathbf{x}}(\mu), \tilde{\mathbf{x}}^{-,k}, \tilde{\mathbf{x}}^{+,k}\right)
             \end{align}
         \item Perform a line search to find the maximum in 
             \begin{equation}

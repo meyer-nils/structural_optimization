@@ -33,7 +33,7 @@ In Sequential Linear Programming (SLP), we approximate the functions in Equation
 \end{align}
 and limit the validity of the approximation with so-called \emph{move limits} 
 \begin{equation}
-    \tilde{\mathbf{x}}^{l,k} \le \mathbf{x} \le \tilde{\mathbf{x}}^{u,k}.
+    \tilde{\mathbf{x}}^{-,k} \le \mathbf{x} \le \tilde{\mathbf{x}}^{+,k}.
 \end{equation}
 The resulting functions are explicit linear expressions and the set for $\mathbf{x}$ is compact, hence the resulting problem is strictly convex. We limit the set because i) the approximation is only valid close to $\mathbf{x}^k$ and ii) the linear problem requires a compact set to be strictly convex. 
 
@@ -57,12 +57,12 @@ The resulting functions are explicit linear expressions and the set for $\mathbf
     \begin{equation}
         \tilde{f}(\mathbf{x}) = 3 + \begin{pmatrix} 2\\1 \end{pmatrix} \cdot \left(\mathbf{x} - \mathbf{x}^k \right).
     \end{equation}
-    Assuming a validity of $\pm 0.5$ around the approximated point, the move limits are $\tilde{\mathbf{x}}^{l,0}=(0.5, 0.5)^\top$ and  $\tilde{\mathbf{x}}^{u,0}=(1.5, 1.5)^\top$.  
+    Assuming a validity of $\pm 0.5$ around the approximated point, the move limits are $\tilde{\mathbf{x}}^{-,0}=(0.5, 0.5)^\top$ and  $\tilde{\mathbf{x}}^{+,0}=(1.5, 1.5)^\top$.  
     An optimization with these conditions yields to the next point $\mathbf{x}^1=(0.5,0.5)^\top$ with 
     \begin{equation}
         \tilde{f}(\mathbf{x}) = 1.25 + \begin{pmatrix} 1\\0.5 \end{pmatrix} \cdot \left(\mathbf{x} - \mathbf{x}^k \right)
     \end{equation}
-    and with move limits $\tilde{\mathbf{x}}^{l,1}=(0, 0)^\top$ and  $\tilde{\mathbf{x}}^{u,1}=(1, 1)^\top$. 
+    and with move limits $\tilde{\mathbf{x}}^{-,1}=(0, 0)^\top$ and  $\tilde{\mathbf{x}}^{+,1}=(1, 1)^\top$. 
     An optimization under these conditions gives us the final result $(0,0)^\top$ for the minimum of the function $f(\mathbf{x})$. We obtained this by sequentially employing linear approximations and then performing optimization on these approximations instead of the original "complex" and expensive function.
 \end{example}
 
@@ -161,12 +161,12 @@ with $L^k_j < x_j < U^k_j$. The parameters $L^k_j$ and $U_j^k$ are called the lo
 
 To prevent singularities by reaching the asymptotes, we use move limits 
 \begin{equation}
-    L^k_j \le \tilde{x}_j^{l,k} \le x_j \le \tilde{x}_j^{u,k} \le U_j^k.
+    L^k_j \le \tilde{x}_j^{-,k} \le x_j \le \tilde{x}_j^{+,k} \le U_j^k.
 \end{equation}
 similar to SLP. These could be chosen for example as 
 \begin{align}
-    \tilde{x}_j^{l,k} &= \max(x_j^l,  0.9 L_j^k + 0.1 x_j^k) \\
-    \tilde{x}_j^{u,k} &= \min(x^u_j, 0.9 U_j^k + 0.1 x_j^k).
+    \tilde{x}_j^{-,k} &= \max(x^-_j,  0.9 L_j^k + 0.1 x_j^k) \\
+    \tilde{x}_j^{+,k} &= \min(x^+_j, 0.9 U_j^k + 0.1 x_j^k).
     \label{eq:mma_move_limits}
 \end{align}
 
@@ -174,8 +174,8 @@ The advantage of these adjustable asymptotes is that we can bring the asymptotes
 \begin{enumerate}
     \item In the first two iterations, set 
         \begin{align}
-            L_j^k &= x_j^k - s (x^u_j - x^l_j) \\
-            U^k_j &= x_j^k + s (x^u_j - x^l_j)
+            L_j^k &= x_j^k - s (x^+_j - x^-_j) \\
+            U^k_j &= x_j^k + s (x^+_j - x^-_j)
         \end{align}
     with $s \in (0,1)$.
     \item For the following iterations ($k>1$) check for each design variable, if it oscillates. If it oscillates, i.e. $(x_j^k-x_j^{k-1})(x_j^{k-1}-x_j^{k-2}) < 0$, bring asymptotes closer to $x_j^k$ by   
