@@ -245,7 +245,7 @@ with Newton's iteration procedure
 \end{equation}
 starting from a starting point $\mathbf{x}^0$. For a quadratic problem, this method would find the solution immediately. However, the inverse Hessian $\mathbf{H}^{-1}$ is computationally expensive to obtain. We use an alternative to computing this term, hence the following method is a "quasi" Newton method. 
 
-We can build up $\mathbf{H}^{-1}$ iteratively in the Broyden–Fletcher–Goldfarb–Shanno (BFGS) \cite{Broyden1970, Fletcher1970, Goldfarb1970, Shanno1970} algorithm: 
+We can build up $\mathbf{H}^{-1}$ iteratively in the Broyden-Fletcher-Goldfarb-Shanno (BFGS) \cite{Broyden1970, Fletcher1970, Goldfarb1970, Shanno1970} algorithm: 
 \begin{enumerate}
     \item Pick a starting point $\mathbf{x}^0$ and set $(\mathbf{H}^{-1})^0=\mathbf{I}$.
     \item Calculate the gradient $\nabla f(\mathbf{x}^k)$ and compute the direction $\mathbf{p}^k = - (\mathbf{H}^{-1})^0 \nabla f(\mathbf{x}^k)$.
