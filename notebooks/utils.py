@@ -6,14 +6,18 @@ torch.set_default_dtype(torch.double)
 
 
 def plot_contours(
-    x, y, z, opti=[], figsize=(8, 6), levels=25, title=None, box=None, paths={}
+    x, f, opti=[], figsize=(8, 6), levels=25, title=None, box=None, paths={}
 ):
     with torch.no_grad():
         plt.figure(figsize=figsize)
-        plt.contour(x, y, z, levels=levels, colors="k", linewidths=0.5)
-        # opts = {}
+        plt.contour(x[..., 0], x[..., 1], f, levels=levels, colors="k", linewidths=0.5)
         if box is not None:
-            cond = (x > box[0][0]) & (x < box[1][0]) & (y > box[0][1]) & (y < box[1][1])
+            cond = (
+                (x[..., 0] > box[0][0])
+                & (x[..., 0] < box[1][0])
+                & (x[..., 1] > box[0][1])
+                & (x[..., 1] < box[1][1])
+            )
             rect = patches.Rectangle(
                 (box[0][0], box[0][1]),
                 box[1][0] - box[0][0],
@@ -24,27 +28,33 @@ def plot_contours(
             )
             plt.gca().add_patch(rect)
             plt.contourf(
-                x,
-                y,
-                z,
+                x[..., 0],
+                x[..., 1],
+                f,
                 levels=levels,
                 cmap="plasma",
                 alpha=0.5,
-                vmin=z.min(),
-                vmax=z.max(),
+                vmin=f.min(),
+                vmax=f.max(),
             )
             plt.contourf(
-                torch.where(cond, x, torch.nan),
-                torch.where(cond, y, torch.nan),
-                torch.where(cond, z, torch.nan),
+                torch.where(cond, x[..., 0], torch.nan),
+                torch.where(cond, x[..., 1], torch.nan),
+                torch.where(cond, f, torch.nan),
                 levels=levels,
                 cmap="plasma",
-                vmin=z.min(),
-                vmax=z.max(),
+                vmin=f.min(),
+                vmax=f.max(),
             )
         else:
             plt.contourf(
-                x, y, z, levels=levels, cmap="plasma", vmin=z.min(), vmax=z.max()
+                x[..., 0],
+                x[..., 1],
+                f,
+                levels=levels,
+                cmap="plasma",
+                vmin=f.min(),
+                vmax=f.max(),
             )
         for label, path in paths.items():
             xp = [p[0] for p in path]
