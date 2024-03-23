@@ -22,7 +22,8 @@ jobs:
           sudo apt install pandoc-citeproc 
           pip install pandocfilters
           sudo chmod +x pandoc_filter.py
-          pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output index.html --standalone main.tex
+          pandoc --output index.html --standalone README.md
+          pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output introduction.html --standalone chapters/introduction.tex 
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
