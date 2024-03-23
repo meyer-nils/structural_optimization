@@ -41,8 +41,24 @@ jobs:
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_05_sizing_unsolved.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/lecture_05_truss.ipynb
           pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=5 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output truss_optimization.html --standalone chapters/truss_optimization.tex
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_06_shape.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_06_shape_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_06_truss_shape.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_06_truss_size.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_06_truss_topology.ipynb
           pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=6 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output fem.html --standalone chapters/fem.tex
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_07_fem.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_07_fem_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_07_fem.ipynb
           pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=7 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output fem_optimization.html --standalone chapters/fem_optimization.tex
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_08_sizing.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_08_sizing_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_09_topology.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_09_topology_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_10_shape.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_10_shape_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_08_shape.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_08_topology.ipynb
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

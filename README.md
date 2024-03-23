@@ -20,7 +20,7 @@ This is accompanying code for my *Structural Optimization* lecture MRM-0156.
 - [Solution](https://meyer-nils.github.io/structural_optimization/exercise_02_unconstrained_optimization.html)
 
 <p align="center">
-  <img width="300" src="figures/simple_decent.svg" style="background-color: #FFFFFF;">
+  <img width="300" src="figures/simple_decent.svg">
 </p>
 
 ## 3 Constrained optimization
@@ -31,15 +31,19 @@ This is accompanying code for my *Structural Optimization* lecture MRM-0156.
 - [Solution](https://meyer-nils.github.io/structural_optimization/exercise_03_constrained_optimization.html)
 
 <p align="center">
-  <img width="300" src="figures/separable_example.svg" style="background-color: #FFFFFF;">
+  <img width="300" src="figures/separable_example.svg">
 </p>
 
 ## 4 Optimization using local approximations
 
 - [Theory](https://meyer-nils.github.io/structural_optimization/approximation_optimization.html)
-- [Code](https://meyer-nils.github.io/structural_optimization/lecture_04_approximation.html)
-- [Exercise](https://meyer-nils.github.io/structural_optimization/exercise_04_approximation_unsolved.html)
-- [Solution](https://meyer-nils.github.io/structural_optimization/exercise_04_approximation.html)
+- [Code](https://meyer-nils.github.io/structural_optimization/lecture_04_approximations.html)
+- [Exercise](https://meyer-nils.github.io/structural_optimization/exercise_04_approximations_unsolved.html)
+- [Solution](https://meyer-nils.github.io/structural_optimization/exercise_04_approximations.html)
+
+<p align="center">
+  <img width="300" src="figures/four_bar_example_1.svg">
+</p>
 
 ## 5 Trusses in a nutshell
 
@@ -48,21 +52,47 @@ This is accompanying code for my *Structural Optimization* lecture MRM-0156.
 - [Exercise](https://meyer-nils.github.io/structural_optimization/exercise_05_sizing_unsolved.html)
 - [Solution](https://meyer-nils.github.io/structural_optimization/exercise_05_sizing.html)
 
+<p align="center">
+  <img width="300" src="figures/truss_sample_solved.svg">
+</p>
+
 
 ## 6 Optimization of truss structures
 
 - [Theory](https://meyer-nils.github.io/structural_optimization/truss_optimization.html)
+- [Code (Size)](https://meyer-nils.github.io/structural_optimization/lecture_06_truss_size.html)
+- [Code (Topology)](https://meyer-nils.github.io/structural_optimization/lecture_06_truss_topology.html)
+- [Code (Shape)](https://meyer-nils.github.io/structural_optimization/lecture_06_truss_shape.html)
+- [Exercise](https://meyer-nils.github.io/structural_optimization/exercise_06_shape_unsolved.html)
+- [Solution](https://meyer-nils.github.io/structural_optimization/exercise_06_shape.html)
 
 <p align="center">
-  <img width="300" src="figures/bridge_shape_optimized.svg" style="background-color: #FFFFFF;">
+  <img width="300" src="figures/bridge_shape_optimized.svg">
 </p>
 
 ## 7 Finite element analysis in a nutshell
 
 - [Theory](https://meyer-nils.github.io/structural_optimization/fem.html)
+- [Code](https://meyer-nils.github.io/structural_optimization/lecture_07_fem.html)
+- [Exercise](https://meyer-nils.github.io/structural_optimization/exercise_07_fem_unsolved.html)
+- [Solution](https://meyer-nils.github.io/structural_optimization/exercise_07_fem.html)
 
+<p align="center">
+  <img width="300" src="figures/cantilever_fem_solved.svg">
+</p>
 
 ## 8 Optimization of continuum structures
 
 - [Theory](https://meyer-nils.github.io/structural_optimization/fem_optimization.html)
+- [Code (Topology)](https://meyer-nils.github.io/structural_optimization/lecture_08_topology.html)
+- [Code (Shape)](https://meyer-nils.github.io/structural_optimization/lecture_08_shape.html)
+- [Exercise (Size)](https://meyer-nils.github.io/structural_optimization/exercise_08_sizing_unsolved.html)
+- [Exercise (Topology)](https://meyer-nils.github.io/structural_optimization/exercise_09_topology_unsolved.html)
+- [Exercise (Shape)](https://meyer-nils.github.io/structural_optimization/exercise_10_shape_unsolved.html)
+- [Solution (Size)](https://meyer-nils.github.io/structural_optimization/exercise_08_sizing.html)
+- [Solution (Topology)](https://meyer-nils.github.io/structural_optimization/exercise_09_topology.html)
+- [Solution (Shape)](https://meyer-nils.github.io/structural_optimization/exercise_10_shape.html)
 
+<p align="center">
+  <img width="300" src="figures/cantilever_fem_optimized_binary_fine_filtered.svg">
+</p>
