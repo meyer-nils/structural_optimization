@@ -24,6 +24,13 @@ jobs:
           sudo chmod +x pandoc_filter.py
           pandoc --output index.html --standalone README.md
           pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output introduction.html --standalone chapters/introduction.tex 
+          pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output unconstrained_optimization.html --standalone chapters/unconstrained_optimization.tex
+          pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output constrained_optimization.html --standalone chapters/constrained_optimization.tex
+          pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output approximation_optimization.html --standalone chapters/approximation_optimization.tex
+          pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output truss.html --standalone chapters/truss.tex
+          pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output truss_optimization.html --standalone chapters/truss_optimization.tex
+          pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output fem.html --standalone chapters/fem.tex
+          pandoc --mathjax --bibliography=literature.bib --number-sections --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output fem_optimization.html --standalone chapters/fem_optimization.tex
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
