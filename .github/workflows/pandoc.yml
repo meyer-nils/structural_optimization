@@ -25,6 +25,9 @@ jobs:
           pandoc --output index.html --standalone README.md
           pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=0 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output introduction.html --standalone chapters/introduction.tex 
           pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=1 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output unconstrained_optimization.html --standalone chapters/unconstrained_optimization.tex
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_02_unconstrained_optimization.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_02_unconstrained_optimization_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_02_unconstrained_optimization.ipynb
           pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=2 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output constrained_optimization.html --standalone chapters/constrained_optimization.tex
           pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=3 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output approximation_optimization.html --standalone chapters/approximation_optimization.tex
           pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=4 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output truss.html --standalone chapters/truss.tex

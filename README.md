@@ -15,6 +15,13 @@ This is accompanying code for my *Structural Optimization* lecture MRM-0156.
 ## 2 Unconstrained optimization
 
 - [Theory](https://meyer-nils.github.io/structural_optimization/unconstrained_optimization.html)
+- [Code](https://meyer-nils.github.io/structural_optimization/lecture_02_unconstrained_optimization.html)
+- [Exercise](https://meyer-nils.github.io/structural_optimization/exercise_02_unconstrained_optimization_unsolved.html)
+- [Solution](https://meyer-nils.github.io/structural_optimization/exercise_02_unconstrained_optimization.html)
+
+<p align="center">
+  <img width="300" src="figures/simple_decent.png">
+</p>
 
 ## 3 Constrained optimization
 
