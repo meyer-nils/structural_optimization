@@ -32,7 +32,7 @@ However, finding this global minimum is generally a challenging task, because it
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{figures/opti_landscape.png}
+    \includegraphics[width=\textwidth, alt={Optimization Landscape}]{figures/opti_landscape.png}
     \caption{Global and local optimum in an optimization problem.}
     \label{fig:global_local_optimization}
 \end{figure}
@@ -54,7 +54,7 @@ This means, we are able to draw a straight line from any point in the set to ano
 
 \begin{figure}[!htpb]
     \centering
-    \includegraphics[width=0.8\textwidth]{figures/convex_sets.png}
+    \includegraphics[width=\textwidth, alt={Convex sets}]{figures/convex_sets.png}
     \caption{Set $\mathcal{S}_0$ is not convex, set $\mathcal{S}_1$ is convex.}
     \label{fig:convex_sets}
 \end{figure}
@@ -75,7 +75,7 @@ We can asses the convexity of a function $f: \mathcal{S} \rightarrow \mathcal{R}
     \end{equation} 
     is positive definite. Visually this means, we can draw a line between any two points of the function and it will never intersect the function.
 
-    \includegraphics[width=\textwidth]{figures/convex_function_0.pdf}
+    \includesvg[width =\textwidth]{figures/convex_function_0.svg}
 \end{example}
 
 
@@ -90,7 +90,7 @@ We can asses the convexity of a function $f: \mathcal{S} \rightarrow \mathcal{R}
     \end{equation} 
     is not positive definite. Visually this means, we can find two points, for which drawing a line between them would cross the function. 
     
-    \includegraphics[width=\textwidth]{figures/convex_function_1.pdf}
+    \includesvg[width=\textwidth]{figures/convex_function_1.svg}
 \end{example}
 
 An unconstrained optimization problem is termed \emph{convex}, if the objective function $f: \mathcal{S} \rightarrow \mathcal{R}$ is convex and the set $\mathcal{S}$ is convex. If in addition, the set $\mathcal{S}$ is compact (i.e. bounded and closed), there exists exactly one solution for the optimization problem. In conclusion this means, that finding the local minimum in a convex problem is equivalent to finding its global minimum. 
@@ -140,7 +140,7 @@ The step itself is scaled with a factor $-\eta \in \mathcal{R}$. The sign stems 
     The optimization path of a simple steepest decent method with a starting point $\mathbf{x}^0= (4, -1)^\top$ and $\eta=0.1$ is shown in the plot below with a blue line. However, the solution requires quite a lot of iterations.
 
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/simple_decent.pdf}
+        \includesvg[width=0.5\textwidth]{figures/simple_decent.svg}
     \end{center}   
 \end{example}
 
@@ -164,7 +164,7 @@ with $c \in (0,1)$. This condition ensures a sufficient decrease of the objectiv
 \begin{example}{Armijo condition}{armijoexample}
     Consider the function $f(x)$ displayed below. The Armijo condition is satisfied in all green ranges.  
     
-    \includegraphics[width=\textwidth]{figures/armijo_condition.pdf}
+    \includesvg[width=\textwidth]{figures/armijo_condition.svg}
 \end{example}
 
 The Armijo condition is always fulfilled for very small steps, thus we have to consider an additional curvature condition (in combination, these are called \emph{Wolfe conditions}) or implement the condition in a clever way to allow for a sufficiently large step size. Latter can be realized with the \emph{backtracking method}, which is usually used to perform the line search to find the step width: 
@@ -180,7 +180,7 @@ The proposed steepest decent method is a useful strategy for unconstrained optim
 \begin{example}{Steepest decent with incomplete line search}{steepestdecentexample}
     We consider the optimization of Equation \eqref{eq:simpledecent_example} using a steepest decent method with incomplete line search. The optimization path for a starting point $\mathbf{x}^0= (4, -1)^\top$, $\eta^0=5.0$, $c=0.5$, and $\rho=0.8$ is shown in the plot below with a blue line. The solution converges much faster than the simple steepest decent.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/steepest_decent.pdf}
+        \includesvg[width=0.5\textwidth]{figures/steepest_decent.svg}
     \end{center}   
 \end{example}
 
@@ -203,7 +203,7 @@ The algorithm of a conjugated gradient method according to Fletchers and Reeves 
 \begin{example}{Conjugated gradients}{cgexample}
     We consider the optimization of Equation \eqref{eq:simpledecent_example} using the CG method with incomplete line search for the sub-problem. The optimization path for a starting point $\mathbf{x}^0= (4, -1)^\top$, $\eta^0=5.0$, $c=0.5$, and $\rho=0.8$ is shown in the plot below with a blue line. The solution converges in just two iterations for this 2D problem, as the problem is quadratic.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/cg.pdf}
+        \includesvg[width=0.5\textwidth]{figures/cg.svg}
     \end{center}   
 \end{example}
 
@@ -219,7 +219,7 @@ Newton's method is a well known method to find roots of a function.
         \item Repeat the steps 2 and 3 until converged.
     \end{enumerate}
     
-    \includegraphics[width=\textwidth]{figures/netwon_iteration.pdf}
+    \includesvg[width=\textwidth]{figures/netwon_iteration.svg}
     \begin{center}    
         \begin{tabular}{cccc}
     
@@ -245,7 +245,7 @@ with Newton's iteration procedure
 \end{equation}
 starting from a starting point $\mathbf{x}^0$. For a quadratic problem, this method would find the solution immediately. However, the inverse Hessian $\mathbf{H}^{-1}$ is computationally expensive to obtain. We use an alternative to computing this term, hence the following method is a "quasi" Newton method. 
 
-We can build up $\mathbf{H}^{-1}$ iteratively in the Broyden–Fletcher–Goldfarb–Shanno (BFGS) \cite{Broyden1970, Fletcher1970, Goldfarb1970, Shanno1970} algorithm: 
+We can build up $\mathbf{H}^{-1}$ iteratively in the Broyden-Fletcher-Goldfarb-Shanno (BFGS) \cite{Broyden1970, Fletcher1970, Goldfarb1970, Shanno1970} algorithm: 
 \begin{enumerate}
     \item Pick a starting point $\mathbf{x}^0$ and set $(\mathbf{H}^{-1})^0=\mathbf{I}$.
     \item Calculate the gradient $\nabla f(\mathbf{x}^k)$ and compute the direction $\mathbf{p}^k = - (\mathbf{H}^{-1})^0 \nabla f(\mathbf{x}^k)$.
@@ -270,7 +270,7 @@ We can build up $\mathbf{H}^{-1}$ iteratively in the Broyden–Fletcher–Goldfa
 \begin{example}{BFGS}{bfgsexample}
     We consider the optimization of Equation \eqref{eq:simpledecent_example} using the BFGS method with incomplete line search for the sub-problem. The optimization path for a starting point $\mathbf{x}^0= (4, -1)^\top$, $\eta^0=5.0$, $c=0.5$, and $\rho=0.8$ is shown in the plot below with a blue line. The solution converges in just two iterations for this 2D quadratic problem.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/bfgs.pdf}
+        \includesvg[width=0.5\textwidth]{figures/bfgs.svg}
     \end{center}   
 \end{example}
 

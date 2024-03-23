@@ -49,13 +49,13 @@ Just like the truss problem, the variable thickness sheet problem can be approxi
 
     We formulate the following algorithm to solve that problem: 
     \begin{enumerate}
-        \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, design limits $\mathbf{d}^l, \mathbf{d}^u$ and the initial design choice $\mathbf{d}^0$.
+        \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, design limits $\mathbf{d}^-, \mathbf{d}^+$ and the initial design choice $\mathbf{d}^0$.
         \item Compute the displacements $\mathbf{u}^k = \mathbf{u}(\mathbf{d}^k)$ by solving the FEM system for the current design $\mathbf{d}^k$.
         \item Compute the strain energies densities for all elements using the previously computed displacements   
         \begin{equation}
             w^k_j(\mathbf{d}^k) = \frac{1}{2}\mathbf{u}^k_j  \cdot \mathbf{k}^0_j \cdot \mathbf{u}^k_j
         \end{equation}
-        \item Compute the lower asymptotes as $\mathbf{L}^k =\mathbf{d}^k - s (\mathbf{d}^u - \mathbf{d}^l)$ with $s \in (0,1)$ during the first two iterations and according to 
+        \item Compute the lower asymptotes as $\mathbf{L}^k =\mathbf{d}^k - s (\mathbf{d}^+ - \mathbf{d}^-)$ with $s \in (0,1)$ during the first two iterations and according to 
         \begin{equation}
             L^k_j = 
             \begin{cases}
@@ -66,13 +66,13 @@ Just like the truss problem, the variable thickness sheet problem can be approxi
         in the following iterations.
         \item Compute the lower move limit as 
         \begin{equation}
-            \tilde{\mathbf{d}}^{l,k} = \max(\mathbf{d}_l,  0.9 \mathbf{L}^k + 0.1 \mathbf{d}^k)
+            \tilde{\mathbf{d}}^{-,k} = \max(\mathbf{d}^-,  0.9 \mathbf{L}^k + 0.1 \mathbf{d}^k)
         \end{equation}
         \item Evaluate the analytical solution
             \begin{align}
                 \hat{d}_j(\mu) &= L_j^k + \sqrt{\frac{2 w_j (\mathbf{d}^k)
                 (L^k_j-d^k_j)^2}{\mu A_j}} \\
-                \mathbf{d}^* (\mu) &= \max\left(\tilde{\mathbf{d}}^{l,k}, \min \left(\hat{\mathbf{d}}(\mu), \mathbf{d}_u \right)\right)
+                \mathbf{d}^* (\mu) &= \textrm{clamp}\left(\hat{\mathbf{d}}(\mu), \tilde{\mathbf{d}}^{-,k}, \mathbf{d}^+ \right)
             \end{align}
         \item Perform a line search to find the root $\mu^*>0$ in 
         \begin{equation}
@@ -82,16 +82,16 @@ Just like the truss problem, the variable thickness sheet problem can be approxi
         \item Repeat with steps 2-7 until convergence or a maximum number of iterations is reached.
     \end{enumerate}
 
-    The following image shows a result of the algorithm for the cantilever problem stated above. Black areas use the full maximum thickness $\mathbf{d}^u$ and white areas use the minimum thickness $\mathbf{d}^l$. The intermediate values are represented by different shades of gray.
+    The following image shows a result of the algorithm for the cantilever problem stated above. Black areas use the full maximum thickness $\mathbf{d}^+$ and white areas use the minimum thickness $\mathbf{d}^-$. The intermediate values are represented by different shades of gray.
 
     \begin{center}
-        \includegraphics[width=\linewidth]{figures/cantilever_fem_optimized.pdf}
+        \includesvg[width=\linewidth]{figures/cantilever_fem_optimized.svg}
     \end{center}
     
 \end{example}
 
 \section{Topology optimization with MMA}
-In a topology optimization of continuum structures, we want to optimize the neighborhood relations of a structure. While the size or shape of an object could be changed by some deformation, we cannot change a topology to another by a "rubber-like" deformation. Essentially this means, in topoplogy optimization we are seeking the fundamental structure of a component: Which parts are connected? How many holes are in it? 
+In a topology optimization of continuum structures, we want to optimize the neighborhood relations of a structure. While the size or shape of an object could be changed by some deformation, we cannot change a topology to another by a "rubber-like" deformation. Essentially this means, in topology optimization we are seeking the fundamental structure of a component: Which parts are connected? How many holes are in it? 
 
 \begin{example}{Topology of steering wheels}{steeringwheelexample}
     Out of the following schematic steering wheels, the top left wheel may be transformed to the bottom center wheel by an appropriate deformation. They have the same topology, but different shapes. However, they cannot be transformed to any other steering wheel, as this would require formation of new holes and break the neighborhood relations. 
@@ -148,13 +148,13 @@ Then, we just need to adjust the sensitivity (see Equation \ref{eq:sensitivity_s
 \begin{example}{Topology optimization with MMA and SIMP}{cantileversimpoptimizationexample}
     Consider the FEM cantilever beam from the previous example. We slightly change the algorithm towards the following:  
     \begin{enumerate}
-        \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, a lower design limit $\pmb{\rho}^l$ and the initial design choice $\pmb{\rho}^0$.
+        \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, a lower design limit $\pmb{\rho}^-$ and the initial design choice $\pmb{\rho}^0$.
         \item Compute the displacements $\mathbf{u}^k = \mathbf{u}(\pmb{\rho}^k)$ by solving the FEM system for the current design $\pmb{\rho}^k$.
         \item Compute the strain energies densities for all elements using the previously computed displacements   
         \begin{equation}
             w^k_j(\pmb{\rho}^k) = \frac{1}{2}\mathbf{u}^k_j \cdot \mathbf{k}^0_j \cdot \mathbf{u}^k_j
         \end{equation}
-        \item Compute the lower asymptotes as $\mathbf{L}^k =\pmb{\rho}^k - s (\mathbf{1} - \pmb{\rho}^l)$ with $s \in (0,1)$ during the first two iterations and according to 
+        \item Compute the lower asymptotes as $\mathbf{L}^k =\pmb{\rho}^k - s (\mathbf{1} - \pmb{\rho}^-)$ with $s \in (0,1)$ during the first two iterations and according to 
         \begin{equation}
             L^k_j = 
             \begin{cases}
@@ -165,13 +165,13 @@ Then, we just need to adjust the sensitivity (see Equation \ref{eq:sensitivity_s
         in the following iterations.
         \item Compute the lower move limit as 
         \begin{equation}
-            \tilde{\pmb{\rho}}^{l,k} = \max(\pmb{\rho}_l,  0.9 \mathbf{L}^k + 0.1 \pmb{\rho}^k)
+            \tilde{\pmb{\rho}}^{-,k} = \max(\pmb{\rho}^-,  0.9 \mathbf{L}^k + 0.1 \pmb{\rho}^k)
         \end{equation}
         \item Evaluate the analytical solution
             \begin{align}
                 \hat{\rho}_j(\mu) &= L_j^k + \sqrt{\frac{2 p \rho_j^{p-1} d_j w_j (\pmb{\rho}^k)
                 (L^k_j-d^k_j)^2}{\mu V_j}} \\
-                \pmb{\rho}^* (\mu) &= \max\left(\tilde{\pmb{\rho}}^{l,k}, \min \left(\hat{\pmb{\rho}}(\mu), \mathbf{1} \right)\right)
+                \pmb{\rho}^* (\mu) &= \textrm{clamp}\left(\hat{\pmb{\rho}}(\mu), \tilde{\pmb{\rho}}^{-,k}, \mathbf{1}\right)
             \end{align}
         \item Perform a line search to find the root $\mu^*>0$ in 
         \begin{equation}
@@ -183,7 +183,7 @@ Then, we just need to adjust the sensitivity (see Equation \ref{eq:sensitivity_s
 
     This procedure results in the following solution:
     \begin{center}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary.pdf}
+        \includesvg[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary.svg}
     \end{center}
 \end{example}
 
@@ -195,8 +195,8 @@ Even if we were to accept mesh dependence and the theoretical problem of ill-pos
 \begin{example}{Mesh dependency}{cantileverdiscoptimizationexample}
     We can increase the resolution of the previous examples to achieve better compliance results. However, this demonstrates the mesh-dependence of the solution as we observe different structures in both cases. Additionally, the resulting fine structures might be difficult to manufacture.
     \begin{center}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_fine.pdf}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine.pdf}
+        \includesvg[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_fine.svg}
+        \includesvg[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine.svg}
     \end{center}
 \end{example}
 
@@ -233,9 +233,9 @@ which is a purely heuristic concept, i.e. there is no mathematical proof for thi
 \begin{example}{Sensitivity filtering}{cantileverfilterexample}
     The following images show the optimized cantilever beams from previous examples with enabled sensitivity filtering employing the same filtering radius for each resolution. Filtering prevents small structures and regularizes the problem such that we achieve the same optimal designs for different mesh sizes.
     \begin{center}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_filtered.pdf}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_fine_filtered.pdf}
-        \includegraphics[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine_filtered.pdf}
+        \includesvg[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_filtered.svg}
+        \includesvg[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_fine_filtered.svg}
+        \includesvg[width=0.7\linewidth]{figures/cantilever_fem_optimized_binary_extra_fine_filtered.svg}
     \end{center}
 \end{example}
 
@@ -264,12 +264,12 @@ drives the solution towards the optimal point $\rho_j^*$, where $G^*_j=1$. The e
 
 In addition, we employ move limits 
 \begin{align}
-    \rho_j^{l,k} &= \max \left(\rho_j^l, (1-m)\rho_j^k \right) \\
-    \rho_j^{u,k} &= \min \left(\rho_j^u, (1+m)\rho_j^k \right)
+    \rho_j^{-,k} &= \max \left(\rho_j^-, (1-m)\rho_j^k \right) \\
+    \rho_j^{+,k} &= \min \left(\rho_j^+, (1+m)\rho_j^k \right)
 \end{align}
 to compute the next value as 
 \begin{equation}
-    \rho_j^{k+1} = \max \left( \min \left(\hat{\rho}_j^{k+1}, \rho_j^{u,k} \right), \rho_j^{l,k} \right).
+    \rho_j^{k+1} = \textrm{clamp} \left(\hat{\rho}_j^{k+1}, \rho_j^{-,k}, \rho_j^{+,k} \right).
 \end{equation}
 The move limits reduce the maximum step width and account for bounds on the design variables. 
 
@@ -283,7 +283,7 @@ To compute $G_j$, we need to determine the value of the Lagrange multiplier $\mu
 
     We formulate the following algorithm to solve that problem: 
     \begin{enumerate}
-        \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, lower design limit $\pmb{\rho}^l$ and the initial design choice $\pmb{\rho}^0$.
+        \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material property $E$, volume constraint $V_0$, lower design limit $\pmb{\rho}^-$ and the initial design choice $\pmb{\rho}^0$.
         \item Compute the displacements $\mathbf{u}^k = \mathbf{u}(\pmb{\rho}^k)$ by solving the FEM system for the current design $\pmb{\rho}^k$.
         \item Compute the sensitivity 
         \begin{equation}
@@ -299,7 +299,7 @@ To compute $G_j$, we need to determine the value of the Lagrange multiplier $\mu
             \end{equation}
         with 
         \begin{equation}
-            \rho^{k+1}_j(\mu) = \max \left( \min \left( \hat{\rho}_j^{k+1} , \rho_j^{u,k} \right), \rho_j^{l,k} \right)
+            \rho^{k+1}_j(\mu) = \textrm{clamp} \left(\hat{\rho}_j^{k+1}, \rho_j^{-,k}, \rho_j^{+,k} \right)
         \end{equation}
         with
         \begin{equation}
@@ -339,7 +339,7 @@ A natural choice for design variables are the coordinates of nodes bounding the 
 \begin{example}{Direct shape optimization of a cantilever beam}{directshapeexample}   
     Consider the cantilever beam from previous examples. If we choose nodal coordinates of the lower edge as design variables (highlighted with black dots) and try to minimize the compliance with a volume constraint, the stiffness improves slightly. However, the mesh is very irregular and leads to inaccurate stress calculations. Furthermore, the deformation is limited as it should neither result in collapsed elements nor highly stretched elements. 
     \begin{center}
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_naive_shape.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_naive_shape.svg}
     \end{center}
 \end{example}
 
@@ -380,37 +380,37 @@ Using the control points as design variables, we can modify the shape smoothly w
     
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_0.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_0.svg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_1.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_1.svg}
     \end{minipage}
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_2.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_2.svg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_3.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_3.svg}
     \end{minipage}
     We may also use linear RBFs to define shape modifications:
     
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_0_linear.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_0_linear.svg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_1_linear.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_1_linear.svg}
     \end{minipage}
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_2_linear.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_2_linear.svg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_3_linear.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_3_linear.svg}
     \end{minipage}
 \end{example}
 
@@ -432,7 +432,7 @@ Just like in shape optimization of trusses, target function and constraint funct
 
     We want to solve for the optimal shape $\pmb{\delta}^*$ that minimizes the compliance of the structure without exceeding the initial volume of the truss. Hence, we formulate the following algorithm to solve the approximated problem: 
     \begin{enumerate}
-        \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material properties $(E, \nu)$ , volume constraint $V_0$, design limits $\pmb{\delta}^l, \pmb{\delta}^u$ and the initial design choice $\pmb{\delta}^0$.
+        \item Define the cantilever FEM model with all nodes $\mathcal{N}$, elements $\mathcal{E}$, material properties $(E, \nu)$ , volume constraint $V_0$, design limits $\pmb{\delta}^-, \pmb{\delta}^+$ and the initial design choice $\pmb{\delta}^0$.
         \item Compute the mesh morphing weights given the current design $\pmb{\delta}^k$ according to
         \begin{equation}
              \pmb{\gamma}^k = \mathbf{M}^{-1} \cdot \pmb{\delta}^k 
@@ -442,7 +442,7 @@ Just like in shape optimization of trusses, target function and constraint funct
             \delta(\mathbf{x}) = \sum_{l=1}^P \gamma_i^k \varphi(\lVert \mathbf{x}-\hat{\mathbf{x}}_i \rVert).
         \end{equation}
         \item Compute the displacements $\mathbf{u}^k$ by solving the FEM system for the morphed mesh.
-        \item Compute the asymptotes as $\mathbf{L}^k = \pmb{\delta}^k - s (\pmb{\delta}^u - \pmb{\delta}^l)$ and $\mathbf{U}^k =\pmb{\delta}^k + s (\pmb{\delta}^u - \pmb{\delta}^l)$ with $s \in (0,1)$ during the first two iterations. In the following iterations, compute the lower asymptotes according to 
+        \item Compute the asymptotes as $\mathbf{L}^k = \pmb{\delta}^k - s (\pmb{\delta}^+ - \pmb{\delta}^-)$ and $\mathbf{U}^k =\pmb{\delta}^k + s (\pmb{\delta}^+ - \pmb{\delta}^-)$ with $s \in (0,1)$ during the first two iterations. In the following iterations, compute the lower asymptotes according to 
         \begin{equation}
             L^k_i = 
             \begin{cases}
@@ -460,8 +460,8 @@ Just like in shape optimization of trusses, target function and constraint funct
         \end{equation}
         \item Compute the move limits as 
         \begin{align}
-            \tilde{\pmb{\delta}}^{l,k} &= \max(\pmb{\delta}^l,  0.9 \mathbf{L}^k + 0.1 \pmb{\delta}^k) \\
-            \tilde{\pmb{\delta}}^{u,k} &= \min(\pmb{\delta}^u,  0.9 \mathbf{U}^k + 0.1 \pmb{\delta}^k)
+            \tilde{\pmb{\delta}}^{-,k} &= \max(\pmb{\delta}^-,  0.9 \mathbf{L}^k + 0.1 \pmb{\delta}^k) \\
+            \tilde{\pmb{\delta}}^{+,k} &= \min(\pmb{\delta}^+,  0.9 \mathbf{U}^k + 0.1 \pmb{\delta}^k)
         \end{align}
 
         \item Evaluate the gradients of the objective function $\frac{\partial C}{\partial \delta_i}$ and the constraint $\frac{\partial g}{\partial \delta_i}$ at $\pmb{\delta}^k$ using automatic differentiation. 
@@ -470,16 +470,16 @@ Just like in shape optimization of trusses, target function and constraint funct
             \begin{align}
                 \hat{\delta}_i(\mu) &= 
                 \begin{cases}
-                    \delta^l_i 
+                    \delta^-_i 
                         &\textrm{if} \quad \frac{\partial C}{\partial \delta_i} > 0, \frac{\partial g}{\partial \delta_i} > 0 \\
                     \frac{U_i^k\omega + L_i^k}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(\delta_i^k-L_i^k)^2\frac{\partial g}{\partial \delta_i}}{(U_i^k-\delta_i^k)^2\frac{\partial C}{\partial \delta_i}}}
                         &\textrm{if} \quad \frac{\partial C}{\partial \delta_i}  > 0, \frac{\partial g}{\partial \delta_i} <0\\
                     \frac{U_i^k-L_i^k\omega}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(U_i^k-\delta_i^k)^2\frac{\partial g}{\partial \delta_i}}{(\delta_i^k-L_i^k)^2\frac{\partial C}{\partial \delta_i}}} 
                         &\textrm{if} \quad \frac{\partial C}{\partial \delta_i} < 0, \frac{\partial g}{\partial \delta_i}  > 0\\
-                    \delta^u_i 
+                    \delta^+_i 
                         &\textrm{if} \quad \frac{\partial C}{\partial \delta_i}< 0, \frac{\partial g}{\partial \delta_i} < 0.
                 \end{cases} \\
-                \pmb{\delta}^* (\mu) &= \max\left(\tilde{\pmb{\delta}}^{l,k}, \min \left(\hat{\pmb{\delta}}(\mu), \tilde{\pmb{\delta}}^{u,k} \right)\right)
+                \pmb{\delta}^* (\mu) &= \textrm{clamp}\left(\hat{\pmb{\delta}}(\mu), \tilde{\pmb{\delta}}^{-,k}, \tilde{\pmb{\delta}}^{+,k}\right)
             \end{align}
         \item Perform a line search to find the maximum in 
             \begin{equation}
@@ -493,11 +493,11 @@ Just like in shape optimization of trusses, target function and constraint funct
 
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape_variables.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape_variables.svg}
     \end{minipage}%
     \begin{minipage}{.5\textwidth}
         \centering
-        \includegraphics[width=0.9\linewidth]{figures/cantilever_fem_shape.pdf}
+        \includesvg[width=0.9\linewidth]{figures/cantilever_fem_shape.svg}
     \end{minipage}
        
 \end{example}

@@ -5,8 +5,7 @@ The first chapter introduces the basic terms for structural optimization. In add
 After studying this chapter and finishing the exercise, you should be able to 
 \begin{itemize}[label=$\dots$]
     \item distinguish three types of structural optimization problems.
-    \item perform tensor algebra computations such as inner products, cross products, and outer products.
-    \item employ index notation confidently.
+    \item perform tensor algebra computations such as inner products, cross products, outer products, dyadic products, and tensor contractions.
     \item apply differential operators such as divergence and gradient on tensor fields.
 \end{itemize}
 \end{objectives}
@@ -24,7 +23,7 @@ The term \emph{best} depends on what we define to be the \emph{objective functio
 
 \begin{figure}[!htpb]
     \centering
-    \includegraphics[width=\textwidth]{figures/structural_optimization_types.png}
+    \includegraphics[width=\textwidth, alt={Sketch topology optimization, shape optimization, sizing optimization}]{figures/structural_optimization_types.png}
     \caption{Types of structural optimization (left to right): Topology optimization, shape optimization, sizing optimization.}
     \label{fig:structural_optimization_types.}
 \end{figure}
@@ -176,10 +175,7 @@ and the Kronecker symbol can be used to define a second-order unit tensor
 \end{equation}
 using a bold capital letter for the second-order tensor, and the permutation symbol is a third-order tensor with a three-dimensional array specifying its entries: 
 \begin{equation}
-    \pmb{\epsilon} = \sum_{i,j,k} \epsilon_{ijk} \mathbf{e}_i \otimes \mathbf{e}_j \otimes \mathbf{e}_k = \sum_{i,j,k}
-    \vcenter{\hbox{\includegraphics[width=0.2\textwidth]{figures/epsilontensor.pdf}}}
-    \quad 
-    \mathbf{e}_i \otimes \mathbf{e}_j \otimes \mathbf{e}_k
+    \pmb{\epsilon} = \sum_{i,j,k} \epsilon_{ijk} \mathbf{e}_i \otimes \mathbf{e}_j \otimes \mathbf{e}_k
 \end{equation}
 
 We may extend this concept further to higher orders. A stiffness tensor for example maps a second-order strain tensor to a second-order stress tensor and thus it is a fourth-order tensor, which we denote with double-stroke capital letters. More general, a fourth order tensor may be obtained by an outer product of two second-order tensors $\mathbf{A},\mathbf{B}\in \mathcal{R}^{d \times d} \rightarrow \mathcal{R}^{d \times d \times d \times d}$ as 
@@ -258,7 +254,8 @@ In many physical processes, variables appear as \emph{tensor fields} with a depe
     \end{equation}
 \end{example}
 
-In most governing equations of physical processes, we need to compute differential operations on these fields. Therefore, the following sections introduce the most important differential operators for tensor fields assuming that the fields are differentiable and that we are using Cartesian coordinates \footnote{In curvilinear coordinates things get a bit more complicated. We stick to Cartesian coordinated in this lecture. }. 
+In most governing equations of physical processes, we need to compute differential operations on these fields. Therefore, the following sections introduce the most important differential operators for tensor fields assuming that the fields are differentiable and that we are using Cartesian coordinates. 
+% \footnote{In curvilinear coordinates things get a bit more complicated. We stick to Cartesian coordinated in this lecture. }. 
 
 A common notation for differential operations on tensor fields utilizes the Nabla operator 
 \begin{equation}

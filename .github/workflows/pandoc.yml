@@ -2,31 +2,80 @@ name: Generate HTML via Pandoc
 
 on: push
 
+permissions:
+  id-token: write
+  pages: write
+
 jobs:
   convert_via_pandoc:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install dependencies
+      - name: Run pandoc
         run: |
-          sudo apt install pandoc-citeproc
-      
-      - uses: docker://pandoc/latex:latest
-        with:
-          args: >-
-            --mathjax
-            --bibliography=literature.bib
-            --number-sections
-            --css main.css
-            --filter pandoc-crossref 
-            --filter pandoc_filter.py
-            --citeproc
-            --variable lang=en
-            --output main.html 
-            --standalone
-            main.tex  
+          wget -q https://github.com/jgm/pandoc/releases/download/3.1.11.1/pandoc-3.1.11.1-1-amd64.deb
+          sudo dpkg -i pandoc-3.1.11.1-1-amd64.deb
+          wget -q https://github.com/lierdakil/pandoc-crossref/releases/download/v0.3.17.0c/pandoc-crossref-Linux.tar.xz
+          tar -xvf pandoc-crossref-Linux.tar.xz
+          sudo mv pandoc-crossref /usr/local/bin/pandoc-crossref
+          sudo apt install pandoc-citeproc 
+          pip install pandocfilters jupyter nbconvert
+          sudo chmod +x pandoc_filter.py
+          pandoc --output index.html --standalone README.md
+          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=0 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output introduction.html --standalone chapters/introduction.tex 
+          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=1 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output unconstrained_optimization.html --standalone chapters/unconstrained_optimization.tex
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_02_unconstrained_optimization.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_02_unconstrained_optimization_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_02_unconstrained_optimization.ipynb
+          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=2 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output constrained_optimization.html --standalone chapters/constrained_optimization.tex
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_03_constrained_optimization.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_03_constrained_optimization_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_03_constrained_optimization.ipynb
+          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=3 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output approximation_optimization.html --standalone chapters/approximation_optimization.tex
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_04_approximations.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_04_approximations_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_04_approximations.ipynb
+          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=4 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output truss.html --standalone chapters/truss.tex
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_05_sizing.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_05_sizing_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_05_truss.ipynb
+          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=5 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output truss_optimization.html --standalone chapters/truss_optimization.tex
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_06_shape.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_06_shape_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_06_truss_shape.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_06_truss_size.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_06_truss_topology.ipynb
+          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=6 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output fem.html --standalone chapters/fem.tex
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_07_fem.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_07_fem_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_07_fem.ipynb
+          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=7 --css main.css --filter pandoc-crossref --filter pandoc_filter.py --citeproc --include-in-header header --variable lang=en --output fem_optimization.html --standalone chapters/fem_optimization.tex
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_08_sizing.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_08_sizing_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_09_topology.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_09_topology_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_10_shape.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/exercise_10_shape_unsolved.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_08_shape.ipynb
+          jupyter nbconvert --to HTML --output-dir . notebooks/lecture_08_topology.ipynb
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: main.html
+          path: '.'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: https://meyer-nils.github.io/structural_optimization
+    runs-on: ubuntu-latest
+    needs: convert_via_pandoc
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

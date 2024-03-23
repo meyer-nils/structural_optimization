@@ -25,3 +25,7 @@ main.pdf
 *.vtk
 *.stl
 *.pvsm
+
+# Pandoc HTML
+svg-inkscape
+*.html

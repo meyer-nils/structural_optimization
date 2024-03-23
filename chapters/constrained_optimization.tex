@@ -20,36 +20,37 @@ After studying this chapter and finishing the exercise, you should be able to
     \item treat box constraints in gradient decent methods with projected gradients
     \item formulate Lagrangian functions of constrained optimization problems
     \item apply the Karush-Kuhn Tucker conditions to find the optimum of a convex constrained optimization problem
-    \item explain the term \emph{Lagangian duality} and in which cases the dual formulation is beneficial
-    \item apply the Langragian duality method to solve convex separable problems
+    \item explain the term \emph{Lagrangian duality} and in which cases the dual formulation is beneficial
+    \item apply the Lagrangian duality method to solve convex separable problems
 \end{itemize}
 \end{objectives}
 
 \section{Box constraints} 
-First, we neglect the equality constraints and inequality constraints in the problem \eqref{eq:constrained_optimization}, i.e. $m=0, n=0$, and focus on box constraints $\mathbf{x} \in \mathcal{X}$. \emph{Box constraint} means that the variables are limited to an upper and lower bound $\mathbf{x}^u$ and $\mathbf{x}^l$, respectively. For example, design variables in structural optimization could be diameters of beams, which cannot become negative or should not exceed a certain maximum producible size.
+First, we neglect the equality constraints and inequality constraints in the problem \eqref{eq:constrained_optimization}, i.e. $m=0, n=0$, and focus on box constraints $\mathbf{x} \in \mathcal{X}$. \emph{Box constraint} means that the variables are limited to an upper and lower bound $\mathbf{x}^+$ and $\mathbf{x}^-$, respectively. For example, design variables in structural optimization could be diameters of beams, which cannot become negative or should not exceed a certain maximum producible size.
 
-These constraints are probably the most friendly constraints in an optimization problem and in a one-dimensional optimization problem we can deal with them simply by clipping the variable as 
+These constraints are probably the most friendly constraints in an optimization problem and in a one-dimensional optimization problem we can deal with them simply by clamping the scalar variable as 
 \begin{equation}
-    x^* = \max(\min(\hat{x}, x^u), x^l)
+    x^* = \textrm{clamp}(\hat{x}, x^-, x^+) = \min(\max(\hat{x}, x^-), x^+)
 \end{equation}
-with the stationary point $\hat{x}$, the lower bound $x_l$ and the upper bound $x_u$. However, clipping the stationary point in each dimension of a multi-dimensional problem would not result in the optimal point, as illustrated by the green point in the next example \cite{Niculae2020}.
+with the stationary point $\hat{x}$, the lower bound $x^-$ and the upper bound $x^+$. 
+However, clamping the stationary point in each dimension of a multi-dimensional problem would not result in the optimal point, as illustrated by the green point in the next example \cite{Niculae2020}.
 
 One method to deal with box constrains in multi-dimensional optimization problems is the projected gradient method. In this method we project each step of a gradient decent back to the domain as 
 \begin{equation}
     \mathbf{x}^{k+1} = P(\mathbf{x}^k -\eta \nabla f(\mathbf{x}^k))
 \end{equation}
-with a projection function $P: \mathcal{R}^d \rightarrow \mathcal{X}$. In case of box constraints, this projection is simply clipping the values to $\mathcal{X}$ by 
+with a projection function $P: \mathcal{R}^d \rightarrow \mathcal{X}$. In case of box constraints, this projection is simply clamping the values to $\mathcal{X}$ by 
 \begin{equation}
-    P(\mathbf{x}) = \max(\min(\mathbf{x}, \mathbf{x}^u), \mathbf{x}^l),
+    P(\mathbf{x}) = \textrm{clamp}(\mathbf{x}, \mathbf{x}^-, \mathbf{x}^+) = \min(\max(\mathbf{x}, \mathbf{x}^-), \mathbf{x}^+).
 \end{equation}
-where the $\max()$ and $\min()$ operators perform a point-wise comparison. 
+Here, all operators ($\max$, $\min$ and $\textrm{clamp}$) are applied as point-wise comparisons to the components of its inputs.
 
 \begin{example}{Box constraints}{boxexample}
     We want to find the solution of the following quadratic optimization problem
     \begin{equation}
         \begin{aligned}
             \min_{\mathbf{x}} \quad & f(\mathbf{x})= (\mathbf{x}-\tilde{\mathbf{x}}) \cdot \mathbf{Q} \cdot (\mathbf{x}-\tilde{\mathbf{x}})\\
-            \textrm{s.t.} \quad     & \mathbf{x}^l \le \mathbf{x} \le \mathbf{x}^u\\
+            \textrm{s.t.} \quad     & \mathbf{x}^- \le \mathbf{x} \le \mathbf{x}^+\\
         \end{aligned}
         \label{eq:boxexample}
     \end{equation}
@@ -67,13 +68,13 @@ where the $\max()$ and $\min()$ operators perform a point-wise comparison.
         1 
         \end{pmatrix}
         ,
-        \mathbf{x}^l = 
+        \mathbf{x}^- = 
         \begin{pmatrix}
         0\\
         -2 
         \end{pmatrix}
         ,
-        \mathbf{x}^u = 
+        \mathbf{x}^+ = 
         \begin{pmatrix}
         2\\
         2 
@@ -82,10 +83,10 @@ where the $\max()$ and $\min()$ operators perform a point-wise comparison.
     \end{equation}
 
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/box_example.pdf}
+        \includesvg[width=0.5\textwidth]{figures/box_example.svg}
     \end{center}
 
-    This is visually equivalent to searching for that point $\mathbf{x}^*$ within the non-faded region in the displayed plot that has the smallest function value. In the unconstrained optimization problem, a simple steepest gradient decent follows the blue path and results in the blue point $(-1, 1)^\top$. In the constrained optimization problem, a simple steepest gradient decent follows the orange path and results in the orange point indicating the correct solution $(0, 0)^\top$ to problem \eqref{eq:boxexample}. Note that simply clipping the result $(-1, 1)^\top$ in each dimension would yield the position indicated by the green point, which is not the optimum.    
+    This is visually equivalent to searching for that point $\mathbf{x}^*$ within the non-faded region in the displayed plot that has the smallest function value. In the unconstrained optimization problem, a simple steepest gradient decent follows the blue path and results in the blue point $(-1, 1)^\top$. In the constrained optimization problem, a simple steepest gradient decent follows the orange path and results in the orange point indicating the correct solution $(0, 0)^\top$ to problem \eqref{eq:boxexample}. Note that simply clamping the result $(-1, 1)^\top$ in each dimension would yield the position indicated by the green point, which is not the optimum.    
 \end{example}
 
 
@@ -95,7 +96,7 @@ Now, we neglect only the inequality constraints in the problem \eqref{eq:constra
     \mathcal{\mathcal{L}} (\mathbf{x}, \pmb{\lambda}) = f(\mathbf{x}) + \sum_{j=1}^m \lambda_j h_j(\mathbf{x}) 
 \end{equation}
 with so called Lagrangian multipliers $\pmb{\lambda} \in \mathcal{R}^m$. 
-According to the Lagrange multiplier theorem, a stationary point of the Langrangian function 
+According to the Lagrange multiplier theorem, a stationary point of the Lagrangian function 
 \begin{align}
     \frac{\partial \mathcal{\mathcal{L}}}{\partial x_k} (\mathbf{x}^*, \pmb{\lambda}^*) &= \frac{\partial f }{\partial x_k} (\mathbf{x}^*) + \sum_{j=1}^m \lambda_j^* \frac{\partial h_j}{\partial x_k} (\mathbf{x}^*) = 0\\
     \frac{\partial \mathcal{\mathcal{L}}}{\partial \lambda_j} (\mathbf{x}^*, \pmb{\lambda}^*) &= h_j(\mathbf{x}^*) = 0,
@@ -129,7 +130,7 @@ fulfills the necessary condition to be an optimum of a constrained optimization 
 
     This is visually equivalent to searching for the point on the black line in the following image that has the smallest function value.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/lagrange_example.pdf}
+        \includesvg[width=0.5\textwidth]{figures/lagrange_example.svg}
     \end{center}
 
     We can find the solution to this problem by finding a stationary point of the Lagrangian function
@@ -192,7 +193,7 @@ The first condition is the stationary condition, the next two conditions are the
 
     This is visually equivalent to searching for a point with the smallest function value on the black line that is within the non-faded area in the following image.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/kkt_example_1.pdf}
+        \includesvg[width=0.5\textwidth]{figures/kkt_example_1.svg}
     \end{center}
 
     The Lagrangian for this problem is 
@@ -242,7 +243,7 @@ The first condition is the stationary condition, the next two conditions are the
 
     This is visually equivalent to searching for a point with the smallest function value on the black line that is within the non-faded area in the following image.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/kkt_example_2.pdf}
+        \includesvg[width=0.5\textwidth]{figures/kkt_example_2.svg}
     \end{center}
 
     The Lagrangian for this problem is 
@@ -338,7 +339,7 @@ is helpful, because we are left with very simple box constraints in these optimi
 
     This is visually equivalent to searching for a point on the black line in the following image that has the smallest function value.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/dual_example.pdf}
+        \includesvg[width=0.5\textwidth]{figures/dual_example.svg}
     \end{center}
 
     We can formulate the Lagrangian function as
@@ -395,7 +396,7 @@ For such a separable convex problem, the search for the the "valley floor"
 \end{equation} 
 turns into $d$ simple strictly convex optimization problems 
 \begin{equation}
-    \min_{x_k \in [x_k^l, x_k^u]} \mathcal{L}_k(x_k) \quad k \in[1,d]
+    \min_{x_k \in [x_k^-, x_k^+]} \mathcal{L}_k(x_k) \quad k \in[1,d]
 \end{equation}
 which have a unique solution and are simple to solve because each of them is just a box-constrained single variable optimization problem. 
 After finding the expression for $\underline{\mathcal{L}} (\pmb{\mu}, \pmb{\lambda})$ easily, we only need to solve this remaining problem $\max_{\pmb{\mu}, \pmb{\lambda}} \underline{\mathcal{L}} (\pmb{\mu}, \pmb{\lambda})$ w.r.t. $\pmb{\mu}$ and $\pmb{\lambda}$. The dual problem is therefore especially well suited for separable convex problems with $d \gg n+m$, i.e. for problems with many design variables and just a few constraints. This is typically the case for topology optimization.
@@ -404,7 +405,7 @@ After finding the expression for $\underline{\mathcal{L}} (\pmb{\mu}, \pmb{\lamb
     Let's consider the previous example with the additional constraint $\mathbf{x} \in \mathcal{X} = [0, 2]\times[-2, 2]$.
     This is visually equivalent to searching within the gray box for a point on the black line that has the smallest function value in the following image.
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{figures/separable_example.pdf}
+        \includesvg[width=0.5\textwidth]{figures/separable_example.svg}
     \end{center}
 
     It would be tedious to solve the problem with additional inequality constraints like $g_1= x_1, g_2=x_1-2, g_3=x_2-2, g_4=2-x_2$. 
@@ -413,15 +414,15 @@ After finding the expression for $\underline{\mathcal{L}} (\pmb{\mu}, \pmb{\lamb
     \begin{equation}
         \mathcal{L}(\mathbf{x}, \lambda) = \underbrace{2 (x_1-\tilde{x}_1)^2 + \lambda (x_1+1)^2}_{\mathcal{L}_1(x_1)} + \underbrace{(x_2-\tilde{x}_2)^2  + \lambda x_2}_{\mathcal{L}_2(x_2)}.
     \end{equation}
-    and can take care of box constraints trivially in each optimization by clipping. Using the stationary points 
+    and can take care of box constraints trivially in each optimization by clamping. Using the stationary points 
     \begin{align}
         \frac{\partial \mathcal{L}_1}{\partial x_1} &= 4\hat{x}_1+4+2\lambda \hat{x}_1 + 2 \lambda = 0 \\
         \frac{\partial \mathcal{L}_2}{\partial x_2} &= 2\hat{x}_2-2+\lambda = 0
     \end{align}
     we can solve 
     \begin{align}
-        x_1^*(\lambda) = \max(\min(\hat{x}_1(\lambda), x_1^u), x_1^l) &= 0 \\
-        x_2^*(\lambda) = \max(\min(\hat{x}_2(\lambda), x_2^u), x_2^l) &= 
+        x_1^*(\lambda) = \textrm{clamp}(\hat{x}_1(\lambda), x_1^-, x_1^+) &= 0 \\
+        x_2^*(\lambda) = \textrm{clamp}(\hat{x}_2(\lambda), x_2^-, x_2^+) &= 
         \begin{cases}
             2 & \quad \lambda < -2 \\
             -2 & \quad \lambda > 6 \\
@@ -439,7 +440,7 @@ After finding the expression for $\underline{\mathcal{L}} (\pmb{\mu}, \pmb{\lamb
     \end{equation}
     This dual objective function is plotted here:
     \begin{center}
-        \includegraphics[width=\textwidth]{figures/dual_function.pdf}
+        \includesvg[width=\textwidth]{figures/dual_function.svg}
     \end{center}
     We can employ any gradient decent method or analytical method to find the optimum of the dual function. In this case, it is $\lambda^*=4$ and therefore the optimum is at $x_1^*=0$ and $x_2^*=-1$.    
 \end{example}
