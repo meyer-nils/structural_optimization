@@ -20,25 +20,42 @@ This is accompanying code for my *Structural Optimization* lecture MRM-0156.
 - [Solution](https://meyer-nils.github.io/structural_optimization/exercise_02_unconstrained_optimization.html)
 
 <p align="center">
-  <img width="300" src="figures/simple_decent.png">
+  <img width="300" src="figures/simple_decent.svg" style="background-color: #FFFFFF;">
 </p>
 
 ## 3 Constrained optimization
 
 - [Theory](https://meyer-nils.github.io/structural_optimization/constrained_optimization.html)
+- [Code](https://meyer-nils.github.io/structural_optimization/lecture_03_constrained_optimization.html)
+- [Exercise](https://meyer-nils.github.io/structural_optimization/exercise_03_constrained_optimization_unsolved.html)
+- [Solution](https://meyer-nils.github.io/structural_optimization/exercise_03_constrained_optimization.html)
+
+<p align="center">
+  <img width="300" src="figures/separable_example.svg" style="background-color: #FFFFFF;">
+</p>
 
 ## 4 Optimization using local approximations
 
 - [Theory](https://meyer-nils.github.io/structural_optimization/approximation_optimization.html)
+- [Code](https://meyer-nils.github.io/structural_optimization/lecture_04_approximation.html)
+- [Exercise](https://meyer-nils.github.io/structural_optimization/exercise_04_approximation_unsolved.html)
+- [Solution](https://meyer-nils.github.io/structural_optimization/exercise_04_approximation.html)
 
 ## 5 Trusses in a nutshell
 
 - [Theory](https://meyer-nils.github.io/structural_optimization/truss.html)
+- [Code](https://meyer-nils.github.io/structural_optimization/lecture_05_truss.html)
+- [Exercise](https://meyer-nils.github.io/structural_optimization/exercise_05_sizing_unsolved.html)
+- [Solution](https://meyer-nils.github.io/structural_optimization/exercise_05_sizing.html)
 
 
 ## 6 Optimization of truss structures
 
 - [Theory](https://meyer-nils.github.io/structural_optimization/truss_optimization.html)
+
+<p align="center">
+  <img width="300" src="figures/bridge_shape_optimized.svg" style="background-color: #FFFFFF;">
+</p>
 
 ## 7 Finite element analysis in a nutshell
 
