@@ -20,7 +20,10 @@ This is accompanying code for my *Structural Optimization* lecture MRM-0156.
 - [Solution](https://meyer-nils.github.io/structural_optimization/exercise_02_unconstrained_optimization.html)
 
 <p align="center">
-  <img width="300" src="figures/simple_decent.svg">
+  <svg width="300" height="300">
+    <rect width="100%" height="100%" fill="white" />
+    <image width="100%" height="100%" href="figures/simple_decent.svg"/>
+  </svg>
 </p>
 
 ## 3 Constrained optimization
