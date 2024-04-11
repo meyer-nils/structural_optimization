@@ -11,6 +11,8 @@ This is accompanying code for my *Structural Optimization* lecture MRM-0156.
 
 - 1 Introduction
   - [Theory](https://meyer-nils.github.io/structural_optimization/introduction.html)
+  - [Exercise](https://meyer-nils.github.io/structural_optimization/exercise_01_tensors_unsolved.html)
+  - [Solution](https://meyer-nils.github.io/structural_optimization/exercise_01_tensors.html)
 - 2 Unconstrained optimization
   - [Theory](https://meyer-nils.github.io/structural_optimization/unconstrained_optimization.html)
   - [Code](https://meyer-nils.github.io/structural_optimization/lecture_02_unconstrained_optimization.html)
