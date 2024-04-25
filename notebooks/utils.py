@@ -6,7 +6,15 @@ torch.set_default_dtype(torch.double)
 
 
 def plot_contours(
-    x, f, opti=[], figsize=(8, 6), levels=25, title=None, box=None, paths={}
+    x,
+    f,
+    opti=[],
+    figsize=(8, 6),
+    levels=25,
+    title=None,
+    box=None,
+    paths={},
+    colorbar=False,
 ):
     with torch.no_grad():
         plt.figure(figsize=figsize)
@@ -56,6 +64,8 @@ def plot_contours(
                 vmin=f.min(),
                 vmax=f.max(),
             )
+        if colorbar:
+            plt.colorbar()
         for label, path in paths.items():
             xp = [p[0] for p in path]
             yp = [p[1] for p in path]
