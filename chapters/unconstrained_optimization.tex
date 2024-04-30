@@ -109,7 +109,7 @@ A naive algorithm for this can be formulated as follows:
     \item Pick a starting point $\mathbf{x}^0$.
     \item Calculate the gradient $\nabla f(\mathbf{x}^k)$.
     \item Make a step $\mathbf{x}^{k+1} = \mathbf{x}^k -\eta \nabla f(\mathbf{x}^k)$.
-    \item Repeat steps 2 and 3 until you reached a maximum number of iterations $k \le N$ or there is no improvement any more ($ \nabla f(\mathbf{x}^k) < \epsilon$). 
+    \item Repeat steps 2 and 3 until you reached a maximum number of iterations $k \le N$ or there is no improvement any more ($ \lVert \nabla f(\mathbf{x}^k) \rVert < \epsilon$). 
 \end{enumerate}
 The step itself is scaled with a factor $-\eta \in \mathcal{R}$. The sign stems from the fact that we want to minimize the function. The scaling variable $\eta$ is termed \emph{learning rate} in machine learning contexts and describes how large the step is before reevaluating the gradient again. A smaller learning rate improves convergence of the algorithm towards the exact solution, but requires more steps and more function evaluations. A larger value of $\eta$ makes it harder for the algorithm to converge, as it may "jump" over the minimum or may diverge. 
 
@@ -151,7 +151,7 @@ The previous approach is simple, but requires many repeated evaluations of the m
     \item Calculate the gradient $\nabla f(\mathbf{x}^k)$ and the search direction $\mathbf{p}^k = - \frac{\nabla f(\mathbf{x}^k)}{\lVert \nabla f(\mathbf{x}^k) \rVert}$.
     \item Solve the sub-problem $\min_{\eta} f(\mathbf{x}^k + \eta \mathbf{p}^k)$ to find the optimal step size $\eta$ for a fixed search direction $\mathbf{p}^k$.
     \item Make a step $\mathbf{x}^{k+1} = \mathbf{x}^k + \eta \mathbf{p}^k$.
-    \item Repeat steps 2, 3 and 4 until you reached a maximum number of iterations $k \le N$ or there is no improvement any more ($ \nabla f(\mathbf{x}^k) < \epsilon$). 
+    \item Repeat steps 2, 3 and 4 until you reached a maximum number of iterations $k \le N$ or there is no improvement any more ($ \lVert \nabla f(\mathbf{x}^k) \rVert < \epsilon$). 
 \end{enumerate}
 
 The sub-problem is just a one-dimensional optimization problem. However, it still requires an iterative solution, if the resulting function $f(\mathbf{x}^k + \eta \mathbf{p}^k)$ has no analytical expression w.r.t. $\eta$. Hence solving this problem to its exact value still takes some time. We do not need to solve this sub-problem to its exact optimal value, though. We can search for a solution that is "good enough" and save some time. But what is good enough?
@@ -264,7 +264,7 @@ We can build up $\mathbf{H}^{-1}$ iteratively in the Broyden-Fletcher-Goldfarb-S
             + 
             \frac{\mathbf{p}^k \otimes \mathbf{p}^k}{\mathbf{p}^k \cdot \mathbf{y}^k}
     \end{equation}
-    \item Repeat steps 2, 3 and 4 until you reached a maximum number of iterations $k \le N$ or there is no improvement any more ($ \nabla f(\mathbf{x}^k) < \epsilon$). 
+    \item Repeat steps 2, 3 and 4 until you reached a maximum number of iterations $k \le N$ or there is no improvement any more ($ \lVert \nabla f(\mathbf{x}^k) \rVert < \epsilon$). 
 \end{enumerate}
 
 \begin{example}{BFGS}{bfgsexample}
