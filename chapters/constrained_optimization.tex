@@ -143,7 +143,7 @@ fulfills the necessary condition to be an optimum of a constrained optimization 
         \frac{\partial \mathcal{\mathcal{L}}}{\partial x_2} &= 2 x_2^* - \lambda^*  -2 = 0\\
         \frac{\partial \mathcal{\mathcal{L}}}{\partial \lambda} &= x_1^* - x_2^* -2 = 0.
     \end{align}
-    This is a linear system of three equations with three unknowns and we can easily find the solution $x_1^*=\frac{1}{3} , x_1^*=-\frac{5}{3}, \lambda^*=-\frac{16}{3}$
+    This is a linear system of three equations with three unknowns and we can easily find the solution $x_1^*=\frac{1}{3} , x_2^*=-\frac{5}{3}, \lambda^*=-\frac{16}{3}$
 \end{example}
 
 
@@ -209,7 +209,7 @@ The first condition is the stationary condition, the next two conditions are the
         \label{eq:kkt_example1_in}
         \frac{\partial \mathcal{\mathcal{L}}}{\partial \mu} &= x_1^*+x_2^* \le 0 \\
         \mu^* &\ge 0 \\
-        0 &= \mu^*(x_1+x_2)
+        0 &= \mu^*(x_1^*+x_2^*)
         \label{eq:kkt_example1_comp}
     \end{align}
     Obviously, the inequality constraint $g(\mathbf{x})$ is not active at $\mathbf{x}^*$, hence $\mu^*=0$ and Equations \eqref{eq:kkt_example1_in} to \eqref{eq:kkt_example1_comp} are fulfilled. The remaining problem is equivalent to the previous example.
@@ -259,7 +259,7 @@ The first condition is the stationary condition, the next two conditions are the
         \label{eq:kkt_example2_in}
         \frac{\partial \mathcal{\mathcal{L}}}{\partial \mu} &= -x_1^*-x_2^* \le 0 \\
         \mu^* &\ge 0 \\
-        0 &= \mu^*(-x_1-x_2)
+        0 &= \mu^*(-x_1^*-x_2^*)
         \label{eq:kkt_example2_comp}
     \end{align}
     In this case, the inequality constraint $g(\mathbf{x})$ is active at $\mathbf{x}^*$, hence $\mu^* > 0$ and $g(\mathbf{x})=0$. This is used to eliminate the inequalities and leaves us with a linear system of equations 
