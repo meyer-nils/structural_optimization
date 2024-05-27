@@ -2,6 +2,7 @@
 ![Python](https://img.shields.io/badge/-Python-4B8BBE?&logo=Python&logoColor=fff)
 ![Juypter](https://img.shields.io/badge/-Jupyter-F37626?&logo=Jupyter&logoColor=fff)
 [![Build LaTeX](https://github.com/meyer-nils/structural_optimization/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/meyer-nils/structural_optimization/actions/workflows/main.yml)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/meyer-nils/structural_optimization)
 [![Static Badge](https://img.shields.io/badge/Download_PDF-1.1.2-blue)](https://github.com/meyer-nils/structural_optimization/releases/download/v1.1.2/structural_optimization.pdf)
 
 
