@@ -154,14 +154,14 @@ where
          0 &\quad \text{if} \quad \frac{\partial f}{\partial x_j} (\mathbf{x}^k) \ge 0 \\
         - (x^k_j-L^k_j)^2 \frac{\partial f}{\partial x_j} (\mathbf{x}^k) &\quad \text{if} \quad \frac{\partial f}{\partial x_j} (\mathbf{x}^k) < 0.
     \end{cases} \\ 
-    r_j^k &= f(\mathbf{x}^k) - \sum_j \left(\frac{p_{j}^k}{U^k_j-x^k_j} + \frac{q_{j}^k}{x^k_j-L^k_j}  \right)
+    r(\mathbf{x}^k) &= f(\mathbf{x}^k) - \sum_j \left(\frac{p_{j}^k}{U^k_j-x^k_j} + \frac{q_{j}^k}{x^k_j-L^k_j}  \right)
     \label{eq:mma_end}
 \end{align}
 with $L^k_j < x_j < U^k_j$. The parameters $L^k_j$ and $U_j^k$ are called the lower and upper asymptotes, respectively. They can be adjusted ("move"), hence the method is termed \emph{Method of Moving Asymptotes} (MMA) \cite{Svanberg1987}. It can be proven that this is a generalization, as setting $L^k_j \rightarrow 0$ and $U^k_j \rightarrow \infty$ recovers the CONLIN method and setting  $L^k_j \rightarrow -\infty$ and $U^k_j \rightarrow \infty$ recovers the SLP method.
 
 To prevent singularities by reaching the asymptotes, we use move limits 
 \begin{equation}
-    L^k_j \le \tilde{x}_j^{-,k} \le x_j \le \tilde{x}_j^{+,k} \le U_j^k.
+    L^k_j < \tilde{x}_j^{-,k} \le x_j \le \tilde{x}_j^{+,k} < U_j^k.
 \end{equation}
 similar to SLP. These could be chosen for example as 
 \begin{align}
