@@ -88,7 +88,7 @@ Then, our linear approximation becomes
 \begin{equation}
     \tilde{f}(\mathbf{x}) = f(\mathbf{x}^k) + \sum_j \frac{\partial f}{\partial y_j}(\mathbf{x}^k) \left(y_j(x_j) - y_j(x^k_j) \right)
 \end{equation}
-for the objective function, but obviously the same principals apply for constraints throughout the remainder of this chapter.
+for the objective function, but obviously the same principles apply for constraints throughout the remainder of this chapter.
 Employing the chain rule
 \begin{equation}
     \frac{\partial f}{\partial y_j} (\mathbf{x}^k) 
@@ -119,11 +119,11 @@ This method is termed \emph{Convex Linearization} or CONLIN \cite{Fleury1989}. T
     \begin{equation}
         \begin{aligned}
             \min_{\mathbf{a}} \quad & f(\mathbf{a})= a_1 + a_2\\
-            \textrm{s.t.} \quad     & g(\mathbf{a}) = \frac{8}{16a_1+9a_2} - \frac{4.5}{9a_1+16a_2} -0.1 \le 0  \\
+            \textrm{s.t.} \quad     & g(\mathbf{a}) = \frac{8}{16a_1+9a_2} - \frac{4.5}{9a_1+16a_2} - \delta_0 \le 0  \\
             \quad     & \mathbf{a} \in [0.2,2.5]^2
         \end{aligned}
     \end{equation}
-    This problem is not convex, because the constraint $g(\mathbf{a})$ (shown as solid black line in the following plot) is not a convex function. This leads to two local minima, one at $a_2=0.2$ and one at $a_2=2.5$.
+    This problem is not convex, because the constraint $g(\mathbf{a})$ (shown as solid black line in the following plot for $\delta_0=0.1$) is not a convex function. This leads to two local minima, one at $a_2=0.2$ and one at $a_2=2.5$.
     \begin{center}
         \includesvg[width=0.6\textwidth]{figures/four_bar_example_0.svg}
     \end{center}
