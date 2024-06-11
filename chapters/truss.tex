@@ -72,7 +72,7 @@ with an element stiffness matrix $\mathbf{k}_j \in \mathcal{R}^{4\times4}$ defin
     \begin{pmatrix}
     \cos{\phi}^2 & \cos{\phi}\sin{\phi} & -\cos{\phi}^2 & -\cos{\phi}\sin{\phi} \\
     \cos{\phi}\sin{\phi} & \sin{\phi}^2 & -\cos{\phi}\sin{\phi} & -\sin{\phi}^2 \\
-    -\cos{\phi}^2 & \cos{\phi}\sin{\phi} & \cos{\phi}^2 &\cos{\phi}\sin{\phi} \\
+    -\cos{\phi}^2 & -\cos{\phi}\sin{\phi} & \cos{\phi}^2 &\cos{\phi}\sin{\phi} \\
     -\cos{\phi}\sin{\phi} & -\sin{\phi}^2 & \cos{\phi}\sin{\phi} & \sin{\phi}^2 \\
     \end{pmatrix}
 \end{equation}
@@ -196,7 +196,7 @@ An exemplary solution for the example shown in Figure \ref{fig:truss_example} is
              a_0 + \frac{a_1}{2\sqrt{2}}&  -\frac{a_1}{2\sqrt{2}} & \cellcolor{aux_green!10}-a_0 &  \cellcolor{aux_green!10}0 & -\cellcolor{aux_green!10} \frac{a_1}{2\sqrt{2}} &  \frac{a_1}{2\sqrt{2}}\\
             -\frac{a_1}{2\sqrt{2}} &  \frac{a_1}{2\sqrt{2}} & \cellcolor{aux_green!10} 0 & \cellcolor{aux_green!10} 0 & \cellcolor{aux_green!10}\frac{a_1}{2\sqrt{2}} &  -\frac{a_1}{2\sqrt{2}} \\
             \rowcolor{aux_green!10}
-             -a_0 &  a_0 & 0 &  0 & 0 & 0\\
+             -a_0 &  0 & a_0 &  0 & 0 & 0\\
              \rowcolor{aux_green!10}
             0 &  0 & 0 &  a_2 & 0 &  -a_2 \\
             \rowcolor{aux_green!10}
