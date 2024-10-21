@@ -226,9 +226,11 @@ and in the volume constraint.
 
 An alternative to filtering densities is filtering of sensitivities. We may compute the filtered sensitivity as
 \begin{equation}
-    \widetilde{\frac{\partial C}{\partial \rho_j}} = \frac{1}{\rho_j} \frac{\sum_i H_{ji} A_i \rho_i \frac{\partial C}{\partial \rho_i} }{\sum_i H_{ji} A_i}
+    \widetilde{\frac{\partial C}{\partial \rho_j}} = \frac{A_j}{\rho_j} \frac{\sum_i H_{ji} \frac{\rho_i}{A_i} \frac{\partial C}{\partial \rho_i}}{\sum_i H_{ji}}
 \end{equation}
-which is a purely heuristic concept, i.e. there is no mathematical proof for this filter to work \cite{Sigmund1998}. However, we can implement this formulation simply by replacing the sensitivities in \eqref{eq:sensitivity_topology} with filtered sensitivities. This is very efficient, simple to implement and experience shows that this filter works quite well.
+which is a purely heuristic concept, i.e. there is no mathematical proof for this filter to work \cite{Sigmund1998, Sigmund2007}. 
+However, we can implement this formulation simply by replacing the sensitivities in \eqref{eq:sensitivity_topology} with filtered sensitivities. 
+This is very efficient, simple to implement and experience shows that this filter works quite well.
 
 \begin{example}{Sensitivity filtering}{cantileverfilterexample}
     The following images show the optimized cantilever beams from previous examples with enabled sensitivity filtering employing the same filtering radius for each resolution. Filtering prevents small structures and regularizes the problem such that we achieve the same optimal designs for different mesh sizes.
