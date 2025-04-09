@@ -17,26 +17,26 @@ After studying this chapter and finishing the exercise, you should be able to
 \section{The linear elastic problem}
 The fundamental equation to solve in static structural problems is the balance of linear momentum
 \begin{equation}
-    \nabla \cdot \mathbf{S}(\mathbf{x}) + \mathbf{b}(\mathbf{x})= \mathbf{0} 
+    \nabla \cdot \pmb{\sigma}(\mathbf{x}) + \mathbf{b}(\mathbf{x})= \mathbf{0} 
     \quad 
     \mathbf{x} \in \Omega
     \label{eq:linear_momentum_balance}
 \end{equation}
-with the symmetric stress tensor $\mathbf{S}=\mathbf{S}^\top \in \mathcal{R}^{d \times d}$ and a prescribed body force field $\mathbf{b} \in \mathcal{R}^d$ describing a force per volume. The term \emph{static} means that we do not consider any time derivatives, i.e. we are searching for a stationary solution.  The domain $\Omega$ describes for example all points of a structural component and we use $\partial \Omega$ to denote the boundary of that domain. This equilibrium basically states that the divergence of stresses (inner forces) must balance the body force field in all points of a domain $\Omega$ to remain stationary. 
+with the symmetric stress tensor $\pmb{\sigma}=\pmb{\sigma}^\top \in \mathcal{R}^{d \times d}$ and a prescribed body force field $\mathbf{b} \in \mathcal{R}^d$ describing a force per volume. The term \emph{static} means that we do not consider any time derivatives, i.e. we are searching for a stationary solution.  The domain $\Omega$ describes for example all points of a structural component and we use $\partial \Omega$ to denote the boundary of that domain. This equilibrium basically states that the divergence of stresses (inner forces) must balance the body force field in all points of a domain $\Omega$ to remain stationary. 
 
 The stress tensor is related to the engineering strain tensor 
 \begin{equation}
-    \mathbf{E}(\mathbf{u}) = \frac{1}{2} \left(\nabla \mathbf{u} + \left(\nabla \mathbf{u}\right)^\top \right)
+    \pmb{\varepsilon}(\mathbf{u}) = \frac{1}{2} \left(\nabla \mathbf{u} + \left(\nabla \mathbf{u}\right)^\top \right)
     \label{eq:strain}
 \end{equation} 
 via a linear elastic material model 
 \begin{equation}
-    \mathbf{S}(\mathbf{x})  = \mathbb{C}  : \mathbf{E}(\mathbf{u}) 
+    \pmb{\sigma}(\mathbf{x})  = \mathbb{C}  : \pmb{\varepsilon}(\mathbf{u}) 
     \label{eq:linear_elasticity}
 \end{equation}
 with a stiffness tensor $\mathbb{C}  \in \mathcal{R}^{d \times d \times d \times d}$. Here, it is assumed that $\mathbb{C}$ does not depend on the position $\mathbf{x}$, i.e. the same material is used in the entire structure. In case of an isotropic material, i.e. a material that behaves direction-independent, we can write Equation \eqref{eq:linear_elasticity} as
 \begin{equation}
-    \mathbf{S}(\mathbf{x}) = \mathbb{C}_\textrm{iso}  : \mathbf{E}(\mathbf{u})  =  2 G \mathbf{E}(\mathbf{u})  + \Lambda \textrm{tr}(\mathbf{E}(\mathbf{u}) ) \mathbf{I},
+    \pmb{\sigma}(\mathbf{x}) = \mathbb{C}_\textrm{iso}  : \pmb{\varepsilon}(\mathbf{u})  =  2 G \pmb{\varepsilon}(\mathbf{u})  + \Lambda \textrm{tr}(\pmb{\varepsilon}(\mathbf{u}) ) \mathbf{I},
     \label{eq:isotropic_material}
 \end{equation}
 with so-called the Lamé constants 
@@ -83,21 +83,21 @@ These two constants, respectively the two constants Young's modulus $E$ and Pois
 % and observe that we have three partial differential equations for three unknowns $u_1(\mathbf{x}), u_2(\mathbf{x}), u_3(\mathbf{x})$.
 With essential boundary conditions on $\partial \Omega_E$ and natural boundary conditions on $\partial \Omega_N$ (see Figure \ref{fig:boundaries}) we can formulate the boundary value problem of linear elasticity as 
 \begin{align}
-    \nabla \cdot \mathbf{S}(\mathbf{x}) + \mathbf{b}(\mathbf{x}) &= \mathbf{0} 
+    \nabla \cdot \pmb{\sigma}(\mathbf{x}) + \mathbf{b}(\mathbf{x}) &= \mathbf{0} 
         &\mathbf{x} \in \Omega \\
     \mathbf{u}(\mathbf{x}) 
     &= \mathbf{u}_0 (\mathbf{x}) 
         &\mathbf{x} \in \partial \Omega_E \\
-    \mathbf{S}(\mathbf{x}) \cdot \mathbf{n}(\mathbf{x}) 
+    \pmb{\sigma}(\mathbf{x}) \cdot \mathbf{n}(\mathbf{x}) 
     &= \mathbf{t} (\mathbf{x}) 
         &\mathbf{x} \in \partial \Omega_N\\
-    \textrm{s.t.} \quad \mathbf{S} &= \mathbb{C} : \mathbf{E}(\mathbf{u})
+    \textrm{s.t.} \quad \pmb{\sigma} &= \mathbb{C} : \pmb{\varepsilon}(\mathbf{u})
 \end{align}
  which should be solved for displacements $\mathbf{u}(\mathbf{x})$. This is a problem with three partial differential equations for three unknowns $u_1(\mathbf{x}), u_2(\mathbf{x}), u_3(\mathbf{x})$.
-Note that this is a second order problem, as we have to compute second derivatives of $\mathbf{u}$ in this problem, as it is differentiated once by $\mathbf{E}(\mathbf{u})$ and then once by $\nabla \cdot \mathbf{S}(\mathbf{x})$.
+Note that this is a second order problem, as we have to compute second derivatives of $\mathbf{u}$ in this problem, as it is differentiated once by $\pmb{\varepsilon}(\mathbf{u})$ and then once by $\nabla \cdot \pmb{\sigma}(\mathbf{x})$.
 
 % \begin{example}{Plane stress}{planestressexample} 
-%     We may reduce the elastic problem to two dimensions, if we make an assumption about the third dimension. If we analyze a structure that is very thin in the 3-direction, e.g. a plate or membrane, there are no out-of-plane stress components and we may assume \emph{plane stress}, i.e. $S_{13}=S_{23}=S_{33}=0$ and $\frac{\partial S_{11}}{\partial x_3}=\frac{\partial S_{12} }{\partial x_3}=\frac{\partial S_{22}}{\partial x_3}=0$. 
+%     We may reduce the elastic problem to two dimensions, if we make an assumption about the third dimension. If we analyze a structure that is very thin in the 3-direction, e.g. a plate or membrane, there are no out-of-plane stress components and we may assume \emph{plane stress}, i.e. $\sigma_{13}=\sigma_{23}=\sigma_{33}=0$ and $\frac{\partial \sigma_{11}}{\partial x_3}=\frac{\partial \sigma_{12} }{\partial x_3}=\frac{\partial \sigma_{22}}{\partial x_3}=0$. 
     
 %     Consider a two-dimensional rectangle $\Omega = [0,l]^2$ which is subjected to the following essential boundary conditions
 %     \begin{equation}
@@ -107,10 +107,10 @@ Note that this is a second order problem, as we have to compute second derivativ
 %     \end{equation}
 %     and the following natural boundary conditions 
 %     \begin{equation}
-%         S_{12}(x_1, 0) = 0  \quad
-%         S_{12}(x_1, l) = 0  \quad
-%         S_{22}(x_1, 0) = 0  \quad
-%         S_{22}(x_1, l) = 0.
+%         \sigma_{12}(x_1, 0) = 0  \quad
+%         \sigma_{12}(x_1, l) = 0  \quad
+%         \sigma_{22}(x_1, 0) = 0  \quad
+%         \sigma_{22}(x_1, l) = 0.
 %     \end{equation}
 
 %     Show that 
@@ -141,13 +141,13 @@ Note that this is a second order problem, as we have to compute second derivativ
 
 %     To prove the natural boundary conditions, we compute the stresses 
 %     \begin{align}
-%         S_{11} &= 2 G \frac{\partial u_1}{\partial x_1} + \Lambda \left(\frac{\partial u_1}{\partial x_1} + \frac{\partial u_2}{\partial x_2} + \frac{\partial u_3}{\partial x_3} \right)
+%         \sigma_{11} &= 2 G \frac{\partial u_1}{\partial x_1} + \Lambda \left(\frac{\partial u_1}{\partial x_1} + \frac{\partial u_2}{\partial x_2} + \frac{\partial u_3}{\partial x_3} \right)
 %         = E \frac{u_0}{l} \\
-%         S_{22} &= 2 G \frac{\partial u_2}{\partial x_2} + \Lambda \left(\frac{\partial u_1}{\partial x_1} + \frac{\partial u_2}{\partial x_2} + \frac{\partial u_3}{\partial x_3} \right) 
+%         \sigma_{22} &= 2 G \frac{\partial u_2}{\partial x_2} + \Lambda \left(\frac{\partial u_1}{\partial x_1} + \frac{\partial u_2}{\partial x_2} + \frac{\partial u_3}{\partial x_3} \right) 
 %         =  0\\
-%         S_{12} &= G \left(\frac{\partial u_1}{\partial x_2} + \frac{\partial u_2}{\partial x_1} \right) = 0
+%         \sigma_{12} &= G \left(\frac{\partial u_1}{\partial x_2} + \frac{\partial u_2}{\partial x_1} \right) = 0
 %     \end{align}
-%     and observe that $S_{12}$ and $S_{22}$ are zero in the entire domain. Hence, both natural boundary conditions are fulfilled as well. The stress $S_{11}$ is proportional to the strain $\frac{u_0}{l}$ with the Young's modulus $E$. This probably matches our expectation, because the stress-free lateral conditions match a tensile test.
+%     and observe that $\sigma_{12}$ and $\sigma_{22}$ are zero in the entire domain. Hence, both natural boundary conditions are fulfilled as well. The stress $\sigma_{11}$ is proportional to the strain $\frac{u_0}{l}$ with the Young's modulus $E$. This probably matches our expectation, because the stress-free lateral conditions match a tensile test.
 % \end{example}
 
 
@@ -162,10 +162,10 @@ Note that this is a second order problem, as we have to compute second derivativ
 %     \end{equation}
 %     and the following natural boundary conditions 
 %     \begin{equation}
-%         S_{12}(x_1, 0) = 0  \quad
-%         S_{12}(x_1, l) = 0  \quad
-%         S_{22}(x_1, 0) = 0  \quad
-%         S_{22}(x_1, l) = 0.
+%         \sigma_{12}(x_1, 0) = 0  \quad
+%         \sigma_{12}(x_1, l) = 0  \quad
+%         \sigma_{22}(x_1, 0) = 0  \quad
+%         \sigma_{22}(x_1, l) = 0.
 %     \end{equation}
 
 %     Show that 
@@ -196,9 +196,9 @@ Note that this is a second order problem, as we have to compute second derivativ
 
 %     To prove the natural boundary conditions, we compute 
 %     \begin{align}
-%         S_{11} &= 2 G \frac{\partial u_1}{\partial x_1} + \Lambda \left(\frac{\partial u_1}{\partial x_1} + \frac{\partial u_2}{\partial x_2} \right) = \frac{E}{1-\nu^2} \frac{u_0}{l} \\
-%         S_{22} &= 2 G \frac{\partial u_2}{\partial x_2} + \Lambda \left(\frac{\partial u_1}{\partial x_1} + \frac{\partial u_2}{\partial x_2} \right) = 0 \\
-%         S_{12} &= G \left(\frac{\partial u_1}{\partial x_2} + \frac{\partial u_2}{\partial x_1} \right) = 0
+%         \sigma_{11} &= 2 G \frac{\partial u_1}{\partial x_1} + \Lambda \left(\frac{\partial u_1}{\partial x_1} + \frac{\partial u_2}{\partial x_2} \right) = \frac{E}{1-\nu^2} \frac{u_0}{l} \\
+%         \sigma_{22} &= 2 G \frac{\partial u_2}{\partial x_2} + \Lambda \left(\frac{\partial u_1}{\partial x_1} + \frac{\partial u_2}{\partial x_2} \right) = 0 \\
+%         \sigma_{12} &= G \left(\frac{\partial u_1}{\partial x_2} + \frac{\partial u_2}{\partial x_1} \right) = 0
 %     \end{align}
 %     and observe that both stresses are zero in the entire domain. Hence, both natural boundary conditions are fulfilled as well.
 % \end{example}
@@ -211,7 +211,7 @@ We can relax that requirement by computing the \emph{weak form} of the equation.
     \item Integrate over domain $\Omega$
     \item Simplify the expressions using the identity 
         \begin{equation}
-            (\nabla \cdot \mathbf{S}) \cdot \mathbf{v} = \nabla \cdot (\mathbf{S} \cdot \mathbf{v}) - \mathbf{S} : \nabla \mathbf{v}
+            (\nabla \cdot \pmb{\sigma}) \cdot \mathbf{v} = \nabla \cdot (\pmb{\sigma} \cdot \mathbf{v}) - \pmb{\sigma} : \nabla \mathbf{v}
             \label{eq:divergence_identity}
         \end{equation}
     and the divergence theorem
@@ -224,46 +224,46 @@ We can relax that requirement by computing the \emph{weak form} of the equation.
 \begin{example}{Using index notation to proof Equation \ref{eq:divergence_identity}}{divergence_identity_example} 
     We can prove Equation \ref{eq:divergence_identity} using index notation and the product rule: 
     \begin{equation}
-        \nabla \cdot (\mathbf{S} \cdot \mathbf{v}) = \sum_{i,j} \frac{\partial (S_{ij} v_j)}{\partial x_i} = \sum_{i,j}\frac{\partial S_{ij}}{\partial x_i} v_j + \sum_{i,j} S_{ij} \frac{\partial v_j}{\partial x_i}
+        \nabla \cdot (\pmb{\sigma} \cdot \mathbf{v}) = \sum_{i,j} \frac{\partial (\sigma_{ij} v_j)}{\partial x_i} = \sum_{i,j}\frac{\partial \sigma_{ij}}{\partial x_i} v_j + \sum_{i,j} \sigma_{ij} \frac{\partial v_j}{\partial x_i}
     \end{equation}
     Rewriting the right side to symbolic notation yields
     \begin{equation}
-        \nabla \cdot (\mathbf{S} \cdot \mathbf{v}) = (\nabla \cdot \mathbf{S}) \cdot \mathbf{v} + \mathbf{S} : \nabla \mathbf{v}.
+        \nabla \cdot (\pmb{\sigma} \cdot \mathbf{v}) = (\nabla \cdot \pmb{\sigma}) \cdot \mathbf{v} + \pmb{\sigma} : \nabla \mathbf{v}.
     \end{equation}
 \end{example}
 
 Contracting with the test function and integrating Equation \eqref{eq:linear_momentum_balance} gives
 \begin{equation}
-    \int_\Omega (\nabla \cdot \mathbf{S}) \cdot \mathbf{v} \text{d}V
+    \int_\Omega (\nabla \cdot \pmb{\sigma}) \cdot \mathbf{v} \text{d}V
     + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v},
     \label{eq:weak_form_raw}
 \end{equation}
 which is a scalar equation. We can use the identity provided in Equation \eqref{eq:divergence_identity} to expand the first term yielding
 \begin{equation}
-    \int_\Omega \nabla \cdot (\mathbf{S} \cdot \mathbf{v}) \text{d}V
-    - \int_\Omega \mathbf{S} : \nabla \mathbf{v} \text{d}V
+    \int_\Omega \nabla \cdot (\pmb{\sigma} \cdot \mathbf{v}) \text{d}V
+    - \int_\Omega \pmb{\sigma} : \nabla \mathbf{v} \text{d}V
     + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v}.
 \end{equation}
 We can now use the divergence theorem in Equation \eqref{eq:divergence_theorem} to compute 
 \begin{equation}
-    \int_{\partial \Omega} (\mathbf{S} \cdot \mathbf{v}) \cdot \mathbf{n} \text{d}A
-    - \int_\Omega \mathbf{S} : \nabla \mathbf{v} \text{d}V
+    \int_{\partial \Omega} (\pmb{\sigma} \cdot \mathbf{v}) \cdot \mathbf{n} \text{d}A
+    - \int_\Omega \pmb{\sigma} : \nabla \mathbf{v} \text{d}V
     + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = \mathbf{0} \quad \forall \mathbf{v}.
 \end{equation}
-Using the fact that $\mathbf{v}$ is zero on the essential boundary, that $\mathbf{S}$ is symmetric and that $\mathbf{S}\cdot \mathbf{n} = \mathbf{t}$ at the natural boundary, we arrive at the simplified weak form of linear elasticity 
+Using the fact that $\mathbf{v}$ is zero on the essential boundary, that $\pmb{\sigma}$ is symmetric and that $\pmb{\sigma}\cdot \mathbf{n} = \mathbf{t}$ at the natural boundary, we arrive at the simplified weak form of linear elasticity 
 \begin{equation}
     \int_{\partial \Omega_N} \mathbf{t} \cdot \mathbf{v} \text{d}A
-    - \int_\Omega \mathbf{S} : \nabla \mathbf{v} \text{d}V
+    - \int_\Omega \pmb{\sigma} : \nabla \mathbf{v} \text{d}V
     + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v}.
 \end{equation}
-Using the symmetry of $\mathbf{S}$ and replacing the material model, we may denote this in the commonly found form
+Using the symmetry of $\pmb{\sigma}$ and replacing the material model, we may denote this in the commonly found form
 \begin{equation}
     \int_{\partial \Omega_N} \mathbf{t} \cdot \mathbf{v} \text{d}A
-    - \int_\Omega \mathbf{E}(\mathbf{u}) : \mathbb{C} :  \mathbf{E}(\mathbf{v}) \text{d}V
+    - \int_\Omega \pmb{\varepsilon}(\mathbf{u}) : \mathbb{C} :  \pmb{\varepsilon}(\mathbf{v}) \text{d}V
     + \int_\Omega \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v}.
 \end{equation}
 It can be proven that this is equivalent to the strong form as long as we require the equation to hold for arbitrary $\mathbf{v}$. We may interpret this formulation as being similar to the principal of virtual work with the test function taking the role of a virtual displacement.
-The benefit of this formulation is that the solution $\mathbf{u}$ has to be only differentiable once, because we got rid of the divergence operator in front of $\mathbf{S}$.
+The benefit of this formulation is that the solution $\mathbf{u}$ has to be only differentiable once, because we got rid of the divergence operator in front of $\pmb{\sigma}$.
 
 \section{Spatial discretization in 2D}
 We can only solve the linear elastic problem analytically on simple geometries and with some assumptions. In general, on real world complex domains $\Omega$, we cannot solve it analytically. However, we can divide the problem in many small sub-problems on simple geometries and try to find a combined solution of these.
@@ -271,7 +271,7 @@ We can only solve the linear elastic problem analytically on simple geometries a
 The core idea of finite elements is the discretization of a continuous domain $\Omega \subset \mathcal{R}^3$ into a finite number of $M$ small elements $\Omega_j$. Then, the weak form can be expressed as 
 \begin{equation}
     \sum_{j=0}^{M-1} \int_{\partial \Omega_{N,j}} \mathbf{t} \cdot \mathbf{v} \text{d}A
-    - \sum_{j=0}^{M-1} \int_{\Omega_j} \mathbf{E}(\mathbf{u}) : \mathbb{C} :  \mathbf{E}(\mathbf{v}) \text{d}V
+    - \sum_{j=0}^{M-1} \int_{\Omega_j} \pmb{\varepsilon}(\mathbf{u}) : \mathbb{C} :  \pmb{\varepsilon}(\mathbf{v}) \text{d}V
     + \sum_{j=0}^{M-1} \int_{\Omega_j} \mathbf{b} \cdot \mathbf{v} \text{d}V = 0 \quad \forall \mathbf{v}.
     \label{eq:discretized_weak_form_3d}
 \end{equation}
@@ -281,7 +281,7 @@ If we reduce the problem to a two dimensional domain, i.e. $\Omega \subset \math
     \sum_{j=0}^{M-1} 
     \underbrace{\int_{\partial \Omega_{N,j}} \mathbf{t} \cdot \mathbf{v} \text{d}s}_\textrm{Boundary traction}
     - \sum_{j=0}^{M-1} d_j  
-    \underbrace{\int_{\Omega_j} \mathbf{E}(\mathbf{u}) : \mathbb{C} :  \mathbf{E}(\mathbf{v}) \text{d}A}_\textrm{Strain energy}
+    \underbrace{\int_{\Omega_j} \pmb{\varepsilon}(\mathbf{u}) : \mathbb{C} :  \pmb{\varepsilon}(\mathbf{v}) \text{d}A}_\textrm{Strain energy}
     + \sum_{j=0}^{M-1} \underbrace{\int_{\Omega_j} \mathbf{b} \cdot \mathbf{v} \text{d}A}_\textrm{Body forces} = 0 \quad \forall \mathbf{v}.
     \label{eq:discretized_weak_form}
 \end{equation}
@@ -541,12 +541,12 @@ where $\mathbf{f}^\Omega_j \in \mathcal{R}^8$ describes the nodal body forces on
 \subsection{Strain energy term}
 Similar to the body force term, we can evaluate the strain energy term of an element in Equation \eqref{eq:discretized_weak_form} by transforming the integral and applying Gauss-Legendre quadrature as 
 \begin{equation}
-    \int_{\Omega_j} \mathbf{E}(\mathbf{u}) : \mathbb{C} :  \mathbf{E}(\mathbf{v}) \text{d}A 
-    = \sum_k \mathbf{E}\left(\mathbf{u}(\pmb{\xi^k})\right) : \mathbb{C} :  \mathbf{E}\left(\mathbf{v}(\pmb{\xi^k})\right)  \text{det}\left(\mathbf{J}_j(\pmb{\xi}^k)\right).
+    \int_{\Omega_j} \pmb{\varepsilon}(\mathbf{u}) : \mathbb{C} :  \pmb{\varepsilon}(\mathbf{v}) \text{d}A 
+    = \sum_k \pmb{\varepsilon}\left(\mathbf{u}(\pmb{\xi^k})\right) : \mathbb{C} :  \pmb{\varepsilon}\left(\mathbf{v}(\pmb{\xi^k})\right)  \text{det}\left(\mathbf{J}_j(\pmb{\xi}^k)\right).
 \end{equation}
 The double contraction is unnecessarily complex for a two-dimensional problem and we can simplify it as follows:
 \begin{equation}
-    \mathbf{E}\left(\mathbf{u}(\pmb{\xi^k})\right) : \mathbb{C} :  \mathbf{E}\left(\mathbf{v}(\pmb{\xi^k})\right) = 
+    \pmb{\varepsilon}\left(\mathbf{u}(\pmb{\xi^k})\right) : \mathbb{C} :  \pmb{\varepsilon}\left(\mathbf{v}(\pmb{\xi^k})\right) = 
     \pmb{\varepsilon}\left(\mathbf{u}(\pmb{\xi}^k)\right)
     \cdot 
     \mathbf{C}
@@ -602,7 +602,7 @@ We can express the strain terms with shape functions as
 \setlength\arraycolsep{5pt}
 for the derivatives of the trial function and analogous for the displacements. In conclusion, we can transform the integral 
 \begin{equation}
-    d_j \int_{\Omega_j} \mathbf{E}(\mathbf{u}) : \mathbb{C} :  \mathbf{E}(\mathbf{v}) \text{d}A 
+    d_j \int_{\Omega_j} \pmb{\varepsilon}(\mathbf{u}) : \mathbb{C} :  \pmb{\varepsilon}(\mathbf{v}) \text{d}A 
 \end{equation}
 to a matrix vector product 
 \begin{equation}

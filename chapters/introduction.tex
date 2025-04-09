@@ -5,14 +5,14 @@ The first chapter introduces the basic terms for structural optimization. In add
 After studying this chapter and finishing the exercise, you should be able to 
 \begin{itemize}[label=$\dots$]
     \item distinguish three types of structural optimization problems.
-    \item perform tensor algebra computations such as inner products, cross products, outer products, dyadic products, and tensor contractions.
+    \item perform tensor algebra computations such as inner products, outer products, and tensor contractions.
     \item apply differential operators such as divergence and gradient on tensor fields.
 \end{itemize}
 \end{objectives}
 
 
 \section{What is structural optimization?}
-Following Gordon \cite{Gordon2003}, a \emph{structure} is "any assemblage of materials which is intended to sustain loads". The term \emph{optimization} means making things best. Thus, \emph{structural optimization} is the subject of making an assemblage of materials sustain loads in the best way \cite{Christensen2008}. 
+Following Gordon \cite{Gordon2003}, a \emph{structure} is "any assemblage of materials which is intended to sustain loads". The term \emph{optimization} means "making things best". Thus, \emph{structural optimization} is the subject of making an assemblage of materials sustain loads in the best way \cite{Christensen2008}. 
 
 The term \emph{best} depends on what we define to be the \emph{objective function} of our design problem. It could be the weight to obtain light structures, it could be the cost to obtain cheap structures, or it could be CO\textsubscript{2} emissions to obtain sustainable structures. Usually the optimization is subject to some \emph{constraints}, for example a certain load that has to be endured without permanent deformation. The variables that we can change to optimize the objective function are called \emph{design variables}. Depending on the choice of design variables, we generally divide three types of structural optimization problems: 
 \begin{description}
@@ -88,12 +88,12 @@ There are a couple of remarks at this point:
     \item The result of the scalar product between two vectors is a scalar.
     \item The Kronecker symbol can be interpreted as an operator that replaces an index.
     \item A single dot always indicates a single contraction of the inner dimensions.
-    \item Some authors identify vectors with column vectors and write the dot product as a matrix product $\mathbf{a} \cdot \mathbf{b} = \mathbf{a}^\top \mathbf{b}$, where $\mathbf{a}^\top$ denotes the transpose of $\mathbf{a}$.
+    \item Some authors identify vectors with column vectors and write the dot product as a matrix product $\mathbf{a}^\top \mathbf{b}$, where $\mathbf{a}^\top$ denotes the transpose of $\mathbf{a}$.
 \end{itemize}
 
 \subsection{Tensors}
 Vectors are not sufficient to describe all directional objects needed in this lecture. A stress, for example, results in a traction vector that also depends on the cutting plane defined by its normal direction. 
-In a sense, the stress tensor combines two directions and we learn in basic mechanics courses that one index is attributed to the direction and one to the plane. We can also think about the stress tensor as a mapping from one vector to another vector or as a multi-dimensional array containing the values of $S_{ij}$.
+In a sense, the stress tensor combines two directions and we learn in basic mechanics courses that one index is attributed to the direction and one to the plane. We can also think about the stress tensor as a mapping from one vector to another vector or as a multi-dimensional array containing the values of $\sigma_{ij}$.
 
 Such \emph{tensor} objects can be constructed by the \emph{outer product}, \emph{tensor product}, or \emph{dyadic product} of two vectors $\mathbf{a}, \mathbf{b} \in \mathcal{R}^d$ as 
 \begin{equation}
@@ -138,6 +138,14 @@ In fact, we can interpret some objects of the previous chapter as tensors. A vec
     \end{pmatrix}_{\{\mathbf{e}_i\}}.
 \end{equation}
 
+In addition, we define the \emph{trace}, \emph{transpose}, and \emph{inverse} of a second-order tensor $\mathbf{A} \in \mathcal{R}^{d \times d}$ as 
+\begin{align}
+    \textrm{tr}(\mathbf{A}) &= \sum_{i} A_{ii}, \\
+    \mathbf{A}^\top &= \sum_{i,j} A_{ji} \mathbf{e}_i \otimes \mathbf{e}_j, \textrm{and}\\
+    \pmb{I} &= \mathbf{A} \cdot \mathbf{A}^{-1} ,
+\end{align}
+respectively.
+
 We define the tensor contraction of two second-order tensors $\mathbf{A},\mathbf{B} \in \mathcal{R}^{d \times d}$: 
 \begin{align}
     \mathbf{A} \cdot \mathbf{B} 
@@ -163,14 +171,6 @@ Essentially, this contracts the inner dimensions once. These are some examples o
         \mathbf{A} \cdot \mathbf{b} = \sum_{i,j} A_{ij} b_j \mathbf{e}_i \quad \in \mathcal{R}^d
     \end{equation}
 \end{example}
-
-We define the \emph{trace}, \emph{transpose}, and \emph{inverse} of a second-order tensor $\mathbf{A} \in \mathcal{R}^{d \times d}$ as 
-\begin{align}
-    \textrm{tr}(\mathbf{A}) &= \sum_{i} A_{ii}, \\
-    \mathbf{A}^\top &= \sum_{i,j} A_{ji} \mathbf{e}_i \otimes \mathbf{e}_j, \textrm{and}\\
-    \pmb{I} &= \mathbf{A} \cdot \mathbf{A}^{-1} ,
-\end{align}
-respectively.
 
 We may extend the concept of outer products further to higher orders. A stiffness tensor, for example, maps a second-order strain tensor to a second-order stress tensor and thus it is a fourth-order tensor, which we denote with double-stroke capital letters. More general, a fourth order tensor may be obtained by an outer product of two second-order tensors $\mathbf{A},\mathbf{B}\in \mathcal{R}^{d \times d}$ as 
 \begin{equation}
@@ -221,7 +221,7 @@ In many physical processes, variables appear as \emph{tensor fields} with a depe
     \end{equation}
     A stress field is a second-order tensor field
     \begin{equation}
-        \mathbf{S}: \mathcal{R}^d \rightarrow \mathcal{R}^{d \times d}.
+        \pmb{\sigma}: \mathcal{R}^d \rightarrow \mathcal{R}^{d \times d}.
     \end{equation}
 \end{example}
 
@@ -238,7 +238,7 @@ A common notation for differential operations on tensor fields utilizes the Nabl
             \frac{\partial}{\partial x_d} \\
         \end{pmatrix}_{\{\mathbf{e}_i\}}
 \end{equation}
-The Nabla operator may be interpreted as a first-order tensor or vector, which upon multiplication in an inner product or cross product applies a derivative instead of being just multiplied. 
+The Nabla operator may be interpreted as a first-order vector, which applies a derivative. 
 
 \subsection{Gradient}
 The gradient computes the partial derivative with respect to each spatial direction and represents this information as a higher-order tensor. We denote the gradient operator $\nabla (\bullet)$. The resulting tensor is increased by one order as shown in the following examples:
@@ -295,12 +295,12 @@ The divergence computes the partial derivative with respect to each spatial dire
     \end{equation}
     Divergence of a second-order tensor field
     \begin{equation}
-        \nabla \cdot \mathbf{S} = \sum_{i,j} \frac{\partial S_{ij}}{\partial x_j} \mathbf{e}_i
+        \nabla \cdot \pmb{\sigma} = \sum_{i,j} \frac{\partial \sigma_{ij}}{\partial x_j} \mathbf{e}_i
         = 
         \begin{pmatrix}
-            \frac{\partial S_{11}}{\partial x_1} + \frac{\partial S_{12}}{\partial x_2} + \frac{\partial S_{13}}{\partial x_3} \\
-            \frac{\partial S_{21}}{\partial x_1} + \frac{\partial S_{22}}{\partial x_2} + \frac{\partial S_{23}}{\partial x_3}\\
-            \frac{\partial S_{31}}{\partial x_1} + \frac{\partial S_{32}}{\partial x_2} + \frac{\partial S_{33}}{\partial x_3}
+            \frac{\partial \sigma_{11}}{\partial x_1} + \frac{\partial \sigma_{12}}{\partial x_2} + \frac{\partial \sigma_{13}}{\partial x_3} \\
+            \frac{\partial \sigma_{21}}{\partial x_1} + \frac{\partial \sigma_{22}}{\partial x_2} + \frac{\partial \sigma_{23}}{\partial x_3}\\
+            \frac{\partial \sigma_{31}}{\partial x_1} + \frac{\partial \sigma_{32}}{\partial x_2} + \frac{\partial \sigma_{33}}{\partial x_3}
         \end{pmatrix}_{\{\mathbf{e}_i\}}
     \end{equation}
 \end{example}
