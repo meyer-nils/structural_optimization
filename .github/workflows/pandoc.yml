@@ -20,36 +20,36 @@ jobs:
           pip install pandocfilters jupyter nbconvert pandoc-tex-numbering
           sudo chmod +x pandoc_filter.py
           pandoc --output index.html --standalone README.md
-          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=0 --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --filter pandoc_filter.py --citeproc  --variable lang=en --output introduction.html --standalone chapters/introduction.tex 
+          pandoc --mathjax --bibliography=literature.bib --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --metadata=section-offset-1:0 --filter pandoc_filter.py --citeproc  --variable lang=en --output introduction.html --standalone chapters/introduction.tex 
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_01_tensors.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_01_tensors_unsolved.ipynb
-          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=1 --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --filter pandoc_filter.py --citeproc --variable lang=en --output unconstrained_optimization.html --standalone chapters/unconstrained_optimization.tex
+          pandoc --mathjax --bibliography=literature.bib --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --metadata=section-offset-1:1 --filter pandoc_filter.py --citeproc --variable lang=en --output unconstrained_optimization.html --standalone chapters/unconstrained_optimization.tex
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_02_unconstrained_optimization.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_02_unconstrained_optimization_unsolved.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/lecture_02_unconstrained_optimization.ipynb
-          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=2 --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --filter pandoc_filter.py --citeproc --variable lang=en --output constrained_optimization.html --standalone chapters/constrained_optimization.tex
+          pandoc --mathjax --bibliography=literature.bib --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --metadata=section-offset-1:2 --filter pandoc_filter.py --citeproc --variable lang=en --output constrained_optimization.html --standalone chapters/constrained_optimization.tex
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_03_constrained_optimization.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_03_constrained_optimization_unsolved.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/lecture_03_constrained_optimization.ipynb
-          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=3 --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --filter pandoc_filter.py --citeproc --variable lang=en --output approximation_optimization.html --standalone chapters/approximation_optimization.tex
+          pandoc --mathjax --bibliography=literature.bib --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --metadata=section-offset-1:3 --filter pandoc_filter.py --citeproc --variable lang=en --output approximation_optimization.html --standalone chapters/approximation_optimization.tex
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_04_approximations.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_04_approximations_unsolved.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/lecture_04_approximations.ipynb
-          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=4 --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --filter pandoc_filter.py --citeproc --variable lang=en --output truss.html --standalone chapters/truss.tex
+          pandoc --mathjax --bibliography=literature.bib --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --metadata=section-offset-1:4 --filter pandoc_filter.py --citeproc --variable lang=en --output truss.html --standalone chapters/truss.tex
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_05_sizing.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_05_sizing_unsolved.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/lecture_05_truss.ipynb
-          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=5 --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --filter pandoc_filter.py --citeproc --variable lang=en --output truss_optimization.html --standalone chapters/truss_optimization.tex
+          pandoc --mathjax --bibliography=literature.bib --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --metadata=section-offset-1:5 --filter pandoc_filter.py --citeproc --variable lang=en --output truss_optimization.html --standalone chapters/truss_optimization.tex
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_06_shape.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_06_shape_unsolved.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/lecture_06_truss_shape.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/lecture_06_truss_size.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/lecture_06_truss_topology.ipynb
-          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=6 --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --filter pandoc_filter.py --citeproc --variable lang=en --output fem.html --standalone chapters/fem.tex
+          pandoc --mathjax --bibliography=literature.bib --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --metadata=section-offset-1:6 --filter pandoc_filter.py --citeproc --variable lang=en --output fem.html --standalone chapters/fem.tex
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_07_fem.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_07_fem_unsolved.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/lecture_07_fem.ipynb
-          pandoc --mathjax --bibliography=literature.bib --number-sections --number-offset=7 --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --filter pandoc_filter.py --citeproc --variable lang=en --output fem_optimization.html --standalone chapters/fem_optimization.tex
+          pandoc --mathjax --bibliography=literature.bib --css main.css --filter pandoc-tex-numbering --metadata-file metadata.yaml --metadata=section-offset-1:7 --filter pandoc_filter.py --citeproc --variable lang=en --output fem_optimization.html --standalone chapters/fem_optimization.tex
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_08_sizing.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_08_sizing_unsolved.ipynb
           jupyter nbconvert --to HTML --output-dir . notebooks/exercise_09_topology.ipynb
