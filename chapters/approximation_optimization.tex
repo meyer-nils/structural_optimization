@@ -69,7 +69,7 @@ The resulting functions are explicit linear expressions and the set for $\mathbf
 \section{Sequential quadratic programming}
 In Sequential Quadratic Programming (SQP), we approximate the objective function in Equation \eqref{eq:constrained_optimization} at $\mathbf{x}^k$ with second order quadratic equations  
 \begin{equation}
-    \tilde{f}(\mathbf{x}) = f(\mathbf{x}^k) + \nabla f (\mathbf{x}^k) \cdot \left(\mathbf{x} - \mathbf{x}^k \right) + \left(\mathbf{x} - \mathbf{x}^k \right) \cdot \nabla^2 f(\mathbf{x}^k) \cdot \left(\mathbf{x} - \mathbf{x}^k \right)
+    \tilde{f}(\mathbf{x}) = f(\mathbf{x}^k) + \nabla f (\mathbf{x}^k) \cdot \left(\mathbf{x} - \mathbf{x}^k \right) + \frac{1}{2}\left(\mathbf{x} - \mathbf{x}^k \right) \cdot \nabla^2 f(\mathbf{x}^k) \cdot \left(\mathbf{x} - \mathbf{x}^k \right)
 \end{equation}
 and the restrictions with first order linear approximations
 \begin{align}
