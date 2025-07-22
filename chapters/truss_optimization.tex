@@ -403,7 +403,7 @@ To find the potential minimum $\hat{x}_i(\mu)$, we investigate for each case ind
             &\textrm{if} \quad \frac{\partial C}{\partial x_i} > 0, \frac{\partial g}{\partial x_i} > 0 \\
         \frac{U_i^k\omega + L_i^k}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(x_i^k-L_i^k)^2\frac{\partial g}{\partial x_i}}{(U_i^k-x_i^k)^2\frac{\partial C}{\partial x_i}}}
             &\textrm{if} \quad \frac{\partial C}{\partial x_i}  > 0, \frac{\partial g}{\partial x_i} <0\\
-        \frac{U_i^k-L_i^k\omega}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(U_i^k-x_i^k)^2\frac{\partial g}{\partial x_i}}{(x_i^k-L_i^k)^2\frac{\partial C}{\partial x_i}}} 
+        \frac{U_i^k + L_i^k\omega}{1+\omega} \quad \text{with} \quad \omega = \sqrt{-\mu\frac{(U_i^k-x_i^k)^2\frac{\partial g}{\partial x_i}}{(x_i^k-L_i^k)^2\frac{\partial C}{\partial x_i}}} 
             &\textrm{if} \quad \frac{\partial C}{\partial x_i} < 0, \frac{\partial g}{\partial x_i}  > 0\\
         x^+_i 
             &\textrm{if} \quad \frac{\partial C}{\partial x_i}< 0, \frac{\partial g}{\partial x_i} < 0.
@@ -499,7 +499,7 @@ for $\mu^*>0$.
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i} > 0, \frac{\partial g}{\partial x_i} > 0 \\
                     \frac{U_i^k\omega + L_i^k}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(x_i^k-L_i^k)^2\frac{\partial g}{\partial x_i}}{(U_i^k-x_i^k)^2\frac{\partial C}{\partial x_i}}}
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i}  > 0, \frac{\partial g}{\partial x_i} <0\\
-                    \frac{U_i^k-L_i^k\omega}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(U_i^k-x_i^k)^2\frac{\partial g}{\partial x_i}}{(x_i^k-L_i^k)^2\frac{\partial C}{\partial x_i}}} 
+                    \frac{U_i^k + L_i^k\omega}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(U_i^k-x_i^k)^2\frac{\partial g}{\partial x_i}}{(x_i^k-L_i^k)^2\frac{\partial C}{\partial x_i}}} 
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i} < 0, \frac{\partial g}{\partial x_i}  > 0\\
                     x^+_i 
                         &\textrm{if} \quad \frac{\partial C}{\partial x_i}< 0, \frac{\partial g}{\partial x_i} < 0.
