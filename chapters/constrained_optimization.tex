@@ -17,7 +17,7 @@ with $n$ inequality constraints $g_i : \mathcal{X} \rightarrow \mathcal{R}$ ("fe
 \begin{objectives}{}{objectives_constrained_optimization}
 After studying this chapter and finishing the exercise, you should be able to 
 \begin{itemize}[label=$\dots$]
-    \item treat box constraints in gradient decent methods with projected gradients
+    \item treat box constraints in gradient descent methods with projected gradients
     \item formulate Lagrangian functions of constrained optimization problems
     \item apply the Karush-Kuhn Tucker conditions to find the optimum of a convex constrained optimization problem
     \item explain the term \emph{Lagrangian duality} and in which cases the dual formulation is beneficial
@@ -35,7 +35,7 @@ These constraints are probably the most friendly constraints in an optimization 
 with the stationary point $\hat{x}$, the lower bound $x^-$ and the upper bound $x^+$. 
 However, clamping the stationary point in each dimension of a multi-dimensional problem would not result in the optimal point, as illustrated by the green point in the next example \cite{Niculae2020}.
 
-One method to deal with box constrains in multi-dimensional optimization problems is the projected gradient method. In this method we project each step of a gradient decent back to the domain as 
+One method to deal with box constrains in multi-dimensional optimization problems is the projected gradient method. In this method we project each step of a gradient descent back to the domain as 
 \begin{equation}
     \mathbf{x}^{k+1} = P(\mathbf{x}^k -\eta \nabla f(\mathbf{x}^k))
 \end{equation}
@@ -86,7 +86,7 @@ Here, all operators ($\max$, $\min$ and $\textrm{clamp}$) are applied as point-w
         \includesvg[width=0.5\textwidth]{figures/box_example.svg}
     \end{center}
 
-    This is visually equivalent to searching for that point $\mathbf{x}^*$ within the non-faded region in the displayed plot that has the smallest function value. In the unconstrained optimization problem, a simple steepest gradient decent follows the blue path and results in the blue point $(-1, 1)^\top$. In the constrained optimization problem, a simple steepest gradient decent follows the orange path and results in the orange point indicating the correct solution $(0, 0)^\top$ to problem \eqref{eq:boxexample}. Note that simply clamping the result $(-1, 1)^\top$ in each dimension would yield the position indicated by the green point, which is not the optimum.    
+    This is visually equivalent to searching for that point $\mathbf{x}^*$ within the non-faded region in the displayed plot that has the smallest function value. In the unconstrained optimization problem, a simple steepest gradient descent follows the blue path and results in the blue point $(-1, 1)^\top$. In the constrained optimization problem, a simple steepest gradient descent follows the orange path and results in the orange point indicating the correct solution $(0, 0)^\top$ to problem \eqref{eq:boxexample}. Note that simply clamping the result $(-1, 1)^\top$ in each dimension would yield the position indicated by the green point, which is not the optimum.    
 \end{example}
 
 
@@ -285,7 +285,7 @@ The first condition is the stationary condition, the next two conditions are the
 \section{Lagrangian duality}
 The examples in the previous sections could be solved with linear systems of equations, because the objective function was quadratic and the constraints were linear. In general, we need to employ an iterative solution method to obtain the results for non-linear optimization problems. 
 
-However, we cannot use the gradient decent schemes directly, because the fact that the Lagrangian function becomes stationary at the optimum does not mean that this is a minimum. In fact, the stationary point of the Lagrangian is a saddle point (see Figure \ref{fig:saddle_point}), i.e. it is a minimum w.r.t. to the design variables and a maximum w.r.t. the Lagrange multipliers.
+However, we cannot use the gradient descent schemes directly, because the fact that the Lagrangian function becomes stationary at the optimum does not mean that this is a minimum. In fact, the stationary point of the Lagrangian is a saddle point (see Figure \ref{fig:saddle_point}), i.e. it is a minimum w.r.t. to the design variables and a maximum w.r.t. the Lagrange multipliers.
 
 \begin{figure}[!htpb]
     \centering
@@ -294,7 +294,7 @@ However, we cannot use the gradient decent schemes directly, because the fact th
     \label{fig:saddle_point}
 \end{figure}
 
-One option to find the saddle point is called the \emph{primal method}, where the Lagrangian is first maximized w.r.t. $\pmb{\mu}$ and $\pmb{\lambda}$ with fixed $\mathbf{x}$ and subsequently minimized w.r.t. $\mathbf{x}$. Visually this is a decent along the ridge until we reach the saddle point. 
+One option to find the saddle point is called the \emph{primal method}, where the Lagrangian is first maximized w.r.t. $\pmb{\mu}$ and $\pmb{\lambda}$ with fixed $\mathbf{x}$ and subsequently minimized w.r.t. $\mathbf{x}$. Visually this is a descent along the ridge until we reach the saddle point. 
 This formulation 
 \begin{equation}
     \min_{\mathbf{x} \in \mathcal{X}} \underbrace{\max_{\pmb{\mu},\pmb{\lambda}} \mathcal{\mathcal{L}}(\pmb{\mu}, \pmb{\lambda}, \mathbf{x})}_{\bar{\mathcal{\mathcal{L}}}(\mathbf{x})}
@@ -442,7 +442,7 @@ After finding the expression for $\underline{\mathcal{L}} (\pmb{\mu}, \pmb{\lamb
     \begin{center}
         \includesvg[width=\textwidth]{figures/dual_function.svg}
     \end{center}
-    We can employ any gradient decent method or analytical method to find the optimum of the dual function. In this case, it is $\lambda^*=4$ and therefore the optimum is at $x_1^*=0$ and $x_2^*=-1$.    
+    We can employ any gradient descent method or analytical method to find the optimum of the dual function. In this case, it is $\lambda^*=4$ and therefore the optimum is at $x_1^*=0$ and $x_2^*=-1$.    
 \end{example}
 
 \bibliographystyle{unsrtnat}

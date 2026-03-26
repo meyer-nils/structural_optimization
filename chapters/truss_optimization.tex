@@ -177,7 +177,7 @@ and solve
 \begin{equation}
     \max_{\mu} \underline{\mathcal{L}}(\mu)
 \end{equation}
-for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends only on one variable and the problem is concave. We can use a gradient decent method to solve it quickly and utilize this analytical expression for the gradient 
+for $\mu^*>0$. This solution procedure is simple - the dual Lagrangian depends only on one variable and the problem is concave. We can use a gradient descent method to solve it quickly and utilize this analytical expression for the gradient 
 \begin{equation}
     \frac{\partial \underline{\mathcal{L}}}{\partial \mu}(\mu) =  \mathbf{a}^* (\mu) \cdot \mathbf{l} - V_0.
 \end{equation}
@@ -510,7 +510,7 @@ for $\mu^*>0$.
             \begin{equation}
                 \max_{\mu>0} \underline{\mathcal{L}}(\mu)
             \end{equation}
-            with a gradient decent method. Once again, we may use automatic differentiation to compute the gradient for the optimization.
+            with a gradient descent method. Once again, we may use automatic differentiation to compute the gradient for the optimization.
         \item Repeat with steps 2-7 until convergence or a maximum number of iterations is reached.
     \end{enumerate}
     

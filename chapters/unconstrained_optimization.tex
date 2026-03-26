@@ -16,8 +16,8 @@ After studying this chapter and finishing the exercise, you should be able to
 \begin{itemize}[label=$\dots$]
     \item distinguish the local and global optimum
     \item define convexity of sets and functions
-    \item explain gradient decent methods such as simple steepest decent, steepest decent with incomplete line search, conjugated gradients, and quasi Newton 
-    \item implement these gradient decent methods in computer code
+    \item explain gradient descent methods such as simple steepest descent, steepest descent with incomplete line search, conjugated gradients, and quasi Newton 
+    \item implement these gradient descent methods in computer code
 \end{itemize}
 \end{objectives}
 
@@ -95,14 +95,14 @@ We can asses the convexity of a function $f: \mathcal{S} \rightarrow \mathcal{R}
 
 An unconstrained optimization problem is termed \emph{convex}, if the objective function $f: \mathcal{S} \rightarrow \mathcal{R}$ is convex and the set $\mathcal{S}$ is convex. If in addition, the set $\mathcal{S}$ is compact (i.e. bounded and closed), there exists exactly one solution for the optimization problem. In conclusion this means, that finding the local minimum in a convex problem is equivalent to finding its global minimum. 
 
-\section{Gradient decent methods}
+\section{Gradient descent methods}
 For analytical convex problems, we only have to find a stationary point (see Equation \ref{eq:stationary_point}) by finding the gradient of the objective function and finding the point where it is vanishing. This requires an explicit differentiable expression of the objective function, which is then rearranged.
 
 However, such an explicit expression of the objective function is not always readily available - e.g. if the objective function is an artificial neural network or a numerical simulation model. In these cases, we are usually just able to compute a local gradient in the vicinity of a point, but are not able to find a closed expression for the gradient. 
 
 An analogy to that would be the search for a minimum in a mountainous landscape with heavy fog: \emph{A person hiking in foggy mountains would be able to only evaluate the height and steepness of the mountains in its close neighborhood. The evaluation of height and steepness takes some time, so the person also wants to find a strategy with a small number of measurements.}
 
-\subsection{Simple steepest decent method}
+\subsection{Simple steepest descent method}
 An obvious approach to minimize such a "foggy" objective function is to follow the steepest gradient direction in order to find a better solution. In the image of searching the lowest point ins a hilly landscape, this is equivalent to descending a mountain by always walking in the direction directly perpendicular to the contour lines. 
 A naive algorithm for this can be formulated as follows:
 \begin{enumerate}
@@ -113,13 +113,13 @@ A naive algorithm for this can be formulated as follows:
 \end{enumerate}
 The step itself is scaled with a factor $-\eta \in \mathcal{R}$. The sign stems from the fact that we want to minimize the function. The scaling variable $\eta$ is termed \emph{learning rate} in machine learning contexts and describes how large the step is before reevaluating the gradient again. A smaller learning rate improves convergence of the algorithm towards the exact solution, but requires more steps and more function evaluations. A larger value of $\eta$ makes it harder for the algorithm to converge, as it may "jump" over the minimum or may diverge. 
 
-\begin{example}{Simple steepest decent}{simpledecentexample}
+\begin{example}{Simple steepest descent}{simpledescentexample}
     We want to find the solution of the following quadratic unconstrained optimization problem
     \begin{equation}
         \begin{aligned}
             \min_{\mathbf{x}} \quad & f(\mathbf{x})= (\mathbf{x}-\tilde{\mathbf{x}}) \cdot \mathbf{Q} \cdot (\mathbf{x}-\tilde{\mathbf{x}})
         \end{aligned}
-        \label{eq:simpledecent_example}
+        \label{eq:simpledescent_example}
     \end{equation}
     with 
     \begin{equation}
@@ -137,14 +137,14 @@ The step itself is scaled with a factor $-\eta \in \mathcal{R}$. The sign stems 
         .
     \end{equation}
 
-    The optimization path of a simple steepest decent method with a starting point $\mathbf{x}^0= (4, -1)^\top$ and $\eta=0.1$ is shown in the plot below with a blue line. However, the solution requires quite a lot of iterations.
+    The optimization path of a simple steepest descent method with a starting point $\mathbf{x}^0= (4, -1)^\top$ and $\eta=0.1$ is shown in the plot below with a blue line. However, the solution requires quite a lot of iterations.
 
     \begin{center}
-        \includesvg[width=0.5\textwidth]{figures/simple_decent.svg}
+        \includesvg[width=0.5\textwidth]{figures/simple_descent.svg}
     \end{center}   
 \end{example}
 
-\subsection{Steepest decent method with incomplete line search}
+\subsection{Steepest descent method with incomplete line search}
 The previous approach is simple, but requires many repeated evaluations of the multi-dimensional gradient. Instead of going an arbitrary downhill step, it is more efficient to perform a line-search along the search direction to got this step towards the minimum in that direction: 
 \begin{enumerate}
     \item Pick a starting point $\mathbf{x}^0$.
@@ -175,17 +175,17 @@ The Armijo condition is always fulfilled for very small steps, thus we have to c
 \end{enumerate}
 This algorithm usually provides a good compromise, as it provides a sufficiently small step to achieve a valid sufficient decrease, but is still large enough to make reasonable progress towards convergence.
 
-The proposed steepest decent method is a useful strategy for unconstrained optimization problems. However, it can be slow because subsequent search directions are perpendicular to each other and search may take many iterations.
+The proposed steepest descent method is a useful strategy for unconstrained optimization problems. However, it can be slow because subsequent search directions are perpendicular to each other and search may take many iterations.
 
-\begin{example}{Steepest decent with incomplete line search}{steepestdecentexample}
-    We consider the optimization of Equation \eqref{eq:simpledecent_example} using a steepest decent method with incomplete line search. The optimization path for a starting point $\mathbf{x}^0= (4, -1)^\top$, $\eta^0=5.0$, $c=0.5$, and $\rho=0.8$ is shown in the plot below with a blue line. The solution converges much faster than the simple steepest decent.
+\begin{example}{Steepest descent with incomplete line search}{steepestdescentexample}
+    We consider the optimization of Equation \eqref{eq:simpledescent_example} using a steepest descent method with incomplete line search. The optimization path for a starting point $\mathbf{x}^0= (4, -1)^\top$, $\eta^0=5.0$, $c=0.5$, and $\rho=0.8$ is shown in the plot below with a blue line. The solution converges much faster than the simple steepest descent.
     \begin{center}
-        \includesvg[width=0.5\textwidth]{figures/steepest_decent.svg}
+        \includesvg[width=0.5\textwidth]{figures/steepest_descent.svg}
     \end{center}   
 \end{example}
 
 \subsection{Conjugated gradients method}
-Especially near the optimum, the steepest decent may lead to a "zig-zag" pattern and many iterations. We can improve the algorithm by ensuring that search directions are conjugated directions to the Hessian of that function. For quadratic problems of the form $f(\mathbf{x}) = \mathbf{x} \cdot \mathbf{A} \cdot \mathbf{x} - \mathbf{b} \mathbf{x}$, this ensures that we can reach the optimum for $\mathbf{x} \in \mathcal{R}^d$ in $d$ steps.
+Especially near the optimum, the steepest descent may lead to a "zig-zag" pattern and many iterations. We can improve the algorithm by ensuring that search directions are conjugated directions to the Hessian of that function. For quadratic problems of the form $f(\mathbf{x}) = \mathbf{x} \cdot \mathbf{A} \cdot \mathbf{x} - \mathbf{b} \mathbf{x}$, this ensures that we can reach the optimum for $\mathbf{x} \in \mathcal{R}^d$ in $d$ steps.
 
 The algorithm of a conjugated gradient method according to Fletchers and Reeves \cite{Fletcher1964} is as follows: 
 \begin{enumerate}
@@ -201,7 +201,7 @@ The algorithm of a conjugated gradient method according to Fletchers and Reeves 
 \end{enumerate}
 
 \begin{example}{Conjugated gradients}{cgexample}
-    We consider the optimization of Equation \eqref{eq:simpledecent_example} using the CG method with incomplete line search for the sub-problem. The optimization path for a starting point $\mathbf{x}^0= (4, -1)^\top$, $\eta^0=5.0$, $c=0.5$, and $\rho=0.8$ is shown in the plot below with a blue line. The solution converges in just two iterations for this 2D problem, as the problem is quadratic.
+    We consider the optimization of Equation \eqref{eq:simpledescent_example} using the CG method with incomplete line search for the sub-problem. The optimization path for a starting point $\mathbf{x}^0= (4, -1)^\top$, $\eta^0=5.0$, $c=0.5$, and $\rho=0.8$ is shown in the plot below with a blue line. The solution converges in just two iterations for this 2D problem, as the problem is quadratic.
     \begin{center}
         \includesvg[width=0.5\textwidth]{figures/cg.svg}
     \end{center}   
@@ -268,7 +268,7 @@ We can build up $\mathbf{H}^{-1}$ iteratively in the Broyden-Fletcher-Goldfarb-S
 \end{enumerate}
 
 \begin{example}{BFGS}{bfgsexample}
-    We consider the optimization of Equation \eqref{eq:simpledecent_example} using the BFGS method with incomplete line search for the sub-problem. The optimization path for a starting point $\mathbf{x}^0= (4, -1)^\top$, $\eta^0=5.0$, $c=0.5$, and $\rho=0.8$ is shown in the plot below with a blue line. The solution converges in just two iterations for this 2D quadratic problem.
+    We consider the optimization of Equation \eqref{eq:simpledescent_example} using the BFGS method with incomplete line search for the sub-problem. The optimization path for a starting point $\mathbf{x}^0= (4, -1)^\top$, $\eta^0=5.0$, $c=0.5$, and $\rho=0.8$ is shown in the plot below with a blue line. The solution converges in just two iterations for this 2D quadratic problem.
     \begin{center}
         \includesvg[width=0.5\textwidth]{figures/bfgs.svg}
     \end{center}   
