@@ -103,7 +103,7 @@ However, such an explicit expression of the objective function is not always rea
 An analogy to that would be the search for a minimum in a mountainous landscape with heavy fog: \emph{A person hiking in foggy mountains would be able to only evaluate the height and steepness of the mountains in its close neighborhood. The evaluation of height and steepness takes some time, so the person also wants to find a strategy with a small number of measurements.}
 
 \subsection{Simple steepest descent method}
-An obvious approach to minimize such a "foggy" objective function is to follow the steepest gradient direction in order to find a better solution. In the image of searching the lowest point ins a hilly landscape, this is equivalent to descending a mountain by always walking in the direction directly perpendicular to the contour lines. 
+An obvious approach to minimize such a "foggy" objective function is to follow the steepest gradient direction in order to find a better solution. In the image of searching the lowest point in a hilly landscape, this is equivalent to descending a mountain by always walking in the direction directly perpendicular to the contour lines. 
 A naive algorithm for this can be formulated as follows:
 \begin{enumerate}
     \item Pick a starting point $\mathbf{x}^0$.
@@ -145,7 +145,7 @@ The step itself is scaled with a factor $-\eta \in \mathcal{R}$. The sign stems 
 \end{example}
 
 \subsection{Steepest descent method with incomplete line search}
-The previous approach is simple, but requires many repeated evaluations of the multi-dimensional gradient. Instead of going an arbitrary downhill step, it is more efficient to perform a line-search along the search direction to got this step towards the minimum in that direction: 
+The previous approach is simple, but requires many repeated evaluations of the multi-dimensional gradient. Instead of going an arbitrary downhill step, it is more efficient to perform a line-search along the search direction to get this step towards the minimum in that direction: 
 \begin{enumerate}
     \item Pick a starting point $\mathbf{x}^0$.
     \item Calculate the gradient $\nabla f(\mathbf{x}^k)$ and the search direction $\mathbf{p}^k = - \frac{\nabla f(\mathbf{x}^k)}{\lVert \nabla f(\mathbf{x}^k) \rVert}$.
@@ -185,9 +185,9 @@ The proposed steepest descent method is a useful strategy for unconstrained opti
 \end{example}
 
 \subsection{Conjugated gradients method}
-Especially near the optimum, the steepest descent may lead to a "zig-zag" pattern and many iterations. We can improve the algorithm by ensuring that search directions are conjugated directions to the Hessian of that function. For quadratic problems of the form $f(\mathbf{x}) = \mathbf{x} \cdot \mathbf{A} \cdot \mathbf{x} - \mathbf{b} \mathbf{x}$, this ensures that we can reach the optimum for $\mathbf{x} \in \mathcal{R}^d$ in $d$ steps.
+Especially near the optimum, the steepest descent may lead to a "zig-zag" pattern and many iterations. We can improve the algorithm by ensuring that search directions are conjugated directions to the Hessian of that function. For quadratic problems of the form $f(\mathbf{x}) = \mathbf{x} \cdot \mathbf{A} \cdot \mathbf{x} - \mathbf{b} \cdot \mathbf{x}$, this ensures that we can reach the optimum for $\mathbf{x} \in \mathcal{R}^d$ in $d$ steps.
 
-The algorithm of a conjugated gradient method according to Fletchers and Reeves \cite{Fletcher1964} is as follows: 
+The algorithm of a conjugated gradient method according to Fletcher and Reeves \cite{Fletcher1964} is as follows: 
 \begin{enumerate}
     \item Pick a starting point $\mathbf{x}^0$.
     \item Calculate the gradient $\nabla f(\mathbf{x}^k)$.
@@ -197,7 +197,7 @@ The algorithm of a conjugated gradient method according to Fletchers and Reeves 
     \end{equation}
     \item Solve the sub-problem $\min_{\eta} f(\mathbf{x}^k + \eta \mathbf{p}^k)$ to find the optimal step size $\eta$ for a fixed search direction $\mathbf{p}^k$.
     \item Make a step $\mathbf{x}^{k+1} = \mathbf{x}^k + \eta \mathbf{p}^k$.
-    \item Repeat steps 2, 3, 4 and 5 until you reached a maximum number of iterations $k \le N$ or there is no improvement any more ($ \nabla f(\mathbf{x}^k) < \epsilon$). 
+    \item Repeat steps 2, 3, 4 and 5 until you reached a maximum number of iterations $k \le N$ or there is no improvement any more ($\lVert \nabla f(\mathbf{x}^k) \rVert < \epsilon$). 
 \end{enumerate}
 
 \begin{example}{Conjugated gradients}{cgexample}
