@@ -39,7 +39,7 @@ with a stiffness tensor $\mathbb{C}  \in \mathcal{R}^{d \times d \times d \times
     \pmb{\sigma}(\mathbf{x}) = \mathbb{C}_\textrm{iso}  : \pmb{\varepsilon}(\mathbf{u})  =  2 G \pmb{\varepsilon}(\mathbf{u})  + \Lambda \textrm{tr}(\pmb{\varepsilon}(\mathbf{u}) ) \mathbf{I},
     \label{eq:isotropic_material}
 \end{equation}
-with so-called the Lamé constants 
+with the so-called Lamé constants 
 \begin{equation}
     G = \frac{E}{2(1+\nu)} > 0 
     \quad \text{and} \quad 
@@ -453,7 +453,7 @@ Within each element $\Omega_j$, we can approximate the solution with so-called \
     For this unit domain, we can express the integral as a summation with tabulated positions $\xi^k$ and weights $w^k$ like
     \begin{equation}
         \int_{-1}^{1} f(\xi) \frac{\text{d}x}{\text{d}\xi} \text{d}\xi
-        = \sum_{k=1}^m w^k f(\xi^k) \frac{\text{d}x}{\text{d}\xi} \xi.
+        = \sum_{k=1}^m w^k f(\xi^k) \frac{\text{d}x}{\text{d}\xi}.
     \end{equation}
     This summation via Gauss quadrature is able to integrate polynomials up to an order $2m-1$ exactly. For example, using two points ($m=2$) with 
     \begin{equation}
@@ -504,7 +504,7 @@ Using the shape functions, we may then express the last variable using the nodal
     =
     \begin{pmatrix}
             N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi}^k) & 0\\
-            0 & N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi})\\
+            0 & N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi}^k)\\
     \end{pmatrix}
     \cdot 
     \begin{pmatrix}
@@ -530,7 +530,7 @@ to a scalar vector product
     \underbrace{\sum_k \text{det}\left(\mathbf{J}_j(\pmb{\xi}^k)\right) \mathbf{b} \cdot
     \begin{pmatrix}
             N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi}^k) & 0\\
-            0 & N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi})\\
+            0 & N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi}^k)\\
     \end{pmatrix}}_{\mathbf{f}^\Omega_j}
     \cdot 
     \mathbf{v}_j
@@ -630,7 +630,7 @@ Using Equation \eqref{eq:shape_interpolation}, we may denote this as
     \underbrace{\sum_k \frac{\partial x}{\partial \xi} \mathbf{t}(\pmb{\xi}^k) \cdot
     \begin{pmatrix}
             N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi}^k) & 0\\
-            0 & N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi})\\
+            0 & N_1(\pmb{\xi}^k) & 0 & N_2(\pmb{\xi}^k) & 0 & N_3(\pmb{\xi}^k) & 0 & N_4(\pmb{\xi}^k)\\
     \end{pmatrix}}_{\mathbf{f}^\Gamma_j}
     \cdot 
     \mathbf{v}_j
@@ -666,7 +666,7 @@ with
     \quad
     \text{and}
     \quad
-    \mathbf{u}
+    \mathbf{u} =
     \begin{pmatrix}
     \begin{smallmatrix}
         \dots \\ (u_1)^0_j \\ (u_2)^0_j \\ \dots \\ (u_1)^1_j \\ (u_2)^1_j \\ \dots \\
