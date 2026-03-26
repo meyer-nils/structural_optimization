@@ -16,7 +16,7 @@ Following Gordon \cite{Gordon2003}, a \emph{structure} is "any assemblage of mat
 
 The term \emph{best} depends on what we define to be the \emph{objective function} of our design problem. It could be the weight to obtain light structures, it could be the cost to obtain cheap structures, or it could be CO\textsubscript{2} emissions to obtain sustainable structures. Usually the optimization is subject to some \emph{constraints}, for example a certain load that has to be endured without permanent deformation. The variables that we can change to optimize the objective function are called \emph{design variables}. Depending on the choice of design variables, we generally divide three types of structural optimization problems: 
 \begin{description}
-    \item[Sizing optimization]{The design variables describe some technical parameters of a structure, e.g. wall thickness, diameters of holes, or the cross section of beams. We seek the optimal size of these parameters in he optimization task.}
+    \item[Sizing optimization]{The design variables describe some technical parameters of a structure, e.g. wall thickness, diameters of holes, or the cross section of beams. We seek the optimal size of these parameters in the optimization task.}
     \item[Shape optimization]{The design variables describe the contour or boundary of a part. We seek the optimal shape of the part boundaries in the optimization task.}
     \item[Topology optimization]{The design variables describe the presence of material in a design space. We seek the optimal distribution of material within that design space.}
 \end{description}
@@ -25,7 +25,7 @@ The term \emph{best} depends on what we define to be the \emph{objective functio
     \centering
     \includegraphics[width=\textwidth, alt={Sketch topology optimization, shape optimization, sizing optimization}]{figures/structural_optimization_types.png}
     \caption{Types of structural optimization (left to right): Topology optimization, shape optimization, sizing optimization.}
-    \label{fig:structural_optimization_types.}
+    \label{fig:structural_optimization_types}
 \end{figure}
 
 Before we can start optimizing structures, we need to recapitulate some basic tensor math, continuum mechanics and fundamentals of optimization, though. 
@@ -40,12 +40,12 @@ A scalar variable, such as a temperature, has no direction and is completely des
 \end{equation}
 
 \subsection{Vectors}
-Most objects have some sort of direction associated to it (e.g. a velocity or a force). They are defined in a \emph{vector space} 
+Most objects have some sort of direction associated with them (e.g. a velocity or a force). They are defined in a \emph{vector space} 
 $\mathcal{R}^d$, where $d$ is the dimension of the vector space. A \emph{vector} is an element of the vector space that fulfills so-called vector axioms and is denoted in bold font, e.g. 
 \begin{equation}
     \textbf{a} \in \mathcal{R}^d.
 \end{equation}
-In order to describe components of a vector, it is convenient to define a \emph{basis}. A basis is given by a subset of vectors ${\mathbf{e}_1,\mathbf{e}_2,...,\mathbf{e}_d}$ that are linearly independent and span the entire vector space.
+In order to describe components of a vector, it is convenient to define a \emph{basis}. A basis is given by a subset of vectors $\{\mathbf{e}_1,\mathbf{e}_2,...,\mathbf{e}_d\}$ that are linearly independent and span the entire vector space.
 More specifically, we use an orthonormal basis (\emph{ONB}) that is spanned by normalized and orthogonal vectors $\{\mathbf{e}_i\}$. The orthogonality is expressed as  
 \begin{equation}
     \label{eq:orthogonality}
@@ -285,7 +285,7 @@ We may compute the gradient of a gradient of a scalar field. If all the partial 
 \end{example}
 
 \subsection{Divergence}
-The divergence computes the partial derivative with respect to each spatial direction, sums these values up and represents this information as a lower-order tensor. We denote the divergence operator $\nabla \cdot (\bullet)$. The resulting tensor is increased by one order as shown in the following examples:
+The divergence computes the partial derivative with respect to each spatial direction, sums these values up and represents this information as a lower-order tensor. We denote the divergence operator $\nabla \cdot (\bullet)$. The resulting tensor is decreased by one order as shown in the following examples:
 \begin{example}{Divergence}{divergenceexample}
     Divergence of a vector field
     \begin{equation}
