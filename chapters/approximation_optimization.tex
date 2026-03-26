@@ -8,7 +8,7 @@ The procedure using a local approximation is as follows:
     \item Evaluate the target function, constraints and their gradients at the current position $\mathbf{x}^k$.
     \item Construct a local, explicit, and convex approximation $\tilde{f}, \tilde{g}, \tilde{h}$ at $\mathbf{x}^k$.
     \item Solve the approximated optimization problem to find the next point $\mathbf{x}^{k+1}$. 
-    \item Repeat steps 2, 3, and 4 until you reached a maximum number of iteration $k \le N$ or there is no improvement anymore.
+    \item Repeat steps 2, 3, and 4 until you reached a maximum number of iterations $k \le N$ or there is no improvement anymore.
 \end{enumerate}
 
 Note that during the optimization within each iteration, we use only the approximation and do not have to evaluate the expensive target function.
@@ -20,7 +20,7 @@ After studying this chapter and finishing the exercise, you should be able to
     \item approximate an optimization problem via Sequential Quadratic Programming (SQP)
     \item approximate an optimization problem via Convex Linearization (CONLIN)
     \item approximate an optimization problem via the Method of Moving Asymptotes (MMA)
-    \item discuss the relation between these approximation methods and chose an appropriate method for a given task
+    \item discuss the relation between these approximation methods and choose an appropriate method for a given task
 \end{itemize}
 \end{objectives}
 
@@ -73,8 +73,8 @@ In Sequential Quadratic Programming (SQP), we approximate the objective function
 \end{equation}
 and the restrictions with first order linear approximations
 \begin{align}
-    \tilde{g}(\mathbf{x}) &= g(\mathbf{x}^k) + \nabla g(\mathbf{x}^k) \left(\mathbf{x} - \mathbf{x}^k \right) \\
-    \tilde{h}(\mathbf{x}) &= h(\mathbf{x}^k) + \nabla h(\mathbf{x}^k) \left(\mathbf{x} - \mathbf{x}^k \right).
+    \tilde{g}(\mathbf{x}) &= g(\mathbf{x}^k) + \nabla g(\mathbf{x}^k) \cdot \left(\mathbf{x} - \mathbf{x}^k \right) \\
+    \tilde{h}(\mathbf{x}) &= h(\mathbf{x}^k) + \nabla h(\mathbf{x}^k) \cdot \left(\mathbf{x} - \mathbf{x}^k \right).
 \end{align}
 This results in a more accurate approximation and also in a more balanced approximation, i.e. the same approximation order for the roots of interest (for constraints we are interested in roots of the function itself, for the objective we are interest in the roots of the derivative). 
 The Hessian $\nabla^2 f$ may be approximated efficiently using the BFGS algorithm. This way, the problem is convex and we may use the methods from Chapter 3 to obtain the optimum. 
