@@ -170,7 +170,7 @@ Then, we just need to adjust the sensitivity (see Equation \ref{eq:sensitivity_s
         \item Evaluate the analytical solution
             \begin{align}
                 \hat{\rho}_j(\mu) &= L_j^k + \sqrt{\frac{2 p \rho_j^{p-1} d_j w_j (\pmb{\rho}^k)
-                (L^k_j-d^k_j)^2}{\mu V_j}} \\
+                (L^k_j-\rho^k_j)^2}{\mu V_j}} \\
                 \pmb{\rho}^* (\mu) &= \textrm{clamp}\left(\hat{\pmb{\rho}}(\mu), \tilde{\pmb{\rho}}^{-,k}, \mathbf{1}\right)
             \end{align}
         \item Perform a line search to find the root $\mu^*>0$ in 
@@ -456,8 +456,8 @@ Just like in shape optimization of trusses, target function and constraint funct
         \begin{equation}
             U^k_i = 
             \begin{cases}
-                \delta^k_i - s  (U^{k-1}_i-\delta^{k-1}_i) & (\delta_i^k-\delta_i^{k-1})(\delta_i^{k-1}-\delta_i^{k-2}) < 0\\
-                \delta^k_i - \frac{1}{\sqrt{s}}  (U^{k-1}_i-\delta^{k-1}_i) & \text{else}
+                \delta^k_i + s  (U^{k-1}_i-\delta^{k-1}_i) & (\delta_i^k-\delta_i^{k-1})(\delta_i^{k-1}-\delta_i^{k-2}) < 0\\
+                \delta^k_i + \frac{1}{\sqrt{s}}  (U^{k-1}_i-\delta^{k-1}_i) & \text{else}
             \end{cases}
         \end{equation}
         \item Compute the move limits as 
