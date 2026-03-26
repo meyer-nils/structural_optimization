@@ -148,19 +148,19 @@ fulfills the necessary condition to be an optimum of a constrained optimization 
 
 
 \section{Karush-Kuhn-Tucker conditions}
-The Lagrange multipliers where initially only defined for equality constraints. However, the concept can be extended to inequality constraints with a Lagrangian function 
+The Lagrange multipliers were initially only defined for equality constraints. However, the concept can be extended to inequality constraints with a Lagrangian function 
 \begin{equation}
     \mathcal{\mathcal{L}} (\mathbf{x}, \pmb{\mu}, \pmb{\lambda}) = f(\mathbf{x}) + \sum_{i=1}^n \mu_i g_i(\mathbf{x}) + \sum_{j=1}^m \lambda_j h_j(\mathbf{x}) 
 \end{equation}
 utilizing the Lagrangian multipliers $\pmb{\mu} \in \mathcal{R}^n$ and $\pmb{\lambda} \in \mathcal{R}^m$ \cite{Karush1939, Kuhn1951}.
 
-Assuming that the gradients of the constraints are linearly independent, we can formulate the Karush-Kuhn-Tucker (KKT) conditions as necessary conditions for an optimum of the optimization problem \eqref{eq:unconstrained_optimzation}: 
+Assuming that the gradients of the constraints are linearly independent, we can formulate the Karush-Kuhn-Tucker (KKT) conditions as necessary conditions for an optimum of the optimization problem \eqref{eq:constrained_optimization}: 
 \begin{align}
     \frac{\partial \mathcal{\mathcal{L}}}{\partial x_k} (\mathbf{x}^*, \pmb{\mu}^*, \pmb{\lambda}^*) &= 
     \frac{\partial f }{\partial x_k} (\mathbf{x}^*) + \sum_{j=1}^n \mu_i^* \frac{\partial g_i}{\partial x_k} (\mathbf{x}^*) + \sum_{j=1}^m \lambda_j^* \frac{\partial h_j}{\partial x_k} (\mathbf{x}^*) = 0 \\
     h_j(\mathbf{x}^*) &= 0 \quad j \in [1,m]\\
     g_i(\mathbf{x}^*) &\le 0 \quad i \in [1,n]\\
-    \mu_i^* &\ge 0 \quad i \in [0,n] \\
+    \mu_i^* &\ge 0 \quad i \in [1,n] \\
     \mu_i^* g_i(\mathbf{x}^*) &=0 \quad i \in [1,n]
 \end{align}
 The first condition is the stationary condition, the next two conditions are the primal feasibility conditions, the next condition is the dual feasibility condition and the last condition is termed the complementary slackness condition. The slackness condition is either fulfilled by $\mu_i^*>0$ and $g_i(\mathbf{x}^*)=0$ for an active constraint or by  $\mu_i^*=0$ and $g_i(\mathbf{x}^*) \le 0$ for an inactive constraint \cite{Christensen2008, Harzheim2014}.
@@ -204,7 +204,7 @@ The first condition is the stationary condition, the next two conditions are the
     The KKT conditions are 
     \begin{align}
         \frac{\partial \mathcal{\mathcal{L}}}{\partial x_1} &= 4 (x_1^* + 1) + \mu^* + \lambda^*  = 0\\
-        \frac{\partial \mathcal{\mathcal{L}}}{\partial x_2} &= 2 (x_1^* - 1) + \mu^* - \lambda^*  = 0\\
+        \frac{\partial \mathcal{\mathcal{L}}}{\partial x_2} &= 2 (x_2^* - 1) + \mu^* - \lambda^*  = 0\\
         \frac{\partial \mathcal{\mathcal{L}}}{\partial \lambda} &= x_1^* - x_2^* - 2 = 0 \\
         \label{eq:kkt_example1_in}
         \frac{\partial \mathcal{\mathcal{L}}}{\partial \mu} &= x_1^*+x_2^* \le 0 \\
@@ -359,7 +359,7 @@ is helpful, because we are left with very simple box constraints in these optimi
     in $\mathcal{L}$ to obtain the dual objective function $\underline{\mathcal{L}} (\lambda)$. Now, we are left with a problem 
     \begin{equation}
         \max_{\lambda} \underline{\mathcal{L}} (\lambda) = 
-        \max_{\lambda} \left( - \frac{\lambda^2}{4} + \lambda + \frac{1}{4} \right).
+        \max_{\lambda} \left( - \frac{\lambda^2}{4} + \lambda \right).
     \end{equation}
     The maximum is located at a stationary point, so with 
     \begin{equation}
@@ -379,7 +379,7 @@ and the constraints can be expressed as
 \end{align}
 Then, the Lagrangian becomes 
 \begin{equation}
-    \mathcal{L} (\mathbf{x}, \pmb{\mu}, \pmb{\lambda}) = f_0 + \sum_{k=1}^d f_i(x_k) + \sum_{i=1}^n \mu_i \left(g_{i0} + \sum_{k=1}^d g_{ik}(x_k) \right) + \sum_{j=1}^m \lambda_j  \left(h_{j0} + \sum_{k=1}^d h_{jk}(x_k) \right)
+    \mathcal{L} (\mathbf{x}, \pmb{\mu}, \pmb{\lambda}) = f_0 + \sum_{k=1}^d f_k(x_k) + \sum_{i=1}^n \mu_i \left(g_{i0} + \sum_{k=1}^d g_{ik}(x_k) \right) + \sum_{j=1}^m \lambda_j  \left(h_{j0} + \sum_{k=1}^d h_{jk}(x_k) \right)
 \end{equation}
 and is also separable
 \begin{equation}
