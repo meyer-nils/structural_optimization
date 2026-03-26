@@ -1,5 +1,5 @@
 \chapter{Constrained optimization}
-In the previous chapter, we draw the analogy between an optimization problem and the search for the lowest point in a mountainous landscape. We may continue with this analogy and make it a bit more realistic: \emph{Previously, the hiking person was able to access any point in the mountain range $\mathcal{R}^d$. However, in reality we might find a couple of constrains in that mountainous landscape. Someone might have put fences in the landscape and we are not able to cross these fences or we are restricted to a hiking path and cannot leave that path.}
+In the previous chapter, we draw the analogy between an optimization problem and the search for the lowest point in a mountainous landscape. We may continue with this analogy and make it a bit more realistic: \emph{Previously, the hiking person was able to access any point in the mountain range $\mathcal{R}^d$. However, in reality we might find a couple of constraints in that mountainous landscape. Someone might have put fences in the landscape and we are not able to cross these fences or we are restricted to a hiking path and cannot leave that path.}
 
 These additional constraints make the optimization harder - the optimum that is achievable for us might be just "at a fence" and not the global optimum of the unrestricted function.
 We denote the general form of a constrained optimization problem as 
@@ -35,7 +35,7 @@ These constraints are probably the most friendly constraints in an optimization 
 with the stationary point $\hat{x}$, the lower bound $x^-$ and the upper bound $x^+$. 
 However, clamping the stationary point in each dimension of a multi-dimensional problem would not result in the optimal point, as illustrated by the green point in the next example \cite{Niculae2020}.
 
-One method to deal with box constrains in multi-dimensional optimization problems is the projected gradient method. In this method we project each step of a gradient descent back to the domain as 
+One method to deal with box constraints in multi-dimensional optimization problems is the projected gradient method. In this method we project each step of a gradient descent back to the domain as 
 \begin{equation}
     \mathbf{x}^{k+1} = P(\mathbf{x}^k -\eta \nabla f(\mathbf{x}^k))
 \end{equation}
