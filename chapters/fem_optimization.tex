@@ -476,7 +476,7 @@ Just like in shape optimization of trusses, target function and constraint funct
                         &\textrm{if} \quad \frac{\partial C}{\partial \delta_i} > 0, \frac{\partial g}{\partial \delta_i} > 0 \\
                     \frac{U_i^k\omega + L_i^k}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(\delta_i^k-L_i^k)^2\frac{\partial g}{\partial \delta_i}}{(U_i^k-\delta_i^k)^2\frac{\partial C}{\partial \delta_i}}}
                         &\textrm{if} \quad \frac{\partial C}{\partial \delta_i}  > 0, \frac{\partial g}{\partial \delta_i} <0\\
-                    \frac{U_i^k-L_i^k\omega}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(U_i^k-\delta_i^k)^2\frac{\partial g}{\partial \delta_i}}{(\delta_i^k-L_i^k)^2\frac{\partial C}{\partial \delta_i}}} 
+                    \frac{U_i^k+L_i^k\omega}{1+\omega}, \quad \omega = \sqrt{-\mu\frac{(U_i^k-\delta_i^k)^2\frac{\partial g}{\partial \delta_i}}{(\delta_i^k-L_i^k)^2\frac{\partial C}{\partial \delta_i}}} 
                         &\textrm{if} \quad \frac{\partial C}{\partial \delta_i} < 0, \frac{\partial g}{\partial \delta_i}  > 0\\
                     \delta^+_i 
                         &\textrm{if} \quad \frac{\partial C}{\partial \delta_i}< 0, \frac{\partial g}{\partial \delta_i} < 0.
