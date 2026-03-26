@@ -293,7 +293,7 @@ To compute $G_j$, we need to determine the value of the Lagrange multiplier $\mu
         \end{equation}
         and filter it according to
         \begin{equation}
-            \widetilde{\frac{\partial C}{\partial \rho_j}} = \frac{1}{\rho_j} \frac{\sum_i H_{ji} A_i \rho_i \frac{\partial C}{\partial \rho_i} }{\sum_i H_{ji} A_i}.
+            \widetilde{\frac{\partial C}{\partial \rho_j}} = \frac{A_j}{\rho_j} \frac{\sum_i H_{ji} \frac{\rho_i}{A_i} \frac{\partial C}{\partial \rho_i}}{\sum_i H_{ji}}
         \end{equation}
         \item Apply the bisection method to find the root of 
             \begin{equation}
