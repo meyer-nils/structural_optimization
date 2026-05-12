@@ -157,7 +157,7 @@ utilizing the Lagrangian multipliers $\pmb{\mu} \in \mathcal{R}^n$ and $\pmb{\la
 Assuming that the gradients of the constraints are linearly independent, we can formulate the Karush-Kuhn-Tucker (KKT) conditions as necessary conditions for an optimum of the optimization problem \eqref{eq:constrained_optimization}: 
 \begin{align}
     \frac{\partial \mathcal{\mathcal{L}}}{\partial x_k} (\mathbf{x}^*, \pmb{\mu}^*, \pmb{\lambda}^*) &= 
-    \frac{\partial f }{\partial x_k} (\mathbf{x}^*) + \sum_{j=1}^n \mu_i^* \frac{\partial g_i}{\partial x_k} (\mathbf{x}^*) + \sum_{j=1}^m \lambda_j^* \frac{\partial h_j}{\partial x_k} (\mathbf{x}^*) = 0 \\
+    \frac{\partial f }{\partial x_k} (\mathbf{x}^*) + \sum_{i=1}^n \mu_i^* \frac{\partial g_i}{\partial x_k} (\mathbf{x}^*) + \sum_{j=1}^m \lambda_j^* \frac{\partial h_j}{\partial x_k} (\mathbf{x}^*) = 0 \\
     h_j(\mathbf{x}^*) &= 0 \quad j \in [1,m]\\
     g_i(\mathbf{x}^*) &\le 0 \quad i \in [1,n]\\
     \mu_i^* &\ge 0 \quad i \in [1,n] \\
