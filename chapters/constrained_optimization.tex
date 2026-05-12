@@ -93,13 +93,13 @@ Here, all operators ($\max$, $\min$ and $\textrm{clamp}$) are applied as point-w
 \section{Lagrange multipliers}
 Now, we neglect only the inequality constraints in the problem \eqref{eq:constrained_optimization}, i.e. $n=0$. Then we can solve the problem using Lagrange multipliers. To do so, we formulate the Lagrangian function
 \begin{equation}
-    \mathcal{\mathcal{L}} (\mathbf{x}, \pmb{\lambda}) = f(\mathbf{x}) + \sum_{j=1}^m \lambda_j h_j(\mathbf{x}) 
+    \mathcal{L} (\mathbf{x}, \pmb{\lambda}) = f(\mathbf{x}) + \sum_{j=1}^m \lambda_j h_j(\mathbf{x}) 
 \end{equation}
 with so-called Lagrangian multipliers $\pmb{\lambda} \in \mathcal{R}^m$. 
 According to the Lagrange multiplier theorem, a stationary point of the Lagrangian function 
 \begin{align}
-    \frac{\partial \mathcal{\mathcal{L}}}{\partial x_k} (\mathbf{x}^*, \pmb{\lambda}^*) &= \frac{\partial f }{\partial x_k} (\mathbf{x}^*) + \sum_{j=1}^m \lambda_j^* \frac{\partial h_j}{\partial x_k} (\mathbf{x}^*) = 0\\
-    \frac{\partial \mathcal{\mathcal{L}}}{\partial \lambda_j} (\mathbf{x}^*, \pmb{\lambda}^*) &= h_j(\mathbf{x}^*) = 0,
+    \frac{\partial \mathcal{L}}{\partial x_k} (\mathbf{x}^*, \pmb{\lambda}^*) &= \frac{\partial f }{\partial x_k} (\mathbf{x}^*) + \sum_{j=1}^m \lambda_j^* \frac{\partial h_j}{\partial x_k} (\mathbf{x}^*) = 0\\
+    \frac{\partial \mathcal{L}}{\partial \lambda_j} (\mathbf{x}^*, \pmb{\lambda}^*) &= h_j(\mathbf{x}^*) = 0,
 \end{align}
 fulfills the necessary condition to be an optimum of a constrained optimization problem, if the gradients of the equality constraints are linearly independent (\emph{Slater condition} or \emph{constraint qualification}). We may interpret these optimality conditions such that any directional derivative in a feasible direction becomes zero.
 
@@ -135,13 +135,13 @@ fulfills the necessary condition to be an optimum of a constrained optimization 
 
     We can find the solution to this problem by finding a stationary point of the Lagrangian function
     \begin{equation}
-        \mathcal{\mathcal{L}}(\mathbf{x}, \lambda) = 2 (x_1-\tilde{x}_1)^2 + (x_2-\tilde{x}_2)^2 + \lambda (x_1 - x_2 -2)
+        \mathcal{L}(\mathbf{x}, \lambda) = 2 (x_1-\tilde{x}_1)^2 + (x_2-\tilde{x}_2)^2 + \lambda (x_1 - x_2 -2)
     \end{equation}
     with its partial derivatives 
     \begin{align}
-        \frac{\partial \mathcal{\mathcal{L}}}{\partial x_1} &= 4 x_1^* + \lambda^*  + 4 = 0\\
-        \frac{\partial \mathcal{\mathcal{L}}}{\partial x_2} &= 2 x_2^* - \lambda^*  -2 = 0\\
-        \frac{\partial \mathcal{\mathcal{L}}}{\partial \lambda} &= x_1^* - x_2^* -2 = 0.
+        \frac{\partial \mathcal{L}}{\partial x_1} &= 4 x_1^* + \lambda^*  + 4 = 0\\
+        \frac{\partial \mathcal{L}}{\partial x_2} &= 2 x_2^* - \lambda^*  -2 = 0\\
+        \frac{\partial \mathcal{L}}{\partial \lambda} &= x_1^* - x_2^* -2 = 0.
     \end{align}
     This is a linear system of three equations with three unknowns and we can easily find the solution $x_1^*=\frac{1}{3} , x_2^*=-\frac{5}{3}, \lambda^*=-\frac{16}{3}$
 \end{example}
@@ -150,16 +150,16 @@ fulfills the necessary condition to be an optimum of a constrained optimization 
 \section{Karush-Kuhn-Tucker conditions}
 The Lagrange multipliers were initially only defined for equality constraints. However, the concept can be extended to inequality constraints with a Lagrangian function 
 \begin{equation}
-    \mathcal{\mathcal{L}} (\mathbf{x}, \pmb{\mu}, \pmb{\lambda}) = f(\mathbf{x}) + \sum_{i=1}^n \mu_i g_i(\mathbf{x}) + \sum_{j=1}^m \lambda_j h_j(\mathbf{x}) 
+    \mathcal{L} (\mathbf{x}, \pmb{\mu}, \pmb{\lambda}) = f(\mathbf{x}) + \sum_{i=1}^n \mu_i g_i(\mathbf{x}) + \sum_{j=1}^m \lambda_j h_j(\mathbf{x}) 
 \end{equation}
 utilizing the Lagrangian multipliers $\pmb{\mu} \in \mathcal{R}^n$ and $\pmb{\lambda} \in \mathcal{R}^m$ \cite{Karush1939, Kuhn1951}.
 
 Assuming that the gradients of the constraints are linearly independent, we can formulate the Karush-Kuhn-Tucker (KKT) conditions as necessary conditions for an optimum of the optimization problem \eqref{eq:constrained_optimization}: 
 \begin{align}
-    \frac{\partial \mathcal{\mathcal{L}}}{\partial x_k} (\mathbf{x}^*, \pmb{\mu}^*, \pmb{\lambda}^*) &= 
+    \frac{\partial \mathcal{L}}{\partial x_k} (\mathbf{x}^*, \pmb{\mu}^*, \pmb{\lambda}^*) &= 
     \frac{\partial f }{\partial x_k} (\mathbf{x}^*) + \sum_{i=1}^n \mu_i^* \frac{\partial g_i}{\partial x_k} (\mathbf{x}^*) + \sum_{j=1}^m \lambda_j^* \frac{\partial h_j}{\partial x_k} (\mathbf{x}^*) = 0 \\
-    \frac{\partial \mathcal{\mathcal{L}}}{\partial \lambda_j} (\mathbf{x}^*, \pmb{\mu}^*, \pmb{\lambda}^*) = h_j(\mathbf{x}^*) &= 0 \quad j \in [1,m]\\
-    \frac{\partial \mathcal{\mathcal{L}}}{\partial \mu_i} (\mathbf{x}^*, \pmb{\mu}^*, \pmb{\lambda}^*) = g_i(\mathbf{x}^*) &\le 0 \quad i \in [1,n]\\
+    \frac{\partial \mathcal{L}}{\partial \lambda_j} (\mathbf{x}^*, \pmb{\mu}^*, \pmb{\lambda}^*) &= h_j(\mathbf{x}^*) = 0 \quad j \in [1,m]\\
+    \frac{\partial \mathcal{L}}{\partial \mu_i} (\mathbf{x}^*, \pmb{\mu}^*, \pmb{\lambda}^*) &= g_i(\mathbf{x}^*) \le 0 \quad i \in [1,n]\\
     \mu_i^* &\ge 0 \quad i \in [1,n] \\
     \mu_i^* g_i(\mathbf{x}^*) &=0 \quad i \in [1,n]
 \end{align}
@@ -198,16 +198,16 @@ The first condition is the stationary condition, the next two conditions are the
 
     The Lagrangian for this problem is 
     \begin{equation}
-        \mathcal{\mathcal{L}}(\mathbf{x}, \mu, \lambda) = 2 (x_1-\tilde{x}_1)^2 + (x_2-\tilde{x}_2)^2 + \mu (x_1+x_2) + \lambda (x_1 - x_2 -2).
+        \mathcal{L}(\mathbf{x}, \mu, \lambda) = 2 (x_1-\tilde{x}_1)^2 + (x_2-\tilde{x}_2)^2 + \mu (x_1+x_2) + \lambda (x_1 - x_2 -2).
     \end{equation}
 
     The KKT conditions are 
     \begin{align}
-        \frac{\partial \mathcal{\mathcal{L}}}{\partial x_1} &= 4 (x_1^* + 1) + \mu^* + \lambda^*  = 0\\
-        \frac{\partial \mathcal{\mathcal{L}}}{\partial x_2} &= 2 (x_2^* - 1) + \mu^* - \lambda^*  = 0\\
-        \frac{\partial \mathcal{\mathcal{L}}}{\partial \lambda} &= x_1^* - x_2^* - 2 = 0 \\
+        \frac{\partial \mathcal{L}}{\partial x_1} &= 4 (x_1^* + 1) + \mu^* + \lambda^*  = 0\\
+        \frac{\partial \mathcal{L}}{\partial x_2} &= 2 (x_2^* - 1) + \mu^* - \lambda^*  = 0\\
+        \frac{\partial \mathcal{L}}{\partial \lambda} &= x_1^* - x_2^* - 2 = 0 \\
         \label{eq:kkt_example1_in}
-        \frac{\partial \mathcal{\mathcal{L}}}{\partial \mu} &= x_1^*+x_2^* \le 0 \\
+        \frac{\partial \mathcal{L}}{\partial \mu} &= x_1^*+x_2^* \le 0 \\
         \mu^* &\ge 0 \\
         0 &= \mu^*(x_1^*+x_2^*)
         \label{eq:kkt_example1_comp}
@@ -248,16 +248,16 @@ The first condition is the stationary condition, the next two conditions are the
 
     The Lagrangian for this problem is 
     \begin{equation}
-        \mathcal{\mathcal{L}}(\mathbf{x}, \mu, \lambda) = 2 (x_1-\tilde{x}_1)^2 + (x_2-\tilde{x}_2)^2 - \mu (x_1+x_2) + \lambda (x_1 - x_2 -2).
+        \mathcal{L}(\mathbf{x}, \mu, \lambda) = 2 (x_1-\tilde{x}_1)^2 + (x_2-\tilde{x}_2)^2 - \mu (x_1+x_2) + \lambda (x_1 - x_2 -2).
     \end{equation}
 
     The KKT conditions are 
     \begin{align}
-        \frac{\partial \mathcal{\mathcal{L}}}{\partial x_1} &= 4 (x_1^* + 1) - \mu^* + \lambda^*  = 0\\
-        \frac{\partial \mathcal{\mathcal{L}}}{\partial x_2} &= 2 (x_2^* - 1) - \mu^* - \lambda^*  = 0\\
-        \frac{\partial \mathcal{\mathcal{L}}}{\partial \lambda} &= x_1^* - x_2^* - 2 = 0 \\
+        \frac{\partial \mathcal{L}}{\partial x_1} &= 4 (x_1^* + 1) - \mu^* + \lambda^*  = 0\\
+        \frac{\partial \mathcal{L}}{\partial x_2} &= 2 (x_2^* - 1) - \mu^* - \lambda^*  = 0\\
+        \frac{\partial \mathcal{L}}{\partial \lambda} &= x_1^* - x_2^* - 2 = 0 \\
         \label{eq:kkt_example2_in}
-        \frac{\partial \mathcal{\mathcal{L}}}{\partial \mu} &= -x_1^*-x_2^* \le 0 \\
+        \frac{\partial \mathcal{L}}{\partial \mu} &= -x_1^*-x_2^* \le 0 \\
         \mu^* &\ge 0 \\
         0 &= \mu^*(-x_1^*-x_2^*)
         \label{eq:kkt_example2_comp}
@@ -297,18 +297,18 @@ However, we cannot use the gradient descent schemes directly, because the fact t
 One option to find the saddle point is called the \emph{primal method}, where the Lagrangian is first maximized w.r.t. $\pmb{\mu}$ and $\pmb{\lambda}$ with fixed $\mathbf{x}$ and then minimized w.r.t. $\mathbf{x}$. Visually this is a descent along the ridge until we reach the saddle point. 
 This formulation 
 \begin{equation}
-    \min_{\mathbf{x} \in \mathcal{X}} \underbrace{\max_{\pmb{\mu},\pmb{\lambda}} \mathcal{\mathcal{L}}(\pmb{\mu}, \pmb{\lambda}, \mathbf{x})}_{\bar{\mathcal{\mathcal{L}}}(\mathbf{x})}
+    \min_{\mathbf{x} \in \mathcal{X}} \underbrace{\max_{\pmb{\mu},\pmb{\lambda}} \mathcal{L}(\pmb{\mu}, \pmb{\lambda}, \mathbf{x})}_{\bar{\mathcal{L}}(\mathbf{x})}
 \end{equation}
-does not provide much improvement, because the inner term $\bar{\mathcal{\mathcal{L}}}(\mathbf{x})$ just states the constraints 
+does not provide much improvement, because the inner term $\bar{\mathcal{L}}(\mathbf{x})$ just states the constraints 
 \begin{align}
-    \frac{\partial \mathcal{\mathcal{L}}}{\partial \mu_i} &= g_i(\mathbf{x}) = 0 \quad i \in \mathcal{I}\\
-    \frac{\partial \mathcal{\mathcal{L}}}{\partial \lambda_j} &= h_j(\mathbf{x}) = 0 \quad j \in [1,m]
+    \frac{\partial \mathcal{L}}{\partial \mu_i} &= g_i(\mathbf{x}) = 0 \quad i \in \mathcal{I}\\
+    \frac{\partial \mathcal{L}}{\partial \lambda_j} &= h_j(\mathbf{x}) = 0 \quad j \in [1,m]
 \end{align}
 with $\mathcal{I}$ denoting the set of active inequality constraints. This leaves us with the same problem as \eqref{eq:constrained_optimization} and not much has been gained. 
 
 However, it can be shown that for convex problems with linearly independent inequality constraints, we can invert the process and minimize the Lagrangian function w.r.t. $\mathbf{x}$ first and then maximize it w.r.t. $\pmb{\mu}$ and $\pmb{\lambda}$. Visually this is a maximization along the valley floor until we reach the saddle point \cite{Harzheim2014}. The formulation 
 \begin{equation}
-     \max_{\pmb{\mu},\pmb{\lambda}} \underbrace{\min_{\mathbf{x}\in \mathcal{X}} \mathcal{\mathcal{L}}(\pmb{\mu}, \pmb{\lambda}, \mathbf{x})}_{\underline{\mathcal{\mathcal{L}}} (\pmb{\mu}, \pmb{\lambda})}
+     \max_{\pmb{\mu},\pmb{\lambda}} \underbrace{\min_{\mathbf{x}\in \mathcal{X}} \mathcal{L}(\pmb{\mu}, \pmb{\lambda}, \mathbf{x})}_{\underline{\mathcal{L}} (\pmb{\mu}, \pmb{\lambda})}
 \end{equation}
 is helpful, because we are left with very simple box constraints in these optimization problems ($\mathbf{x} \in \mathcal{X}$ in the inner minimization and $\pmb{\mu} \ge 0$ in the maximization). 
 
@@ -344,7 +344,7 @@ is helpful, because we are left with very simple box constraints in these optimi
 
     We can formulate the Lagrangian function as
     \begin{equation}
-        \mathcal{\mathcal{L}}(\mathbf{x}, \lambda) = 2 (x_1-\tilde{x}_1)^2 + (x_2-\tilde{x}_2)^2 + \lambda \left[(x_1+1)^2 + x_2 \right].
+        \mathcal{L}(\mathbf{x}, \lambda) = 2 (x_1-\tilde{x}_1)^2 + (x_2-\tilde{x}_2)^2 + \lambda \left[(x_1+1)^2 + x_2 \right].
     \end{equation}
     Now, we solve the dual problem by first minimizing the Lagrange function w.r.t. $\mathbf{x}$. For the stationary point, 
     \begin{align}
