@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "structural-optimization"
+version = "1.3.0"
+description = "Helper utilities for the Structural Optimization lecture MRM-0156"
+requires-python = ">=3.10"
+dependencies = [
+    "torch-fem[notebook]",
+    "gmsh",
+    "plotly",
+]
+
+[dependency-groups]
+# Installed by `uv sync` / `uv run`, but NOT by `pip install .` — this keeps
+# JupyterLab out of Google Colab, where it would clash with the preinstalled stack.
+lab = [
+    "jupyterlab",
+]
+dev = [
+    "pytest",
+    "testbook",
+]
+
+[tool.uv]
+default-groups = ["lab"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["structopt"]

@@ -1,6 +1,9 @@
 # Python 
 __pycache__ 
 
+# uv / virtual environments
+.venv
+
 # Jupter 
 .ipynb_checkpoints
 

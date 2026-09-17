@@ -3,12 +3,58 @@
 ![Juypter](https://img.shields.io/badge/-Jupyter-F37626?&logo=Jupyter&logoColor=fff)
 [![Build LaTeX](https://github.com/meyer-nils/structural_optimization/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/meyer-nils/structural_optimization/actions/workflows/main.yml)
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/meyer-nils/structural_optimization)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/meyer-nils/structural_optimization/HEAD)
 [![Static Badge](https://img.shields.io/badge/Download_PDF-1.3.0-blue)](https://github.com/meyer-nils/structural_optimization/releases/download/v1.3.0/structural_optimization.pdf)
 
 
 
 # Structural Optimization
 This is accompanying code for my *Structural Optimization* lecture MRM-0156. 
+
+## Getting started
+
+### Option 1: Run in your browser (nothing to install)
+Click the [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/meyer-nils/structural_optimization/HEAD) badge. It opens the whole repository in a ready-to-use JupyterLab session with all packages installed — just open a notebook and start working. The first launch after a change to the material takes a few minutes while the environment is built; later launches are fast.
+
+Note that Binder sessions are temporary and shut down after about ten minutes of inactivity, so download anything you want to keep. Alternatively, [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/meyer-nils/structural_optimization) lets you pick any notebook of this repository in Google Colab, where you have to install the packages yourself by running
+
+```python
+!pip install git+https://github.com/meyer-nils/structural_optimization.git
+```
+
+in a new cell first.
+
+### Option 2: Local installation with uv
+We use [uv](https://docs.astral.sh/uv/) to manage Python and all packages. You do not need to install Python, Anaconda or anything else beforehand — uv takes care of it.
+
+**Step 1.** Install uv by running this in a terminal:
+
+*Windows (PowerShell):*
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+*macOS and Linux:*
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+**Step 2.** Close and reopen the terminal, then run:
+```bash
+git clone https://github.com/meyer-nils/structural_optimization.git
+cd structural_optimization
+uv run jupyter lab
+```
+
+That's it. The last command downloads a suitable Python version, creates an isolated environment with the exact package versions from `uv.lock` and opens JupyterLab in your browser. Use it again any time you want to continue working.
+
+<details>
+<summary>Prefer Visual Studio Code?</summary>
+
+Install [Visual Studio Code](https://code.visualstudio.com) with the "Python" and "Jupyter" extensions, run `uv sync` once in the repository, then open the folder in VS Code. Click "Select Kernel" in the top right of a notebook and choose the interpreter from the `.venv` folder.
+</details>
+
+## Contents
 
 - 1 Introduction
   - [Theory](https://meyer-nils.github.io/structural_optimization/introduction.html)
