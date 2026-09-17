@@ -260,9 +260,9 @@ at the optimal point, to formulate an optimality condition
 that must be fulfilled at the optimum whenever a variable does not reach its bounds.
 A heuristic algorithm can now compute $G_j$ and adjust $\rho_j$ such that $G_j$ approaches 1. We may realize that increasing $\rho_j$ increases the stiffness and hence decreases the displacement for a given load. Consequently, increasing $\rho_j$ decreases $G_j$ and vice versa. Hence, an update rule 
 \begin{equation}
-    \hat{\rho}_j^{k+1} = \left(G_j^k\right)^\xi \rho_j^k 
+    \hat{\rho}_j^{k+1} = \left(G_j^k\right)^\alpha \rho_j^k
 \end{equation}
-drives the solution towards the optimal point $\rho_j^*$, where $G^*_j=1$. The exponent $\xi \in (0,1]$ stabilizes the algorithm with typical values being $\xi=0.5$ \cite{Harzheim2014}. 
+drives the solution towards the optimal point $\rho_j^*$, where $G^*_j=1$. The exponent $\alpha \in (0,1]$ stabilizes the algorithm with typical values being $\alpha=0.5$ \cite{Harzheim2014}.
 
 In addition, we employ move limits 
 \begin{align}
@@ -305,7 +305,7 @@ To compute $G_j$, we need to determine the value of the Lagrange multiplier $\mu
         \end{equation}
         with
         \begin{equation}
-            \hat{\rho}_j^{k+1} = \left(\frac{ - \widetilde{\frac{\partial C}{\partial \rho_j}}}{\mu V_j}\right)^\xi \rho_j^k.
+            \hat{\rho}_j^{k+1} = \left(\frac{ - \widetilde{\frac{\partial C}{\partial \rho_j}}}{\mu V_j}\right)^\alpha \rho_j^k.
         \end{equation}
         \item Repeat with steps 2-4 until convergence or a maximum number of iterations is reached.
     \end{enumerate}
