@@ -32,3 +32,7 @@ main.pdf
 # Pandoc HTML
 svg-inkscape
 *.html
+
+# Generated Colab notebooks (published to the colab branch by CI)
+colab/
+
